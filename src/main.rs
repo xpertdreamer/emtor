@@ -1,3 +1,8 @@
+mod cpu;
+mod reg;
+
+use crate::cpu::Cpu;
+
 fn main() {
-    println!("Hello, world!");
+    let emtor = Cpu::create();
 }
