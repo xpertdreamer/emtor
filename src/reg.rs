@@ -1,5 +1,5 @@
-pub const REG_A: u8 = 0;
-pub const REG_B: u8 = 1;
+pub const REG_A: u8 = 0x00;
+pub const REG_B: u8 = 0x01;
 
 pub struct Regs {
     pub a: u8,
