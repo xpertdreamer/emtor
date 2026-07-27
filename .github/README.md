@@ -1,3 +1,5 @@
+These are test opcodes and will be changed later
+
 | OPCODE | Command           |
 |--------|-------------------|
 |  0x00  |  HLT              | 
