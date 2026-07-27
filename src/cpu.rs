@@ -1,6 +1,6 @@
 use crate::reg::Regs;
 
-const MEM_SIZE: usize = 256;
+pub const MEM_SIZE: usize = 256;
 
 enum Opcode {
     MOV { dest: u8, src: u8, val: Option<u8> },
@@ -42,8 +42,8 @@ impl Opcode {
 
 pub struct Cpu {
     pub regs: Regs,
-    pc: u16,
-    mem: [u8; MEM_SIZE],
+    pub pc: u16,
+    pub mem: [u8; MEM_SIZE],
     state: bool
 }
 
