@@ -10,11 +10,13 @@ pub const CONST_TO_REG_MOV_MODE: u8 = 0x0B;
 pub const HLT_OPCODE: u8 = 0x00;
 pub const ADD_OPCODE: u8 = 0x01;
 pub const MOV_OPCODE: u8 = 0x02;
+pub const SUB_OPCODE: u8 = 0x03;
 
 enum Opcode {
     MOV { mode: Option<u8>, dest: u8, src: u8 },
     ADD,
-    HLT
+    HLT,
+    SUB
 }
 
 impl Opcode {
@@ -41,7 +43,8 @@ impl Opcode {
                     }
                     _ => None
                 }
-            }
+            },
+            SUB_OPCODE => Some(Opcode::SUB),
             _ => None
         }
     }
@@ -53,11 +56,11 @@ impl Opcode {
                 cpu.state = false;
             }
             Opcode::ADD => {
-                // TODO: add instraction with args
                 // TODO: trace
                 cpu.regs.a = cpu.regs.a + cpu.regs.b;
             }
             Opcode::MOV { mode, dest, src } => {
+                // TODO: trace
                 let source_val = match mode {
                     Some(REG_TO_REG_MOV_MODE) => {
                         match src {
@@ -88,6 +91,10 @@ impl Opcode {
                         eprintln!("ERROR: dest ID is incorrect {}", dest);
                     }
                 }
+            },
+            Opcode::SUB => {
+                // TODO: trace
+                cpu.regs.a = cpu.regs.a - cpu.regs.b;
             }
         }
     }
