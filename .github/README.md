@@ -1,4 +1,5 @@
-These are test opcodes and will be changed later
+### OPCODES
+These are test opcodes and maybe will be changed later
 
 | OPCODE | Command           |
 |--------|-------------------|
@@ -7,7 +8,16 @@ These are test opcodes and will be changed later
 | 0x02   | MOV mode dest src |
 | 0x03   | SUB               |
 
-## MOV command
+### HLT command
+Terminates program execution. Doesn`t have any arguments
+
+### ADD command
+Doesn`t have any arguments. Simply performs the addition of two registers. The result is stored in register a (0x00).
+
+### SUB command
+Similar to ADD. Produces a=a-b operation
+
+### MOV command
 Mode argument and two operands lay down in memory sequentially
 
 | CODE | MOV OPERATING MODE                       |
