@@ -132,7 +132,7 @@ impl Cpu {
         } else {
             self.state = false;
             eprintln!("ERROR: End of memory");
-            return 0;
+            return HLT_OPCODE;
         }
     }
 
