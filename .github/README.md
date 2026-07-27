@@ -4,4 +4,4 @@ These are test opcodes and will be changed later
 |--------|-------------------|
 |  0x00  |  HLT              | 
 |  0x01  |  ADD              |
-|  0x02  |  MOV dest src val |
+|  0x02  |  MOV mode dest src |
