@@ -1,6 +1,6 @@
 pub struct Regs {
-    a: u8,
-    b: u8
+    pub a: u8,
+    pub b: u8
 }
 
 impl Regs {
