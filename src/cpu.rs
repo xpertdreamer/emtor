@@ -1,4 +1,4 @@
-use crate::reg::Regs;
+use crate::{TRACE, reg::*};
 
 pub const MEM_SIZE: usize = 256;
 
@@ -56,7 +56,7 @@ impl Opcode {
                 cpu.state = false;
             }
             Opcode::ADD => {
-                // TODO: trace
+                if TRACE { println!("TRACE: EXECUTING ADD, A = {}, B = {}", cpu.regs.a, cpu.regs.b ); }
                 cpu.regs.a = cpu.regs.a + cpu.regs.b;
             }
             Opcode::MOV { mode, dest, src } => {
@@ -64,8 +64,8 @@ impl Opcode {
                 let source_val = match mode {
                     Some(REG_TO_REG_MOV_MODE) => {
                         match src {
-                            0 => cpu.regs.a,
-                            1 => cpu.regs.b,
+                            &REG_A => cpu.regs.a,
+                            &REG_B => cpu.regs.b,
                             _ => {
                                 cpu.state = false;
                                 eprintln!("ERROR: src ID is incorrect {}", src);
@@ -84,8 +84,8 @@ impl Opcode {
                 };
 
                 match dest {
-                    0 => cpu.regs.a = source_val,
-                    1 => cpu.regs.b = source_val,
+                    &REG_A => cpu.regs.a = source_val,
+                    &REG_B => cpu.regs.b = source_val,
                     _ => {
                         cpu.state = false;
                         eprintln!("ERROR: dest ID is incorrect {}", dest);
@@ -93,7 +93,7 @@ impl Opcode {
                 }
             },
             Opcode::SUB => {
-                // TODO: trace
+                if TRACE { println!("TRACE: EXECUTING SUB, A = {}, B = {}", cpu.regs.a, cpu.regs.b ); }
                 cpu.regs.a = cpu.regs.a - cpu.regs.b;
             }
         }
