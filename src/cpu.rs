@@ -2,9 +2,11 @@ use crate::reg::Regs;
 
 pub const MEM_SIZE: usize = 256;
 
-pub const REG_TO_REG_MOV_MODE: u8 = 0xA;
-pub const CONST_TO_REG_MOV_MODE: u8 = 0xB;
+// MOV MODES
+pub const REG_TO_REG_MOV_MODE: u8 = 0x0A;
+pub const CONST_TO_REG_MOV_MODE: u8 = 0x0B;
 
+// OPCODES
 pub const HLT_OPCODE: u8 = 0x00;
 pub const ADD_OPCODE: u8 = 0x01;
 pub const MOV_OPCODE: u8 = 0x02;
@@ -63,7 +65,7 @@ impl Opcode {
                             1 => cpu.regs.b,
                             _ => {
                                 cpu.state = false;
-                                println!("ERROR: src ID is incorrect {}", src);
+                                eprintln!("ERROR: src ID is incorrect {}", src);
                                 return;
                             }
                         }
@@ -73,7 +75,7 @@ impl Opcode {
                     }
                     _ => {
                         cpu.state = false;
-                        println!("ERROR: MOV mode is incorrect");
+                        eprintln!("ERROR: MOV mode is incorrect");
                         return;
                     }
                 };
@@ -83,7 +85,7 @@ impl Opcode {
                     1 => cpu.regs.b = source_val,
                     _ => {
                         cpu.state = false;
-                        println!("ERROR: dest ID is incorrect {}", dest);
+                        eprintln!("ERROR: dest ID is incorrect {}", dest);
                     }
                 }
             }
@@ -129,7 +131,7 @@ impl Cpu {
                 opcode.exec(self);
             } else {
                 self.state = false;
-                println!("Unknown operation");
+                eprintln!("Unknown operation");
             }
         }
     }
