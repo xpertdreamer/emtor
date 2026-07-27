@@ -125,9 +125,15 @@ impl Cpu {
     }
 
     pub fn fetch_next_byte(&mut self) -> u8 {
-        let byte = self.mem[self.pc as usize];
-        self.pc += 1;
-        byte
+        if (self.pc as usize) < MEM_SIZE {
+            let byte = self.mem[self.pc as usize];
+            self.pc += 1;
+            return byte;
+        } else {
+            self.state = false;
+            eprintln!("ERROR: End of memory");
+            return 0;
+        }
     }
 
     pub fn run(&mut self) {
