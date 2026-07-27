@@ -1,3 +1,5 @@
-0x00 HLT
-0x01 ADD
-0x02 MOV dest src val
+| OPCODE | Command           |
+|--------|-------------------|
+|  0x00  |  HLT              | 
+|  0x01  |  ADD              |
+|  0x02  |  MOV dest src val |
