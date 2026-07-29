@@ -12,13 +12,15 @@ pub const ADD_OPCODE: u8 = 0x01;
 pub const MOV_OPCODE: u8 = 0x02;
 pub const SUB_OPCODE: u8 = 0x03;
 pub const MUL_OPCODE: u8 = 0x04;
+pub const JMP_OPCODE: u8 = 0x05;
 
 enum Opcode {
     MOV { mode: Option<u8>, dest: u8, src: u8 },
     ADD,
     HLT,
     SUB,
-    MUL
+    MUL,
+    JMP(u16)
 }
 
 impl Opcode {
@@ -48,6 +50,13 @@ impl Opcode {
             },
             SUB_OPCODE => Some(Opcode::SUB),
             MUL_OPCODE => Some(Opcode::MUL),
+            JMP_OPCODE =>
+            {
+                let high = cpu.fetch_next_byte();
+                let low = cpu.fetch_next_byte();
+                let address: u16 = ((high as u16) << 8) | low as u16;
+                Some(Opcode::JMP(address))
+            },
             _ => None
         }
     }
@@ -102,6 +111,10 @@ impl Opcode {
             Opcode::MUL => {
                 if TRACE { println!("TRACE: EXECUTING MUL, A = {}, B = {}", cpu.regs.a, cpu.regs.b ); }
                 cpu.regs.a = cpu.regs.a * cpu.regs.b;
+            },
+            Opcode::JMP(address) => {
+                if TRACE { println!("TRACE: EXECUTING JMP, ADDRESS = {}", address ); }
+                cpu.pc = *address;
             }
         }
     }

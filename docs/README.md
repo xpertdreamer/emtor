@@ -11,6 +11,7 @@ These are test opcodes and maybe will be changed later
 | 0x02   | MOV mode dest src |
 | 0x03   | SUB               |
 | 0x04   | MUL               |
+| 0x05   | JMP address       |
 
 ### HLT command
 Terminates program execution. Doesn`t have any arguments
@@ -31,3 +32,7 @@ Mode argument and two operands lay down in memory sequentially
 
 ### MUL command
 Similar to ADD. Produces a=a*b operation
+
+### JMP command
+Accept the next address of Programm Counter (PC). The address consists of two operands (high and low bytes), which are stored in memory sequentially in Big-Endian order: [JMP Instruction -> High byte -> Low byte], and then they form a single address: [HIGH|LOW].
+
