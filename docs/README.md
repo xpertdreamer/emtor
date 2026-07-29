@@ -10,6 +10,7 @@ These are test opcodes and maybe will be changed later
 | 0x01   | ADD               |
 | 0x02   | MOV mode dest src |
 | 0x03   | SUB               |
+| 0x04   | MUL               |
 
 ### HLT command
 Terminates program execution. Doesn`t have any arguments
@@ -27,3 +28,6 @@ Mode argument and two operands lay down in memory sequentially
 |------|------------------------------------------|
 | 0x0A | From register to register (a = 0, b = 1) |
 | 0x0B | From memory to register (src = value)    |
+
+### MUL command
+Similar to ADD. Produces a=a*b operation
