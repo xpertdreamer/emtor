@@ -18,13 +18,6 @@ fn main() {
         0x00                     // HLT
     ]);
 
-    // emtor.load_prog(&[
-    //     0x02, 0x0B, 0x00, 75,
-    //     0x02, 0x0B, 0x01, 22,
-    //     0x03,
-    //     0x00
-    // ]);
-
     emtor.run();
     println!("reg a: {}", emtor.regs.a);
     println!("reg b: {}", emtor.regs.b);
@@ -34,5 +27,25 @@ fn main() {
         if emtor.mem[i] != 0 {
             println!("{} = {:#X}", i, emtor.mem[i]);
         }
+    }
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_add() {
+        let mut emtor = Cpu::create();
+        emtor.load_prog(&[
+            0x02, 0x0B, 0x00, 12,    // MOV Const
+            0x02, 0x0B, 0x01, 2,     // MOV Const
+            0x01                     // ADD: A = A + B
+        ]);
+        emtor.run();
+        assert_eq!(emtor.regs.a, 14);
+        assert_eq!(emtor.regs.b, 2);
+        assert_eq!(emtor.pc, 10);
     }
 }
