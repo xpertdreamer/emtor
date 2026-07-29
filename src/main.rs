@@ -63,4 +63,20 @@ mod tests {
         assert_eq!(emtor.regs.b, 0x02);
         assert_eq!(emtor.pc, 0x0A);
     }
+
+    #[test]
+    fn test_jmp() {
+        let mut emtor = Cpu::create();
+        emtor.load_prog(&[
+            0x02, 0x0B, 0x00, 0x32,     // MOV Const    1
+            0x02, 0x0B, 0x01, 0x02,     // MOV Const    2
+            0x05, 0x00, 0x10,           // JMP -> 5     3
+            0x02, 0x0A, 0x00, 0x01,     // MOV Reg      4
+            0x00                        // HLT          5
+        ]);
+        emtor.run();
+        assert_eq!(emtor.regs.a, 0x32);
+        assert_eq!(emtor.regs.b, 0x02);
+        assert_eq!(emtor.pc, 0x11);
+    }
 }
