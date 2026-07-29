@@ -11,12 +11,14 @@ pub const HLT_OPCODE: u8 = 0x00;
 pub const ADD_OPCODE: u8 = 0x01;
 pub const MOV_OPCODE: u8 = 0x02;
 pub const SUB_OPCODE: u8 = 0x03;
+pub const MUL_OPCODE: u8 = 0x04;
 
 enum Opcode {
     MOV { mode: Option<u8>, dest: u8, src: u8 },
     ADD,
     HLT,
-    SUB
+    SUB,
+    MUL
 }
 
 impl Opcode {
@@ -45,6 +47,7 @@ impl Opcode {
                 }
             },
             SUB_OPCODE => Some(Opcode::SUB),
+            MUL_OPCODE => Some(Opcode::MUL),
             _ => None
         }
     }
@@ -83,9 +86,9 @@ impl Opcode {
                     }
                 };
 
-                match dest {
-                    &REG_A => cpu.regs.a = source_val,
-                    &REG_B => cpu.regs.b = source_val,
+                match *dest {
+                    REG_A => cpu.regs.a = source_val,
+                    REG_B => cpu.regs.b = source_val,
                     _ => {
                         cpu.state = false;
                         eprintln!("ERROR: dest ID is incorrect {}", dest);
@@ -95,6 +98,10 @@ impl Opcode {
             Opcode::SUB => {
                 if TRACE { println!("TRACE: EXECUTING SUB, A = {}, B = {}", cpu.regs.a, cpu.regs.b ); }
                 cpu.regs.a = cpu.regs.a - cpu.regs.b;
+            },
+            Opcode::MUL => {
+                if TRACE { println!("TRACE: EXECUTING MUL, A = {}, B = {}", cpu.regs.a, cpu.regs.b ); }
+                cpu.regs.a = cpu.regs.a * cpu.regs.b;
             }
         }
     }
