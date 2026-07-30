@@ -82,7 +82,7 @@ impl Opcode {
             }
             Opcode::ADD => {
                 if TRACE { println!("TRACE: EXECUTING ADD, A = {}, B = {}", cpu.regs.a, cpu.regs.b ); }
-                cpu.regs.a += cpu.regs.b;
+                cpu.regs.c = cpu.regs.a + cpu.regs.b;
             }
             Opcode::MOV { mode, dest, src } => {
                 // TODO: trace
@@ -91,6 +91,7 @@ impl Opcode {
                         match *src {
                             REG_A => cpu.regs.a,
                             REG_B => cpu.regs.b,
+                            REG_C => cpu.regs.c,
                             _ => {
                                 cpu.state = false;
                                 eprintln!("ERROR: src ID is incorrect {}", src);
@@ -111,6 +112,7 @@ impl Opcode {
                 match *dest {
                     REG_A => cpu.regs.a = source_val,
                     REG_B => cpu.regs.b = source_val,
+                    REG_C => cpu.regs.c = source_val,
                     _ => {
                         cpu.state = false;
                         eprintln!("ERROR: dest ID is incorrect {}", dest);
@@ -119,11 +121,11 @@ impl Opcode {
             },
             Opcode::SUB => {
                 if TRACE { println!("TRACE: EXECUTING SUB, A = {}, B = {}", cpu.regs.a, cpu.regs.b ); }
-                cpu.regs.a -= cpu.regs.b;
+                cpu.regs.c = cpu.regs.a + cpu.regs.b;
             },
             Opcode::MUL => {
                 if TRACE { println!("TRACE: EXECUTING MUL, A = {}, B = {}", cpu.regs.a, cpu.regs.b ); }
-                cpu.regs.a *= cpu.regs.b;
+                cpu.regs.c = cpu.regs.a * cpu.regs.b;
             },
             Opcode::JMP(address) => {
                 if TRACE { println!("TRACE: EXECUTING JMP, ADDRESS = {}", address ); }
@@ -138,8 +140,8 @@ impl Opcode {
                     (((a != b) as u8) << 1)              |
                     (((a > b) as u8) << 2)               |
                     (((a < b) as u8) << 3)               |
-                    ((((a > b) || (a == b)) as u8) << 4) |
-                    ((((a < b) || (a == b)) as u8) << 5) |
+                    (((a >= b) as u8) << 4)              |
+                    (((a <= b) as u8) << 5)              |
                     (((a == 0) as u8) << 6)              |
                     (((a != 0) as u8) << 7);
             },
