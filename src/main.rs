@@ -16,6 +16,7 @@ fn main() {
         0x02, 0x0B, 0x01, 0x04,  // MOV Const
         0x03,                    // SUB
         0x04,                    // MUL
+        0x06,                    // CMP
         0x00                     // HLT
     ]);
 
@@ -23,6 +24,7 @@ fn main() {
     println!("reg a: {}", emtor.regs.a);
     println!("reg b: {}", emtor.regs.b);
     println!("pc: {}", emtor.pc);
+    println!("reg f {:#b}", emtor.regs.f);
     println!("----------");
     for i in 0..MEM_SIZE {
         if emtor.mem[i] != 0 {
