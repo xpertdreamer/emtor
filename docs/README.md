@@ -1,23 +1,22 @@
 # emtor
 > Recreational project which have the goal - write an emulator of fictional architecture in Rust
 
-### OPCODES
-These are test opcodes and maybe will be changed later
+# OPCODES
 
-| OPCODE | Command           |
-|--------|-------------------|
-| 0x00   | HLT               |
-| 0x01   | ADD               |
-| 0x02   | MOV mode dest src |
-| 0x03   | SUB               |
-| 0x04   | MUL               |
-| 0x05   | JMP address       |
-| 0x06   | CMP               |
-| 0x07   | JCT mask address  |
-| 0x08   | INC address       |
-| 0x09   | DEC address       |
-| 0x0A   | OFS offset        |
-| 0xOB   | JOR mask address  |
+| OPCODE | Command                           |
+|--------|-----------------------------------|
+| 0x00   | [HLT](#hlt-command)               |
+| 0x01   | [ADD](#add-command)               |
+| 0x02   | [MOV mode dest src](#mov-command) |
+| 0x03   | [SUB](#sub-command)               |
+| 0x04   | [MUL](#mul-command)               |
+| 0x05   | [JMP address](#jmp-command)       |
+| 0x06   | [CMP](#cmp-command)               |
+| 0x07   | [JCT mask address](#jct-command)  |
+| 0x08   | [INC address](#inc-command)       |
+| 0x09   | [DEC address](#dec-command)       |
+| 0x0A   | [OFS offset](#ofs-command)        |
+| 0x0B   | [JOR mask address](#jor-command)  |
 
 ### HLT command
 Terminates program execution. Doesn`t have any arguments
