@@ -14,6 +14,7 @@ pub const SUB_OPCODE: u8 = 0x03;
 pub const MUL_OPCODE: u8 = 0x04;
 pub const JMP_OPCODE: u8 = 0x05;
 
+#[allow(clippy::upper_case_acronyms)]
 enum Opcode {
     MOV { mode: Option<u8>, dest: u8, src: u8 },
     ADD,
@@ -69,15 +70,15 @@ impl Opcode {
             }
             Opcode::ADD => {
                 if TRACE { println!("TRACE: EXECUTING ADD, A = {}, B = {}", cpu.regs.a, cpu.regs.b ); }
-                cpu.regs.a = cpu.regs.a + cpu.regs.b;
+                cpu.regs.a += cpu.regs.b;
             }
             Opcode::MOV { mode, dest, src } => {
                 // TODO: trace
                 let source_val = match mode {
                     Some(REG_TO_REG_MOV_MODE) => {
-                        match src {
-                            &REG_A => cpu.regs.a,
-                            &REG_B => cpu.regs.b,
+                        match *src {
+                            REG_A => cpu.regs.a,
+                            REG_B => cpu.regs.b,
                             _ => {
                                 cpu.state = false;
                                 eprintln!("ERROR: src ID is incorrect {}", src);
@@ -106,11 +107,11 @@ impl Opcode {
             },
             Opcode::SUB => {
                 if TRACE { println!("TRACE: EXECUTING SUB, A = {}, B = {}", cpu.regs.a, cpu.regs.b ); }
-                cpu.regs.a = cpu.regs.a - cpu.regs.b;
+                cpu.regs.a -= cpu.regs.b;
             },
             Opcode::MUL => {
                 if TRACE { println!("TRACE: EXECUTING MUL, A = {}, B = {}", cpu.regs.a, cpu.regs.b ); }
-                cpu.regs.a = cpu.regs.a * cpu.regs.b;
+                cpu.regs.a *= cpu.regs.b;
             },
             Opcode::JMP(address) => {
                 if TRACE { println!("TRACE: EXECUTING JMP, ADDRESS = {}", address ); }
@@ -142,17 +143,18 @@ impl Cpu {
             self.mem[i] = byte;
         }
         self.pc = 0;
+        self.regs.f_zeroed();
     }
 
     pub fn fetch_next_byte(&mut self) -> u8 {
         if (self.pc as usize) < MEM_SIZE {
             let byte = self.mem[self.pc as usize];
             self.pc += 1;
-            return byte;
+            byte
         } else {
             self.state = false;
             eprintln!("ERROR: End of memory");
-            return HLT_OPCODE;
+            HLT_OPCODE
         }
     }
 
