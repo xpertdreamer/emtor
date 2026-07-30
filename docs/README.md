@@ -60,7 +60,7 @@ If mask given as an argument contains more than one 'true' bit - throws error.
 ### INC command
 Increments a number in a given register
 
-### INC command
+### DEC command
 Decrements a number in a given register
 
 ### OFS command
