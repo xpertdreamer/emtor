@@ -48,9 +48,18 @@ and then they form a single address:
 Compares register A with register B and sets the flag register accordingly. All flags are updated based on the comparison result. The flag layout is given in the section [CPU Flags Layout](#cpu-flags-layout)
 
 ### JCT command
-Performs a conditional jump based on the flag mask. The instruction checks if all bits in the mask are set in the flag register. Format: JCT mask address
+Performs a conditional jump based on the flag mask. The instruction checks if a bit in the mask are set in the flag register. Format: JCT mask address
 
-### CPU Flags Layout
+### INC command
+Increments a number in a given register
+
+### INC command
+Decrements a number in a given register
+
+### OFS command
+The full name is OFFSET. Moves the PC by the number passed as an argument. The address consists of two operands (high and low bytes), which are stored in memory sequentially in Big-Endian order ([Check this](#jmp-command))
+
+## CPU Flags Layout
 The CPU uses a single byte flag register to store the results of comparisons and operations. Each bit represents a specific condition.
 
 | Bit | Flag | Name             |
