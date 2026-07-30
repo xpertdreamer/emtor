@@ -1,7 +1,7 @@
 # emtor
 > Recreational project which have the goal - write an emulator of fictional architecture in Rust
 
-# OPCODES
+## OPCODES
 
 | OPCODE | Command                           |
 |--------|-----------------------------------|
