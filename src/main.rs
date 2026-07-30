@@ -38,47 +38,62 @@ fn main() {
 mod tests {
     use super::*;
 
+    fn run_test(program: &[u8]) -> Cpu {
+        let mut cpu = Cpu::create();
+        cpu.load_prog(program);
+        cpu.run();
+        cpu
+    }
+
     #[test]
     fn test_add() {
-        let mut emtor = Cpu::create();
-        emtor.load_prog(&[
+        let emtor = run_test(&[
             0x02, 0x0B, 0x00, 12,    // MOV Const
             0x02, 0x0B, 0x01, 2,     // MOV Const
             0x01,                    // ADD
         ]);
-        emtor.run();
-        assert_eq!(emtor.regs.a, 14);
+        assert_eq!(emtor.regs.c, 14);
         assert_eq!(emtor.regs.b, 2);
         assert_eq!(emtor.pc, 10);
     }
 
     #[test]
     fn test_mul() {
-        let mut emtor = Cpu::create();
-        emtor.load_prog(&[
+        let emtor = run_test(&[
             0x02, 0x0B, 0x00, 0x32,     // MOV Const
             0x02, 0x0B, 0x01, 0x02,     // MOV Const
             0x04                        // MUL
         ]);
-        emtor.run();
-        assert_eq!(emtor.regs.a, 0x64);
+        assert_eq!(emtor.regs.c, 0x64);
         assert_eq!(emtor.regs.b, 0x02);
         assert_eq!(emtor.pc, 0x0A);
     }
 
     #[test]
     fn test_jmp() {
-        let mut emtor = Cpu::create();
-        emtor.load_prog(&[
-            0x02, 0x0B, 0x00, 0x32,     // MOV Const    1
-            0x02, 0x0B, 0x01, 0x02,     // MOV Const    2
-            0x05, 0x00, 0x10,           // JMP -> 5     3
-            0x02, 0x0A, 0x00, 0x01,     // MOV Reg      4
-            0x00                        // HLT          5
+        let emtor = run_test(&[
+            0x02, 0x0B, 0x00, 0x32,     // MOV Const    0
+            0x02, 0x0B, 0x01, 0x02,     // MOV Const    1
+            0x05, 0x00, 0x10,           // JMP -> 5     2
+            0x02, 0x0A, 0x00, 0x01,     // MOV Reg      3
+            0x00                        // HLT          4
         ]);
-        emtor.run();
         assert_eq!(emtor.regs.a, 0x32);
         assert_eq!(emtor.regs.b, 0x02);
         assert_eq!(emtor.pc, 0x11);
+    }
+
+    #[test]
+    fn test_jct() {
+        let emtor = run_test(&[
+            0x02, 0x0B, 0x00, 0x03,     // MOV Const    0
+            0x08, 0x01,                 // INC B        1
+            0x06,                       // CMP          2
+            0x07, 0x96, 0x00, 0x04,     // JCT          3
+        ]);
+        assert_eq!(emtor.regs.a, 0x03);
+        assert_eq!(emtor.regs.b, 0x03);
+        assert_eq!(emtor.pc, 0xC);
+        assert_eq!(emtor.regs.f, 0xB1);
     }
 }
