@@ -15,6 +15,8 @@ pub const MUL_OPCODE: u8 = 0x04;
 pub const JMP_OPCODE: u8 = 0x05;
 pub const CMP_OPCODE: u8 = 0x06;
 pub const JCT_OPCODE: u8 = 0x07;
+pub const INC_OPCODE: u8 = 0x08;
+pub const DEC_OPCODE: u8 = 0x09;
 
 #[allow(clippy::upper_case_acronyms)]
 enum Opcode {
@@ -25,7 +27,9 @@ enum Opcode {
     MUL,
     JMP(u16),
     CMP,
-    JCT{ mask: u8, address: u16 }
+    JCT{ mask: u8, address: u16 },
+    INC(u8),
+    DEC(u8)
 }
 
 impl Opcode {
@@ -69,7 +73,15 @@ impl Opcode {
                 let low = cpu.fetch_next_byte();
                 let address: u16 = ((high as u16) << 8) | low as u16;
                 Some(Opcode::JCT { mask, address })
-            }
+            },
+            INC_OPCODE => {
+                let address = cpu.fetch_next_byte();
+                Some(Opcode::INC(address))
+            },
+            DEC_OPCODE => {
+                let address = cpu.fetch_next_byte();
+                Some(Opcode::DEC(address))
+            },
             _ => None
         }
     }
@@ -157,6 +169,28 @@ impl Opcode {
                     }
                 }
                 if ok { cpu.pc = *address; }
+            },
+            Opcode::INC(address) => {
+                match *address {
+                    REG_A => cpu.regs.a += 1,
+                    REG_B => cpu.regs.b += 1,
+                    REG_C => cpu.regs.c += 1,
+                    _ => {
+                        cpu.state = false;
+                        eprintln!("ERROR: dest ID is incorrect {}", address);
+                    }
+                }
+            },
+            Opcode::DEC(address) => {
+                match *address {
+                    REG_A => cpu.regs.a -= 1,
+                    REG_B => cpu.regs.b -= 1,
+                    REG_C => cpu.regs.c -= 1,
+                    _ => {
+                        cpu.state = false;
+                        eprintln!("ERROR: dest ID is incorrect {}", address);
+                    }
+                }
             }
         }
     }
