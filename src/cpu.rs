@@ -21,7 +21,8 @@ enum Opcode {
     HLT,
     SUB,
     MUL,
-    JMP(u16)
+    JMP(u16),
+    CMP
 }
 
 impl Opcode {
@@ -58,6 +59,7 @@ impl Opcode {
                 let address: u16 = ((high as u16) << 8) | low as u16;
                 Some(Opcode::JMP(address))
             },
+            CMP_OPCODE => Some(Opcode::CMP),
             _ => None
         }
     }
@@ -116,6 +118,20 @@ impl Opcode {
             Opcode::JMP(address) => {
                 if TRACE { println!("TRACE: EXECUTING JMP, ADDRESS = {}", address ); }
                 cpu.pc = *address;
+            },
+            Opcode::CMP => {
+                if TRACE { println!("TRACE: EXECUTING CMP, A = {}, B = {}, F = {:#b}", cpu.regs.a, cpu.regs.b, cpu.regs.f); }
+                let a = cpu.regs.a;
+                let b = cpu.regs.b;
+                cpu.regs.f =
+                    ((a == b) as u8)                     |
+                    (((a != b) as u8) << 1)              |
+                    (((a > b) as u8) << 2)               |
+                    (((a < b) as u8) << 3)               |
+                    ((((a > b) || (a == b)) as u8) << 4) |
+                    ((((a < b) || (a == b)) as u8) << 5) |
+                    (((a == 0) as u8) << 6)              |
+                    (((a != 0) as u8) << 7);
             }
         }
     }
