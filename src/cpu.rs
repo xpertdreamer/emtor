@@ -178,6 +178,7 @@ impl Opcode {
                 if ok { cpu.pc = *address; }
             },
             Opcode::INC(address) => {
+                // TODO: trace
                 match *address {
                     REG_A => cpu.regs.a += 1,
                     REG_B => cpu.regs.b += 1,
@@ -189,6 +190,7 @@ impl Opcode {
                 }
             },
             Opcode::DEC(address) => {
+                // TODO: trace
                 match *address {
                     REG_A => cpu.regs.a -= 1,
                     REG_B => cpu.regs.b -= 1,
@@ -200,6 +202,7 @@ impl Opcode {
                 }
             },
             Opcode::OFS(offset) => {
+                // TODO: trace
                 cpu.pc += offset;
             }
         }
