@@ -14,6 +14,9 @@ These are test opcodes and maybe will be changed later
 | 0x05   | JMP address       |
 | 0x06   | CMP               |
 | 0x07   | JCT mask address  |
+| 0x08   | INC address       |
+| 0x09   | DEC address       |
+| 0x0A   | OFS offset        |
 
 ### HLT command
 Terminates program execution. Doesn`t have any arguments
