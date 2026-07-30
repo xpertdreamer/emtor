@@ -13,6 +13,8 @@ pub const MOV_OPCODE: u8 = 0x02;
 pub const SUB_OPCODE: u8 = 0x03;
 pub const MUL_OPCODE: u8 = 0x04;
 pub const JMP_OPCODE: u8 = 0x05;
+pub const CMP_OPCODE: u8 = 0x06;
+pub const JCT_OPCODE: u8 = 0x07;
 
 #[allow(clippy::upper_case_acronyms)]
 enum Opcode {
@@ -22,7 +24,8 @@ enum Opcode {
     SUB,
     MUL,
     JMP(u16),
-    CMP
+    CMP,
+    JCT{ mask: u8, address: u16 }
 }
 
 impl Opcode {
@@ -60,6 +63,13 @@ impl Opcode {
                 Some(Opcode::JMP(address))
             },
             CMP_OPCODE => Some(Opcode::CMP),
+            JCT_OPCODE => {
+                let mask = cpu.fetch_next_byte();
+                let high = cpu.fetch_next_byte();
+                let low = cpu.fetch_next_byte();
+                let address: u16 = ((high as u16) << 8) | low as u16;
+                Some(Opcode::JCT { mask, address })
+            }
             _ => None
         }
     }
@@ -132,6 +142,19 @@ impl Opcode {
                     ((((a < b) || (a == b)) as u8) << 5) |
                     (((a == 0) as u8) << 6)              |
                     (((a != 0) as u8) << 7);
+            },
+            Opcode::JCT { mask, address } => {
+                let ok = (cpu.regs.f & mask) == *mask;
+                if TRACE {
+                    println!("JCT: mask=0b{:08b}, F=0b{:08b} -> {}",
+                        mask, cpu.regs.f,
+                        if ok { "TAKEN" } else { "NOT TAKEN" }
+                    );
+                    if ok {
+                        println!("  -> 0x{:04X}", address);
+                    }
+                }
+                if ok { cpu.pc = *address; }
             }
         }
     }
