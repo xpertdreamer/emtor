@@ -34,5 +34,12 @@ Mode argument and two operands lay down in memory sequentially
 Similar to ADD. Produces a=a*b operation
 
 ### JMP command
-Accept the next address of Programm Counter (PC). The address consists of two operands (high and low bytes), which are stored in memory sequentially in Big-Endian order: [JMP Instruction -> High byte -> Low byte], and then they form a single address: [HIGH|LOW].
+Accept the next address of Programm Counter (PC). The address consists of two operands (high and low bytes), which are stored in memory sequentially in Big-Endian order: 
+
+``[JMP Instruction -> High byte -> Low byte]``
+
+and then they form a single address: 
+
+``[HIGH|LOW]``
+
 
