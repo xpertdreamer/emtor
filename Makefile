@@ -22,6 +22,7 @@ test: $(SRCS)
 	  ./$(TEST_TARGET)
 
 clippy:
-		   $(CLIPPY) $(RUSTFLAGS) $(SRC)/main.rs --crate-type=bin
+		   $(CLIPPY) $(RUSTFLAGS) $(SRC)/main.rs --crate-type=bin --out-dir $(BUILDDIR)
+		   ./$(BUILDDIR)/main
 
 clean: rm -rf $(BUILDDIR)
