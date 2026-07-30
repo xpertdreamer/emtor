@@ -17,6 +17,7 @@ These are test opcodes and maybe will be changed later
 | 0x08   | INC address       |
 | 0x09   | DEC address       |
 | 0x0A   | OFS offset        |
+| 0xOB   | JOR mask address  |
 
 ### HLT command
 Terminates program execution. Doesn`t have any arguments
@@ -51,7 +52,11 @@ and then they form a single address:
 Compares register A with register B and sets the flag register accordingly. All flags are updated based on the comparison result. The flag layout is given in the section [CPU Flags Layout](#cpu-flags-layout)
 
 ### JCT command
-Performs a conditional jump based on the flag mask. The instruction checks if a bit in the mask are set in the flag register. Format: JCT mask address
+Performs a conditional jump based on the flag mask. The instruction checks if all bits in the mask are set in the flag register. Format: JCT mask address
+
+### JOR command
+Performs a conditional jump based on the flag mask. The instruction checks if a bit in the mask are set in the flag register. Format: JOR mask address.
+If mask given as an argument contains more than one 'true' bit - throws error.
 
 ### INC command
 Increments a number in a given register

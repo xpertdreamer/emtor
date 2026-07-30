@@ -9,9 +9,7 @@ fn main() {
     let mut emtor = Cpu::create();
 
     emtor.load_prog(&[
-        0x0A, 0x00, 0x01,
-        0x00,
-        0x08, 0x00
+        0x0B, 0x03, 0x00, 0x08
     ]);
 
     emtor.run();

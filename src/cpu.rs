@@ -18,6 +18,7 @@ pub const JCT_OPCODE: u8 = 0x07;
 pub const INC_OPCODE: u8 = 0x08;
 pub const DEC_OPCODE: u8 = 0x09;
 pub const OFS_OPCODE: u8 = 0x0A;
+pub const JOR_OPCODE: u8 = 0x0B;
 
 #[allow(clippy::upper_case_acronyms)]
 enum Opcode {
@@ -31,7 +32,8 @@ enum Opcode {
     JCT{ mask: u8, address: u16 },
     INC(u8),
     DEC(u8),
-    OFS(u16)
+    OFS(u16),
+    JOR{ mask: u8, address: u16 },
 }
 
 impl Opcode {
@@ -88,6 +90,11 @@ impl Opcode {
             OFS_OPCODE => {
                 let offset = Self::high_end(cpu.fetch_next_byte(), cpu.fetch_next_byte());
                 Some(Opcode::OFS(offset))
+            },
+            JOR_OPCODE => {
+                let mask = cpu.fetch_next_byte();
+                let address = Self::high_end(cpu.fetch_next_byte(), cpu.fetch_next_byte());
+                Some(Opcode::JOR { mask, address })
             },
             _ => None
         }
@@ -165,7 +172,7 @@ impl Opcode {
                     (((a != 0) as u8) << 7);
             },
             Opcode::JCT { mask, address } => {
-                let ok = (cpu.regs.f & mask) != 0;
+                let ok: bool = (cpu.regs.f & mask) == 0;
                 if TRACE {
                     println!("JCT: mask=0b{:08b}, F=0b{:08b} -> {}",
                         mask, cpu.regs.f,
@@ -204,7 +211,25 @@ impl Opcode {
             Opcode::OFS(offset) => {
                 // TODO: trace
                 cpu.pc += offset;
-            }
+            },
+            Opcode::JOR { mask, address } => {
+                if (*mask == 0) || ((mask & (mask - 1)) != 0) {
+                    cpu.state = false;
+                    eprintln!("ERROR: JOR requires exactly one bit in mask (got 0b{:08b})", mask);
+                    return;
+                }
+                let ok: bool = (cpu.regs.f & mask) != 0;
+                if TRACE {
+                    println!("JOR: mask=0b{:08b}, F=0b{:08b} -> {}",
+                             mask, cpu.regs.f,
+                             if ok { "TAKEN" } else { "NOT TAKEN" }
+                    );
+                    if ok {
+                        println!("  -> 0x{:04X}", address);
+                    }
+                }
+                if ok { cpu.pc = *address; }
+            },
         }
     }
 }
