@@ -9,15 +9,9 @@ fn main() {
     let mut emtor = Cpu::create();
 
     emtor.load_prog(&[
-        0x02, 0x0B, 0x00, 12,    // MOV Const
-        0x02, 0x0B, 0x01, 2,     // MOV Const
-        0x01,                    // ADD
-        0x02, 0x0A, 0x01, 0x00,  // MOV Reg
-        0x02, 0x0B, 0x01, 0x04,  // MOV Const
-        0x03,                    // SUB
-        0x04,                    // MUL
-        0x06,                    // CMP
-        0x00                     // HLT
+        0x0A, 0x00, 0x01,
+        0x00,
+        0x08, 0x00
     ]);
 
     emtor.run();
@@ -89,11 +83,22 @@ mod tests {
             0x02, 0x0B, 0x00, 0x03,     // MOV Const    0
             0x08, 0x01,                 // INC B        1
             0x06,                       // CMP          2
-            0x07, 0x96, 0x00, 0x04,     // JCT          3
+            0x07, 0x02, 0x00, 0x04,     // JCT          3
         ]);
         assert_eq!(emtor.regs.a, 0x03);
         assert_eq!(emtor.regs.b, 0x03);
         assert_eq!(emtor.pc, 0xC);
         assert_eq!(emtor.regs.f, 0xB1);
+    }
+
+    #[test]
+    fn test_ofs() {
+        let cpu = run_test(&[
+            0x0A, 0x00, 0x01,
+            0x00,
+            0x08, 0x00
+        ]);
+        assert_eq!(cpu.regs.a, 0x01);
+        assert_eq!(cpu.pc, 0x07);
     }
 }

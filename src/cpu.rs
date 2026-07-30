@@ -17,6 +17,7 @@ pub const CMP_OPCODE: u8 = 0x06;
 pub const JCT_OPCODE: u8 = 0x07;
 pub const INC_OPCODE: u8 = 0x08;
 pub const DEC_OPCODE: u8 = 0x09;
+pub const OFS_OPCODE: u8 = 0x0A;
 
 #[allow(clippy::upper_case_acronyms)]
 enum Opcode {
@@ -29,10 +30,16 @@ enum Opcode {
     CMP,
     JCT{ mask: u8, address: u16 },
     INC(u8),
-    DEC(u8)
+    DEC(u8),
+    OFS(u16)
 }
 
 impl Opcode {
+    fn high_end(h: u8, l: u8) -> u16 {
+        let address: u16 = ((h as u16) << 8) | l as u16;
+        address
+    }
+
     pub fn match_byte(cpu: &mut Cpu) -> Option<Self>{
         let byte = cpu.fetch_next_byte();
 
@@ -61,17 +68,13 @@ impl Opcode {
             MUL_OPCODE => Some(Opcode::MUL),
             JMP_OPCODE =>
             {
-                let high = cpu.fetch_next_byte();
-                let low = cpu.fetch_next_byte();
-                let address: u16 = ((high as u16) << 8) | low as u16;
+                let address = Self::high_end(cpu.fetch_next_byte(), cpu.fetch_next_byte());
                 Some(Opcode::JMP(address))
             },
             CMP_OPCODE => Some(Opcode::CMP),
             JCT_OPCODE => {
                 let mask = cpu.fetch_next_byte();
-                let high = cpu.fetch_next_byte();
-                let low = cpu.fetch_next_byte();
-                let address: u16 = ((high as u16) << 8) | low as u16;
+                let address = Self::high_end(cpu.fetch_next_byte(), cpu.fetch_next_byte());
                 Some(Opcode::JCT { mask, address })
             },
             INC_OPCODE => {
@@ -81,6 +84,10 @@ impl Opcode {
             DEC_OPCODE => {
                 let address = cpu.fetch_next_byte();
                 Some(Opcode::DEC(address))
+            },
+            OFS_OPCODE => {
+                let offset = Self::high_end(cpu.fetch_next_byte(), cpu.fetch_next_byte());
+                Some(Opcode::OFS(offset))
             },
             _ => None
         }
@@ -158,7 +165,7 @@ impl Opcode {
                     (((a != 0) as u8) << 7);
             },
             Opcode::JCT { mask, address } => {
-                let ok = (cpu.regs.f & mask) == *mask;
+                let ok = (cpu.regs.f & mask) != 0;
                 if TRACE {
                     println!("JCT: mask=0b{:08b}, F=0b{:08b} -> {}",
                         mask, cpu.regs.f,
@@ -191,6 +198,9 @@ impl Opcode {
                         eprintln!("ERROR: dest ID is incorrect {}", address);
                     }
                 }
+            },
+            Opcode::OFS(offset) => {
+                cpu.pc += offset;
             }
         }
     }
