@@ -87,6 +87,10 @@ impl Cpu {
         self.pc = address;
     }
 
+    pub fn get_pc(&self) -> u16 {
+        self.pc
+    }
+
     pub fn is_running(&self) -> bool {
         self.state
     }

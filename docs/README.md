@@ -1,4 +1,4 @@
-Would do some refactoring to divide responsibilities between modules and improve readability. 
+Would provide some documentation later [01.08.2026]
 
 # emtor
 > Recreational project which have the goal - write an emulator of fictional architecture in Rust
@@ -27,7 +27,7 @@ Terminates program execution. Doesn`t have any arguments
 Doesn`t have any arguments. Simply performs the addition of two registers. The result is stored in register c (0x02).
 
 ### SUB command
-Similar to ADD. Produces c=a-b operation
+Similar to ADD. Produces c=b-a operation
 
 ### MOV command
 Mode argument and two operands lay down in memory sequentially

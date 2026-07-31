@@ -1,4 +1,22 @@
-// pub const TRACE: bool = true;
+use crate::machine::Machine;
+
+mod cpu;
+mod reg;
+mod opcode;
+mod machine;
+
+pub const TRACE: bool = true;
+
+fn main() {
+    let mut emtor = Machine::create();
+    emtor.load_program(&[
+        0x08, 0xC0,
+        0x01,
+        0x08, 0xC1,
+        0x01, 0x00,
+    ]);
+    emtor.run();
+}
 
 // fn main() {
 //     let mut emtor = Cpu::create();
