@@ -24,6 +24,7 @@ pub const STR_OPCODE: u8 = 0x0D;
 
 #[allow(clippy::upper_case_acronyms)]
 enum Opcode {
+    // TODO: replace mode with arm style
     MOV { mode: Option<u8>, dest: u8, src: u8 },
     ADD,
     HLT,
