@@ -3,8 +3,8 @@ use crate::{TRACE, reg::*};
 pub const MEM_SIZE: usize = 256;
 
 // MOV MODES
-pub const REG_TO_REG_MOV_MODE: u8 = 0x0A;
-pub const CONST_TO_REG_MOV_MODE: u8 = 0x0B;
+pub const REG_TO_REG_MOV_MODE: u8 = 0x8A;
+pub const CONST_TO_REG_MOV_MODE: u8 = 0x8B;
 
 // OPCODES
 pub const HLT_OPCODE: u8 = 0x00;
@@ -20,6 +20,7 @@ pub const DEC_OPCODE: u8 = 0x09;
 pub const OFS_OPCODE: u8 = 0x0A;
 pub const JOR_OPCODE: u8 = 0x0B;
 pub const NOP_OPCODE: u8 = 0x0C;
+pub const STR_OPCODE: u8 = 0x0D;
 
 #[allow(clippy::upper_case_acronyms)]
 enum Opcode {
@@ -35,7 +36,8 @@ enum Opcode {
     DEC(u8),
     OFS(u16),
     JOR{ mask: u8, address: u16 },
-    NOP
+    NOP,
+    STR {reg: u8, address: u16 }
 }
 
 impl Opcode {
@@ -58,13 +60,13 @@ impl Opcode {
                         let dest = cpu.fetch_next_byte();
                         let src = cpu.fetch_next_byte();
                         Some(Opcode::MOV { mode: Some(REG_TO_REG_MOV_MODE), dest, src })
-                    }
+                    },
                     // Const to reg
                     CONST_TO_REG_MOV_MODE => {
                         let dest = cpu.fetch_next_byte();
                         let value = cpu.fetch_next_byte();
                         Some(Opcode::MOV { mode: Some(CONST_TO_REG_MOV_MODE), dest, src: value })
-                    }
+                    },
                     _ => None
                 }
             },
@@ -99,6 +101,11 @@ impl Opcode {
                 Some(Opcode::JOR { mask, address })
             },
             NOP_OPCODE => Some(Opcode::NOP),
+            STR_OPCODE => {
+                let reg = cpu.fetch_next_byte();
+                let address = Self::high_end(cpu.fetch_next_byte(), cpu.fetch_next_byte());
+                Some(Opcode::STR { reg, address })
+            }
             _ => None
         }
     }
@@ -127,10 +134,10 @@ impl Opcode {
                                 return;
                             }
                         }
-                    }
+                    },
                     Some(CONST_TO_REG_MOV_MODE) => {
                         *src
-                    }
+                    },
                     _ => {
                         cpu.state = false;
                         eprintln!("ERROR: MOV mode is incorrect");
@@ -143,8 +150,8 @@ impl Opcode {
                     REG_C => cpu.regs.c = source_val,
                     _ => {
                         cpu.state = false;
-                        eprintln!("ERROR: dest ID is incorrect {}", dest);
-                    }
+                        eprintln!("ERROR: dest ID is incorrect {}", src);
+                    },
                 }
             },
             Opcode::SUB => {
@@ -234,6 +241,30 @@ impl Opcode {
             },
             Opcode::NOP => {
                 // pass
+            },
+            Opcode::STR { reg, address } => {
+                if *address as usize >= MEM_SIZE {
+                    cpu.state = false;
+                    eprintln!("ERROR: STR out of bounds at 0x{:04X} (max 0x{:04X})",
+                        address, MEM_SIZE - 1);
+                    return;
+                }
+                let value = match *reg {
+                    REG_A => cpu.regs.a,
+                    REG_B => cpu.regs.b,
+                    REG_C => cpu.regs.c,
+                    _ => {
+                        cpu.state = false;
+                        eprintln!("ERROR: Invalid register for STR {}", reg);
+                        return;
+                    }
+                };
+                cpu.mem[*address as usize] = value;
+
+                if TRACE {
+                    let reg_name = match reg { 0 => "A", 1 => "B", 2 => "C", _ => "?" };
+                    println!("STR: mem[0x{:04X}] = {} ({})", address, reg_name, value);
+                }
             }
         }
     }

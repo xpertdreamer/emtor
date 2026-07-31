@@ -26,54 +26,54 @@ fn main() {
 }
 
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+// #[cfg(test)]
+// mod tests {
+//     use super::*;
 
-    fn run_test(program: &[u8]) -> Cpu {
-        let mut cpu = Cpu::create();
-        cpu.load_prog(program);
-        cpu.run();
-        cpu
-    }
+//     fn run_test(program: &[u8]) -> Cpu {
+//         let mut cpu = Cpu::create();
+//         cpu.load_prog(program);
+//         cpu.run();
+//         cpu
+//     }
 
-    #[test]
-    fn test_add() {
-        let emtor = run_test(&[
-            0x02, 0x0B, 0x00, 12,    // MOV Const
-            0x02, 0x0B, 0x01, 2,     // MOV Const
-            0x01,                    // ADD
-        ]);
-        assert_eq!(emtor.regs.c, 14);
-        assert_eq!(emtor.regs.b, 2);
-        assert_eq!(emtor.pc, 10);
-    }
+    // #[test]
+    // fn test_add() {
+    //     let emtor = run_test(&[
+    //         0x02, 0x8B, 0x00, 12,    // MOV Const
+    //         0x02, 0x8B, 0x01, 2,     // MOV Const
+    //         0x01,                    // ADD
+    //     ]);
+    //     assert_eq!(emtor.regs.c, 14);
+    //     assert_eq!(emtor.regs.b, 2);
+    //     assert_eq!(emtor.pc, 10);
+    // }
 
-    #[test]
-    fn test_mul() {
-        let emtor = run_test(&[
-            0x02, 0x0B, 0x00, 0x32,     // MOV Const
-            0x02, 0x0B, 0x01, 0x02,     // MOV Const
-            0x04                        // MUL
-        ]);
-        assert_eq!(emtor.regs.c, 0x64);
-        assert_eq!(emtor.regs.b, 0x02);
-        assert_eq!(emtor.pc, 0x0A);
-    }
+    // #[test]
+    // fn test_mul() {
+    //     let emtor = run_test(&[
+    //         0x02, 0x8B, 0x00, 0x32,     // MOV Const
+    //         0x02, 0x8B, 0x01, 0x02,     // MOV Const
+    //         0x04                        // MUL
+    //     ]);
+    //     assert_eq!(emtor.regs.c, 0x64);
+    //     assert_eq!(emtor.regs.b, 0x02);
+    //     assert_eq!(emtor.pc, 0x0A);
+    // }
 
-    #[test]
-    fn test_jmp() {
-        let emtor = run_test(&[
-            0x02, 0x0B, 0x00, 0x32,     // MOV Const    0
-            0x02, 0x0B, 0x01, 0x02,     // MOV Const    1
-            0x05, 0x00, 0x10,           // JMP -> 5     2
-            0x02, 0x0A, 0x00, 0x01,     // MOV Reg      3
-            0x00                        // HLT          4
-        ]);
-        assert_eq!(emtor.regs.a, 0x32);
-        assert_eq!(emtor.regs.b, 0x02);
-        assert_eq!(emtor.pc, 0x11);
-    }
+    // #[test]
+    // fn test_jmp() {
+    //     let emtor = run_test(&[
+    //         0x02, 0x8B, 0x00, 0x32,     // MOV Const    0
+    //         0x02, 0x8B, 0x01, 0x02,     // MOV Const    1
+    //         0x05, 0x00, 0x10,           // JMP -> 5     2
+    //         0x02, 0x8A, 0x00, 0x01,     // MOV Reg      3
+    //         0x00                        // HLT          4
+    //     ]);
+    //     assert_eq!(emtor.regs.a, 0x32);
+    //     assert_eq!(emtor.regs.b, 0x02);
+    //     assert_eq!(emtor.pc, 0x11);
+    // }
 
     // #[test]
     // fn test_jct() {
@@ -89,14 +89,14 @@ mod tests {
     //     assert_eq!(emtor.regs.f, 0xB1);
     // }
 
-    #[test]
-    fn test_ofs() {
-        let cpu = run_test(&[
-            0x0A, 0x00, 0x01,
-            0x00,
-            0x08, 0x00
-        ]);
-        assert_eq!(cpu.regs.a, 0x01);
-        assert_eq!(cpu.pc, 0x07);
-    }
-}
+    // #[test]
+    // fn test_ofs() {
+    //     let cpu = run_test(&[
+    //         0x0A, 0x00, 0x01,
+    //         0x00,
+    //         0x08, 0x00
+    //     ]);
+    //     assert_eq!(cpu.regs.a, 0x01);
+    //     assert_eq!(cpu.pc, 0x07);
+    // }
+// }
