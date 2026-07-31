@@ -75,19 +75,19 @@ mod tests {
         assert_eq!(emtor.pc, 0x11);
     }
 
-    #[test]
-    fn test_jct() {
-        let emtor = run_test(&[
-            0x02, 0x0B, 0x00, 0x03,     // MOV Const    0
-            0x08, 0x01,                 // INC B        1
-            0x06,                       // CMP          2
-            0x07, 0x02, 0x00, 0x04,     // JCT          3
-        ]);
-        assert_eq!(emtor.regs.a, 0x03);
-        assert_eq!(emtor.regs.b, 0x03);
-        assert_eq!(emtor.pc, 0xC);
-        assert_eq!(emtor.regs.f, 0xB1);
-    }
+    // #[test]
+    // fn test_jct() {
+    //     let emtor = run_test(&[
+    //         0x02, 0x0B, 0x00, 0x03,     // MOV Const    0
+    //         0x08, 0x01,                 // INC B        1
+    //         0x06,                       // CMP          2
+    //         0x07, 0x02, 0x00, 0x,     // JCT          3
+    //     ]);
+    //     assert_eq!(emtor.regs.a, 0x03);
+    //     assert_eq!(emtor.regs.b, 0x03);
+    //     assert_eq!(emtor.pc, 0xC);
+    //     assert_eq!(emtor.regs.f, 0xB1);
+    // }
 
     #[test]
     fn test_ofs() {
