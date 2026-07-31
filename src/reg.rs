@@ -1,6 +1,6 @@
-pub const REG_A: u8 = 0x00;
-pub const REG_B: u8 = 0x01;
-pub const REG_C: u8 = 0x02;
+pub const REG_A: u8 = 0xC0;
+pub const REG_B: u8 = 0xC1;
+pub const REG_C: u8 = 0xC2;
 
 pub struct Regs {
     pub a: u8,
