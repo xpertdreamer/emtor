@@ -19,6 +19,7 @@ pub const INC_OPCODE: u8 = 0x08;
 pub const DEC_OPCODE: u8 = 0x09;
 pub const OFS_OPCODE: u8 = 0x0A;
 pub const JOR_OPCODE: u8 = 0x0B;
+pub const NOP_OPCODE: u8 = 0x0C;
 
 #[allow(clippy::upper_case_acronyms)]
 enum Opcode {
@@ -34,6 +35,7 @@ enum Opcode {
     DEC(u8),
     OFS(u16),
     JOR{ mask: u8, address: u16 },
+    NOP
 }
 
 impl Opcode {
@@ -96,6 +98,7 @@ impl Opcode {
                 let address = Self::high_end(cpu.fetch_next_byte(), cpu.fetch_next_byte());
                 Some(Opcode::JOR { mask, address })
             },
+            NOP_OPCODE => Some(Opcode::NOP),
             _ => None
         }
     }
@@ -134,7 +137,6 @@ impl Opcode {
                         return;
                     }
                 };
-
                 match *dest {
                     REG_A => cpu.regs.a = source_val,
                     REG_B => cpu.regs.b = source_val,
@@ -230,6 +232,9 @@ impl Opcode {
                 }
                 if ok { cpu.pc = *address; }
             },
+            Opcode::NOP => {
+                // pass
+            }
         }
     }
 }
