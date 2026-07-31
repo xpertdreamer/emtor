@@ -21,10 +21,11 @@ pub const OFS_OPCODE: u8 = 0x0A;
 pub const JOR_OPCODE: u8 = 0x0B;
 pub const NOP_OPCODE: u8 = 0x0C;
 pub const STR_OPCODE: u8 = 0x0D;
+pub const LMR_OPCODE: u8 = 0x0E;
 
 #[allow(clippy::upper_case_acronyms)]
 enum Opcode {
-    // TODO: replace mode with arm style
+    // TODO: replace mode with arm style, or create separate instruction
     MOV { mode: Option<u8>, dest: u8, src: u8 },
     ADD,
     HLT,
@@ -38,7 +39,8 @@ enum Opcode {
     OFS(u16),
     JOR{ mask: u8, address: u16 },
     NOP,
-    STR {reg: u8, address: u16 }
+    STR {reg: u8, address: u16 },
+    LMR {reg: u8, address: u16}
 }
 
 impl Opcode {
@@ -106,6 +108,11 @@ impl Opcode {
                 let reg = cpu.fetch_next_byte();
                 let address = Self::high_end(cpu.fetch_next_byte(), cpu.fetch_next_byte());
                 Some(Opcode::STR { reg, address })
+            },
+            LMR_OPCODE => {
+                let reg = cpu.fetch_next_byte();
+                let address = Self::high_end(cpu.fetch_next_byte(), cpu.fetch_next_byte());
+                Some(Opcode::LMR { reg, address })
             }
             _ => None
         }
@@ -265,6 +272,30 @@ impl Opcode {
                 if TRACE {
                     let reg_name = match reg { 0 => "A", 1 => "B", 2 => "C", _ => "?" };
                     println!("STR: mem[0x{:04X}] = {} ({})", address, reg_name, value);
+                }
+            },
+            Opcode::LMR { reg, address } => {
+                if *address as usize >= MEM_SIZE {
+                    cpu.state = false;
+                    eprintln!("ERROR: LMR out of bounds at 0x{:04X} (max 0x{:04X})", address, MEM_SIZE - 1);
+                    return;
+                }
+                let value = cpu.mem[*address as usize];
+
+                match *reg {
+                    REG_A => cpu.regs.a = value,
+                    REG_B => cpu.regs.b = value,
+                    REG_C => cpu.regs.c = value,
+                    _ => {
+                        cpu.state = false;
+                        eprintln!("ERROR: Invalid register for LDR {}", reg);
+                        return;
+                    }
+                };
+
+                if TRACE {
+                    let reg_name = match reg { 0 => "A", 1 => "B", 2 => "C", _ => "?" };
+                    println!("LDR: mem[0x{:04X}] = {} ({})", address, reg_name, value);
                 }
             }
         }
