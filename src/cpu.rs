@@ -1,320 +1,11 @@
-use crate::{TRACE, reg::*};
+use crate::reg::*;
 
 pub const MEM_SIZE: usize = 256;
 
-pub const EQ: u8 = 1 << 0;      // Equal
-pub const NE: u8 = 1 << 1;      // Not Equal
-pub const GT: u8 = 1 << 2;      // Greater Than
-pub const LT: u8 = 1 << 3;      // Less Than
-pub const GE: u8 = 1 << 4;      // Greater or Equal
-pub const LE: u8 = 1 << 5;      // Less or Equal
-pub const ZE: u8 = 1 << 6;      // Zero
-pub const NZ: u8 = 1 << 7;      // Not Zero
-
-// MOV MODES
-// pub const REG_TO_REG_MOV_MODE: u8 = 0x8A;
-// pub const CONST_TO_REG_MOV_MODE: u8 = 0x8B;
-
-// OPCODES
-pub const HLT_OPCODE: u8 = 0x00;
-pub const ADD_OPCODE: u8 = 0x01;
-// pub const MOV_OPCODE: u8 = 0x02;
-pub const SUB_OPCODE: u8 = 0x03;
-pub const MUL_OPCODE: u8 = 0x04;
-pub const JMP_OPCODE: u8 = 0x05;
-pub const CMP_OPCODE: u8 = 0x06;
-pub const JCT_OPCODE: u8 = 0x07;
-pub const INC_OPCODE: u8 = 0x08;
-pub const DEC_OPCODE: u8 = 0x09;
-pub const OFS_OPCODE: u8 = 0x0A;
-pub const JOR_OPCODE: u8 = 0x0B;
-pub const NOP_OPCODE: u8 = 0x0C;
-pub const STR_OPCODE: u8 = 0x0D;
-pub const LMR_OPCODE: u8 = 0x0E;
-
-#[allow(clippy::upper_case_acronyms)]
-enum Opcode {
-    // TODO: replace mode with arm style, or create separate instruction
-    // MOV { mode: Option<u8>, dest: u8, src: u8 },
-    ADD,
-    HLT,
-    SUB,
-    MUL,
-    JMP(u16),
-    CMP,
-    JCT{ mask: u8, address: u16 },
-    INC(u8),
-    DEC(u8),
-    OFS(u16),
-    JOR{ mask: u8, address: u16 },
-    NOP,
-    STR {reg: u8, address: u16 },
-    LMR {reg: u8, address: u16}
-}
-
-impl Opcode {
-    fn high_end(h: u8, l: u8) -> u16 {
-        let address: u16 = ((h as u16) << 8) | l as u16;
-        address
-    }
-
-    pub fn match_byte(cpu: &mut Cpu) -> Option<Self>{
-        let byte = cpu.fetch_next_byte();
-
-        match byte {
-            HLT_OPCODE => Some(Opcode::HLT),
-            ADD_OPCODE => Some(Opcode::ADD),
-            // MOV_OPCODE => {
-            //     let mode = cpu.fetch_next_byte();
-            //     match mode {
-            //         // From reg to reg
-            //         REG_TO_REG_MOV_MODE => {
-            //             let dest = cpu.fetch_next_byte();
-            //             let src = cpu.fetch_next_byte();
-            //             Some(Opcode::MOV { mode: Some(REG_TO_REG_MOV_MODE), dest, src })
-            //         },
-            //         // Const to reg
-            //         CONST_TO_REG_MOV_MODE => {
-            //             let dest = cpu.fetch_next_byte();
-            //             let value = cpu.fetch_next_byte();
-            //             Some(Opcode::MOV { mode: Some(CONST_TO_REG_MOV_MODE), dest, src: value })
-            //         },
-            //         _ => None
-            //     }
-            // },
-            SUB_OPCODE => Some(Opcode::SUB),
-            MUL_OPCODE => Some(Opcode::MUL),
-            JMP_OPCODE =>
-            {
-                let address = Self::high_end(cpu.fetch_next_byte(), cpu.fetch_next_byte());
-                Some(Opcode::JMP(address))
-            },
-            CMP_OPCODE => Some(Opcode::CMP),
-            JCT_OPCODE => {
-                let mask = cpu.fetch_next_byte();
-                let address = Self::high_end(cpu.fetch_next_byte(), cpu.fetch_next_byte());
-                Some(Opcode::JCT { mask, address })
-            },
-            INC_OPCODE => {
-                let address = cpu.fetch_next_byte();
-                Some(Opcode::INC(address))
-            },
-            DEC_OPCODE => {
-                let address = cpu.fetch_next_byte();
-                Some(Opcode::DEC(address))
-            },
-            OFS_OPCODE => {
-                let offset = Self::high_end(cpu.fetch_next_byte(), cpu.fetch_next_byte());
-                Some(Opcode::OFS(offset))
-            },
-            JOR_OPCODE => {
-                let mask = cpu.fetch_next_byte();
-                let address = Self::high_end(cpu.fetch_next_byte(), cpu.fetch_next_byte());
-                Some(Opcode::JOR { mask, address })
-            },
-            NOP_OPCODE => Some(Opcode::NOP),
-            STR_OPCODE => {
-                let reg = cpu.fetch_next_byte();
-                let address = Self::high_end(cpu.fetch_next_byte(), cpu.fetch_next_byte());
-                Some(Opcode::STR { reg, address })
-            },
-            LMR_OPCODE => {
-                let reg = cpu.fetch_next_byte();
-                let address = Self::high_end(cpu.fetch_next_byte(), cpu.fetch_next_byte());
-                Some(Opcode::LMR { reg, address })
-            }
-            _ => None
-        }
-    }
-
-    pub fn exec(&self, cpu: &mut Cpu) {
-        match self {
-            Opcode::HLT => {
-                // TODO: trace
-                cpu.state = false;
-            }
-            Opcode::ADD => {
-                if TRACE { println!("TRACE: EXECUTING ADD, A = {}, B = {}", cpu.regs.a, cpu.regs.b ); }
-                cpu.regs.c = cpu.regs.a + cpu.regs.b;
-            }
-            // Opcode::MOV { mode, dest, src } => {
-            //     // TODO: trace
-            //     let source_val = match mode {
-            //         Some(REG_TO_REG_MOV_MODE) => {
-            //             match *src {
-            //                 REG_A => cpu.regs.a,
-            //                 REG_B => cpu.regs.b,
-            //                 REG_C => cpu.regs.c,
-            //                 _ => {
-            //                     cpu.state = false;
-            //                     eprintln!("ERROR: src ID is incorrect {}", src);
-            //                     return;
-            //                 }
-            //             }
-            //         },
-            //         Some(CONST_TO_REG_MOV_MODE) => {
-            //             *src
-            //         },
-            //         _ => {
-            //             cpu.state = false;
-            //             eprintln!("ERROR: MOV mode is incorrect");
-            //             return;
-            //         }
-            //     };
-            //     match *dest {
-            //         REG_A => cpu.regs.a = source_val,
-            //         REG_B => cpu.regs.b = source_val,
-            //         REG_C => cpu.regs.c = source_val,
-            //         _ => {
-            //             cpu.state = false;
-            //             eprintln!("ERROR: dest ID is incorrect {}", src);
-            //         },
-            //     }
-            // },
-            Opcode::SUB => {
-                if TRACE { println!("TRACE: EXECUTING SUB, A = {}, B = {}", cpu.regs.a, cpu.regs.b ); }
-                cpu.regs.c = cpu.regs.a + cpu.regs.b;
-            },
-            Opcode::MUL => {
-                if TRACE { println!("TRACE: EXECUTING MUL, A = {}, B = {}", cpu.regs.a, cpu.regs.b ); }
-                cpu.regs.c = cpu.regs.a * cpu.regs.b;
-            },
-            Opcode::JMP(address) => {
-                if TRACE { println!("TRACE: EXECUTING JMP, ADDRESS = {}", address ); }
-                cpu.pc = *address;
-            },
-            Opcode::CMP => {
-                if TRACE { println!("TRACE: EXECUTING CMP, A = {}, B = {}, F = {:#b}", cpu.regs.a, cpu.regs.b, cpu.regs.f); }
-                let a = cpu.regs.a;
-                let b = cpu.regs.b;
-                cpu.regs.f =
-                    ((a == b) as u8 * EQ) |
-                    ((a != b) as u8 * NE) |
-                    ((a > b) as u8 * GT)  |
-                    ((a < b) as u8 * LT)  |
-                    ((a >= b) as u8 * GE) |
-                    ((a <= b) as u8 * LE) |
-                    ((a == 0) as u8 * ZE) |
-                    ((a != 0) as u8 * NZ);
-            },
-            Opcode::JCT { mask, address } => {
-                let ok: bool = (cpu.regs.f & mask) == 0;
-                if TRACE {
-                    println!("JCT: mask=0b{:08b}, F=0b{:08b} -> {}",
-                        mask, cpu.regs.f,
-                        if ok { "TAKEN" } else { "NOT TAKEN" }
-                    );
-                    if ok {
-                        println!("  -> 0x{:04X}", address);
-                    }
-                }
-                if ok { cpu.pc = *address; }
-            },
-            Opcode::INC(address) => {
-                // TODO: trace
-                match *address {
-                    REG_A => cpu.regs.a += 1,
-                    REG_B => cpu.regs.b += 1,
-                    REG_C => cpu.regs.c += 1,
-                    _ => {
-                        cpu.state = false;
-                        eprintln!("ERROR: dest ID is incorrect {}", address);
-                    }
-                }
-            },
-            Opcode::DEC(address) => {
-                // TODO: trace
-                match *address {
-                    REG_A => cpu.regs.a -= 1,
-                    REG_B => cpu.regs.b -= 1,
-                    REG_C => cpu.regs.c -= 1,
-                    _ => {
-                        cpu.state = false;
-                        eprintln!("ERROR: dest ID is incorrect {}", address);
-                    }
-                }
-            },
-            Opcode::OFS(offset) => {
-                // TODO: trace
-                cpu.pc += offset;
-            },
-            Opcode::JOR { mask, address } => {
-                if (*mask == 0) || ((mask & (mask - 1)) != 0) {
-                    cpu.state = false;
-                    eprintln!("ERROR: JOR requires exactly one bit in mask (got 0b{:08b})", mask);
-                    return;
-                }
-                let ok: bool = (cpu.regs.f & mask) != 0;
-                if TRACE {
-                    println!("JOR: mask=0b{:08b}, F=0b{:08b} -> {}",
-                             mask, cpu.regs.f,
-                             if ok { "TAKEN" } else { "NOT TAKEN" }
-                    );
-                    if ok {
-                        println!("  -> 0x{:04X}", address);
-                    }
-                }
-                if ok { cpu.pc = *address; }
-            },
-            Opcode::NOP => {
-                // pass
-            },
-            Opcode::STR { reg, address } => {
-                if *address as usize >= MEM_SIZE {
-                    cpu.state = false;
-                    eprintln!("ERROR: STR out of bounds at 0x{:04X} (max 0x{:04X})",
-                        address, MEM_SIZE - 1);
-                    return;
-                }
-                let value = match *reg {
-                    REG_A => cpu.regs.a,
-                    REG_B => cpu.regs.b,
-                    REG_C => cpu.regs.c,
-                    _ => {
-                        cpu.state = false;
-                        eprintln!("ERROR: Invalid register for STR {}", reg);
-                        return;
-                    }
-                };
-                cpu.mem[*address as usize] = value;
-
-                if TRACE {
-                    let reg_name = match reg { 0 => "A", 1 => "B", 2 => "C", _ => "?" };
-                    println!("STR: mem[0x{:04X}] = {} ({})", address, reg_name, value);
-                }
-            },
-            Opcode::LMR { reg, address } => {
-                if *address as usize >= MEM_SIZE {
-                    cpu.state = false;
-                    eprintln!("ERROR: LMR out of bounds at 0x{:04X} (max 0x{:04X})", address, MEM_SIZE - 1);
-                    return;
-                }
-                let value = cpu.mem[*address as usize];
-
-                match *reg {
-                    REG_A => cpu.regs.a = value,
-                    REG_B => cpu.regs.b = value,
-                    REG_C => cpu.regs.c = value,
-                    _ => {
-                        cpu.state = false;
-                        eprintln!("ERROR: Invalid register for LDR {}", reg);
-                        return;
-                    }
-                };
-
-                if TRACE {
-                    let reg_name = match reg { 0 => "A", 1 => "B", 2 => "C", _ => "?" };
-                    println!("LDR: mem[0x{:04X}] = {} ({})", address, reg_name, value);
-                }
-            }
-        }
-    }
-}
-
 pub struct Cpu {
-    pub regs: Regs,
-    pub pc: u16,
-    pub mem: [u8; MEM_SIZE],
+    regs: Regs,
+    pc: u16,
+    mem: [u8; MEM_SIZE],
     state: bool
 }
 
@@ -336,28 +27,71 @@ impl Cpu {
         self.regs.f_zeroed();
     }
 
-    pub fn fetch_next_byte(&mut self) -> u8 {
+    pub fn fetch_next_byte(&mut self) -> Option<u8> {
         if (self.pc as usize) < MEM_SIZE {
             let byte = self.mem[self.pc as usize];
             self.pc += 1;
-            byte
+            Some(byte)
         } else {
             self.state = false;
             eprintln!("ERROR: End of memory");
-            HLT_OPCODE
+            None
         }
     }
 
-    pub fn run(&mut self) {
-        while self.state {
-            if !self.state { return; }
-
-            if let Some(opcode) = Opcode::match_byte(self) {
-                opcode.exec(self);
-            } else {
-                self.state = false;
-                eprintln!("Unknown operation");
-            }
+    pub fn read_mem(&self, address: u16) -> Option<u8> {
+        if (address as usize) < MEM_SIZE {
+            Some(self.mem[address as usize])
+        } else {
+            None
         }
+    }
+
+    pub fn write_mem(&mut self, address: u16, value: u8) -> bool {
+        if (address as usize) < MEM_SIZE {
+            self.mem[address as usize] = value;
+            true
+        } else {
+            false
+        }
+    }
+
+    pub fn read_reg(&self, reg_id: u8) -> Option<u8> {
+        match reg_id {
+            REG_A => Some(self.regs.a),
+            REG_B => Some(self.regs.b),
+            REG_C => Some(self.regs.c),
+            _ => None,
+        }
+    }
+
+    pub fn write_reg(&mut self, reg_id: u8, value: u8) -> bool {
+        match reg_id {
+            REG_A => self.regs.a = value,
+            REG_B => self.regs.b = value,
+            REG_C => self.regs.c = value,
+            _ => return false,
+        }
+        true
+    }
+
+    pub fn set_flags(&mut self, flags: u8) {
+        self.regs.f = flags;
+    }
+
+    pub fn get_flags(&self) -> u8 {
+        self.regs.f
+    }
+
+    pub fn set_pc(&mut self, address: u16) {
+        self.pc = address;
+    }
+
+    pub fn is_running(&self) -> bool {
+        self.state
+    }
+
+    pub fn halt(&mut self) {
+        self.state = false;
     }
 }

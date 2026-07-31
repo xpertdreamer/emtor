@@ -1,29 +1,24 @@
-mod cpu;
-mod reg;
+// pub const TRACE: bool = true;
 
-pub const TRACE: bool = true;
+// fn main() {
+//     let mut emtor = Cpu::create();
 
-use crate::cpu::{Cpu, MEM_SIZE};
+//     emtor.load_prog(&[
+//         0x0B, 0x03, 0x00, 0x08
+//     ]);
 
-fn main() {
-    let mut emtor = Cpu::create();
-
-    emtor.load_prog(&[
-        0x0B, 0x03, 0x00, 0x08
-    ]);
-
-    emtor.run();
-    println!("reg a: {}", emtor.regs.a);
-    println!("reg b: {}", emtor.regs.b);
-    println!("pc: {}", emtor.pc);
-    println!("reg f {:#b}", emtor.regs.f);
-    println!("----------");
-    for i in 0..MEM_SIZE {
-        if emtor.mem[i] != 0 {
-            println!("{} = {:#X}", i, emtor.mem[i]);
-        }
-    }
-}
+//     emtor.run();
+//     println!("reg a: {}", emtor.regs.a);
+//     println!("reg b: {}", emtor.regs.b);
+//     println!("pc: {}", emtor.pc);
+//     println!("reg f {:#b}", emtor.regs.f);
+//     println!("----------");
+//     for i in 0..MEM_SIZE {
+//         if emtor.mem[i] != 0 {
+//             println!("{} = {:#X}", i, emtor.mem[i]);
+//         }
+//     }
+// }
 
 
 // #[cfg(test)]
