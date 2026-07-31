@@ -1,3 +1,5 @@
+Would do some refactoring to divide responsibilities between modules and improve readability. 
+
 # emtor
 > Recreational project which have the goal - write an emulator of fictional architecture in Rust
 
