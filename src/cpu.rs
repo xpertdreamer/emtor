@@ -3,13 +3,13 @@ use crate::{TRACE, reg::*};
 pub const MEM_SIZE: usize = 256;
 
 // MOV MODES
-pub const REG_TO_REG_MOV_MODE: u8 = 0x8A;
-pub const CONST_TO_REG_MOV_MODE: u8 = 0x8B;
+// pub const REG_TO_REG_MOV_MODE: u8 = 0x8A;
+// pub const CONST_TO_REG_MOV_MODE: u8 = 0x8B;
 
 // OPCODES
 pub const HLT_OPCODE: u8 = 0x00;
 pub const ADD_OPCODE: u8 = 0x01;
-pub const MOV_OPCODE: u8 = 0x02;
+// pub const MOV_OPCODE: u8 = 0x02;
 pub const SUB_OPCODE: u8 = 0x03;
 pub const MUL_OPCODE: u8 = 0x04;
 pub const JMP_OPCODE: u8 = 0x05;
@@ -26,7 +26,7 @@ pub const LMR_OPCODE: u8 = 0x0E;
 #[allow(clippy::upper_case_acronyms)]
 enum Opcode {
     // TODO: replace mode with arm style, or create separate instruction
-    MOV { mode: Option<u8>, dest: u8, src: u8 },
+    // MOV { mode: Option<u8>, dest: u8, src: u8 },
     ADD,
     HLT,
     SUB,
@@ -55,24 +55,24 @@ impl Opcode {
         match byte {
             HLT_OPCODE => Some(Opcode::HLT),
             ADD_OPCODE => Some(Opcode::ADD),
-            MOV_OPCODE => {
-                let mode = cpu.fetch_next_byte();
-                match mode {
-                    // From reg to reg
-                    REG_TO_REG_MOV_MODE => {
-                        let dest = cpu.fetch_next_byte();
-                        let src = cpu.fetch_next_byte();
-                        Some(Opcode::MOV { mode: Some(REG_TO_REG_MOV_MODE), dest, src })
-                    },
-                    // Const to reg
-                    CONST_TO_REG_MOV_MODE => {
-                        let dest = cpu.fetch_next_byte();
-                        let value = cpu.fetch_next_byte();
-                        Some(Opcode::MOV { mode: Some(CONST_TO_REG_MOV_MODE), dest, src: value })
-                    },
-                    _ => None
-                }
-            },
+            // MOV_OPCODE => {
+            //     let mode = cpu.fetch_next_byte();
+            //     match mode {
+            //         // From reg to reg
+            //         REG_TO_REG_MOV_MODE => {
+            //             let dest = cpu.fetch_next_byte();
+            //             let src = cpu.fetch_next_byte();
+            //             Some(Opcode::MOV { mode: Some(REG_TO_REG_MOV_MODE), dest, src })
+            //         },
+            //         // Const to reg
+            //         CONST_TO_REG_MOV_MODE => {
+            //             let dest = cpu.fetch_next_byte();
+            //             let value = cpu.fetch_next_byte();
+            //             Some(Opcode::MOV { mode: Some(CONST_TO_REG_MOV_MODE), dest, src: value })
+            //         },
+            //         _ => None
+            //     }
+            // },
             SUB_OPCODE => Some(Opcode::SUB),
             MUL_OPCODE => Some(Opcode::MUL),
             JMP_OPCODE =>
@@ -128,40 +128,40 @@ impl Opcode {
                 if TRACE { println!("TRACE: EXECUTING ADD, A = {}, B = {}", cpu.regs.a, cpu.regs.b ); }
                 cpu.regs.c = cpu.regs.a + cpu.regs.b;
             }
-            Opcode::MOV { mode, dest, src } => {
-                // TODO: trace
-                let source_val = match mode {
-                    Some(REG_TO_REG_MOV_MODE) => {
-                        match *src {
-                            REG_A => cpu.regs.a,
-                            REG_B => cpu.regs.b,
-                            REG_C => cpu.regs.c,
-                            _ => {
-                                cpu.state = false;
-                                eprintln!("ERROR: src ID is incorrect {}", src);
-                                return;
-                            }
-                        }
-                    },
-                    Some(CONST_TO_REG_MOV_MODE) => {
-                        *src
-                    },
-                    _ => {
-                        cpu.state = false;
-                        eprintln!("ERROR: MOV mode is incorrect");
-                        return;
-                    }
-                };
-                match *dest {
-                    REG_A => cpu.regs.a = source_val,
-                    REG_B => cpu.regs.b = source_val,
-                    REG_C => cpu.regs.c = source_val,
-                    _ => {
-                        cpu.state = false;
-                        eprintln!("ERROR: dest ID is incorrect {}", src);
-                    },
-                }
-            },
+            // Opcode::MOV { mode, dest, src } => {
+            //     // TODO: trace
+            //     let source_val = match mode {
+            //         Some(REG_TO_REG_MOV_MODE) => {
+            //             match *src {
+            //                 REG_A => cpu.regs.a,
+            //                 REG_B => cpu.regs.b,
+            //                 REG_C => cpu.regs.c,
+            //                 _ => {
+            //                     cpu.state = false;
+            //                     eprintln!("ERROR: src ID is incorrect {}", src);
+            //                     return;
+            //                 }
+            //             }
+            //         },
+            //         Some(CONST_TO_REG_MOV_MODE) => {
+            //             *src
+            //         },
+            //         _ => {
+            //             cpu.state = false;
+            //             eprintln!("ERROR: MOV mode is incorrect");
+            //             return;
+            //         }
+            //     };
+            //     match *dest {
+            //         REG_A => cpu.regs.a = source_val,
+            //         REG_B => cpu.regs.b = source_val,
+            //         REG_C => cpu.regs.c = source_val,
+            //         _ => {
+            //             cpu.state = false;
+            //             eprintln!("ERROR: dest ID is incorrect {}", src);
+            //         },
+            //     }
+            // },
             Opcode::SUB => {
                 if TRACE { println!("TRACE: EXECUTING SUB, A = {}, B = {}", cpu.regs.a, cpu.regs.b ); }
                 cpu.regs.c = cpu.regs.a + cpu.regs.b;
