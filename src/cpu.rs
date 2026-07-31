@@ -2,6 +2,15 @@ use crate::{TRACE, reg::*};
 
 pub const MEM_SIZE: usize = 256;
 
+pub const EQ: u8 = 1 << 0;      // Equal
+pub const NE: u8 = 1 << 1;      // Not Equal
+pub const GT: u8 = 1 << 2;      // Greater Than
+pub const LT: u8 = 1 << 3;      // Less Than
+pub const GE: u8 = 1 << 4;      // Greater or Equal
+pub const LE: u8 = 1 << 5;      // Less or Equal
+pub const ZE: u8 = 1 << 6;      // Zero
+pub const NZ: u8 = 1 << 7;      // Not Zero
+
 // MOV MODES
 // pub const REG_TO_REG_MOV_MODE: u8 = 0x8A;
 // pub const CONST_TO_REG_MOV_MODE: u8 = 0x8B;
@@ -179,14 +188,14 @@ impl Opcode {
                 let a = cpu.regs.a;
                 let b = cpu.regs.b;
                 cpu.regs.f =
-                    ((a == b) as u8)                     |
-                    (((a != b) as u8) << 1)              |
-                    (((a > b) as u8) << 2)               |
-                    (((a < b) as u8) << 3)               |
-                    (((a >= b) as u8) << 4)              |
-                    (((a <= b) as u8) << 5)              |
-                    (((a == 0) as u8) << 6)              |
-                    (((a != 0) as u8) << 7);
+                    ((a == b) as u8 * EQ) |
+                    ((a != b) as u8 * NE) |
+                    ((a > b) as u8 * GT)  |
+                    ((a < b) as u8 * LT)  |
+                    ((a >= b) as u8 * GE) |
+                    ((a <= b) as u8 * LE) |
+                    ((a == 0) as u8 * ZE) |
+                    ((a != 0) as u8 * NZ);
             },
             Opcode::JCT { mask, address } => {
                 let ok: bool = (cpu.regs.f & mask) == 0;
