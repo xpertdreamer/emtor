@@ -81,7 +81,10 @@ impl Machine {
             Opcode::LMR { reg, address } => self.exec_lmr(reg, address),
             Opcode::MOV { dest, src } => self.exec_mov(dest, src),
             Opcode::MOC { dest, value } => self.exec_moc(dest, value),
-            Opcode::NOT(reg) => self.exec_not(reg)
+            Opcode::NOT(reg) => self.exec_not(reg),
+            Opcode::XOR { dest, src } => self.exec_xor(dest, src),
+            Opcode::BOR { dest, src } => self.exec_bor(dest, src),
+            Opcode::AND { dest, src } => self.exec_and(dest, src)
         }
 
     }
@@ -89,6 +92,36 @@ impl Machine {
     fn trace(&self, ms: &str) {
         if self.trace {
             println!("TRACE: {}", ms);
+        }
+    }
+
+    fn exec_xor(&mut self, dest: u8, src: u8) {
+        // TODO: trace
+        let a = self.cpu.read_reg(dest).expect("ERROR: [XOR] invalid dest register ID");
+        let b = self.cpu.read_reg(src).expect("ERROR: [XOR] invalid src register ID");
+        if !self.cpu.write_reg(dest, a ^ b) {
+            eprintln!("ERROR: cannot perform XOR to register 0x{:04X}", dest);
+            self.cpu.halt();
+        }
+    }
+
+    fn exec_bor(&mut self, dest: u8, src: u8) {
+        // TODO: trace
+        let a = self.cpu.read_reg(dest).expect("ERROR: [BOR] invalid dest register ID");
+        let b = self.cpu.read_reg(src).expect("ERROR: [BOR] invalid src register ID");
+        if !self.cpu.write_reg(dest, a | b) {
+            eprintln!("ERROR: cannot perform BOR to register 0x{:04X}", dest);
+            self.cpu.halt();
+        }
+    }
+
+    fn exec_and(&mut self, dest: u8, src: u8) {
+        // TODO: trace
+        let a = self.cpu.read_reg(dest).expect("ERROR: [AND] invalid dest register ID");
+        let b = self.cpu.read_reg(src).expect("ERROR: [AND] invalid src register ID");
+        if !self.cpu.write_reg(dest, a & b) {
+            eprintln!("ERROR: cannot perform AND to register 0x{:04X}", dest);
+            self.cpu.halt();
         }
     }
 
