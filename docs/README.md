@@ -1,5 +1,6 @@
 > Not fully implemented. Documentation is sucks
 # TODO: tests
+# TODO: system flags (sign handler, overflow handler and etc.)
 
 # emtor
 > Recreational project which have the goal to write an emulator of fictional architecture in Rust
