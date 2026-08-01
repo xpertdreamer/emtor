@@ -50,7 +50,7 @@ impl Opcode {
     }
 
     pub fn decode(cpu: &mut Cpu) -> Option<Self> {
-        let byte = cpu.fetch_next_byte().expect("ERROR: Memory out of bound, while reading u16");
+        let byte = cpu.fetch_next_byte().expect("ERROR: Memory out of bound, while reading byte");
         match byte {
             opcodes::HLT => Some(Opcode::HLT),
             opcodes::ADD => Some(Opcode::ADD),
