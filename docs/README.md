@@ -27,6 +27,9 @@
 | 0x0E   | [LMR reg address](#lmr-command)  |
 | 0x0F   | [MOC dest const](#moc-command)   |
 | 0x10   | [NOT reg](#not-command)          |
+| 0x11   | [XOR dest src](#xor-command)     |
+| 0x12   | [BOR dest src](#bor-command)     |
+| 0x13   | [AND dest src](#and-command)     |
 
 
 ### HLT command 
@@ -103,6 +106,18 @@ The full name is Load from Memory to Register. Copies the value from the memory 
 
 ### NOT command 
 Bitwise complement of the given register`s value
+[back](#opcodes)
+
+### XOR command 
+Performs XOR operation on destination by source. The result is stored in 'destination'.
+[back](#opcodes)
+
+### BOR command 
+Performs Bitwise OR operation on destination by source. The result is stored in 'destination'.
+[back](#opcodes)
+
+### AND command 
+Performs AND operation on destination by source. The result is stored in 'destination'.
 [back](#opcodes)
 
 ## CPU Flags Layout
