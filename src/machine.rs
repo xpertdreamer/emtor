@@ -1,5 +1,15 @@
 use crate::{TRACE, cpu::*, opcode::Opcode, reg::REG_A, reg::REG_B, reg::REG_C};
 
+#[derive(Debug, PartialEq)]
+pub struct CpuState {
+    pub pc: u16,
+    pub flags: u8,
+    pub state: bool,
+    pub reg_a: u8,
+    pub reg_b: u8,
+    pub reg_c: u8,
+}
+
 mod conditional_flags {
     pub const EQ: u8 = 1 << 0;      // Equal
     pub const NE: u8 = 1 << 1;      // Not Equal
@@ -21,6 +31,17 @@ impl Machine {
         Machine {
             trace: TRACE,
             cpu: Cpu::create(),
+        }
+    }
+
+    pub fn dump(&self) -> CpuState {
+        CpuState {
+            pc: self.cpu.get_pc(),
+            flags: self.cpu.get_flags(),
+            state: self.cpu.is_running(),
+            reg_a: self.cpu.read_reg(REG_A).unwrap_or(0),
+            reg_b: self.cpu.read_reg(REG_B).unwrap_or(0),
+            reg_c: self.cpu.read_reg(REG_C).unwrap_or(0),
         }
     }
 
