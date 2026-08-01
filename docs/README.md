@@ -23,6 +23,8 @@
 | 0x0D   | [STR reg address](#str-command)  |
 | 0x0E   | [LMR reg address](#lmr-command)  |
 | 0x0F   | [MOC dest const](#moc-command)   |
+| 0x10   | [NOT reg](#not-command)          |
+
 
 ### HLT command 
 Terminates program execution. Doesn`t have any arguments
@@ -94,6 +96,10 @@ The full name is STORE. Just copies the value from register to memory.
 
 ### LMR command 
 The full name is Load from Memory to Register. Copies the value from the memory location represented by the address into a register
+[back](#opcodes)
+
+### NOT command 
+Bitwise complement of the given register`s value
 [back](#opcodes)
 
 ## CPU Flags Layout
