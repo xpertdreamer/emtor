@@ -1,4 +1,5 @@
 > Not fully implemented. Documentation is sucks
+# TODO: tests
 
 # emtor
 > Recreational project which have the goal to write an emulator of fictional architecture in Rust
