@@ -5,20 +5,24 @@ Would provide some documentation later [01.08.2026]
 
 ## OPCODES
 
-| OPCODE | Command                           |
-|--------|-----------------------------------|
-| 0x00   | [HLT](#hlt-command)               |
-| 0x01   | [ADD](#add-command)               |
-| 0x02   | [MOV mode dest src](#mov-command) |
-| 0x03   | [SUB](#sub-command)               |
-| 0x04   | [MUL](#mul-command)               |
-| 0x05   | [JMP address](#jmp-command)       |
-| 0x06   | [CMP](#cmp-command)               |
-| 0x07   | [JCT mask address](#jct-command)  |
-| 0x08   | [INC address](#inc-command)       |
-| 0x09   | [DEC address](#dec-command)       |
-| 0x0A   | [OFS offset](#ofs-command)        |
-| 0x0B   | [JOR mask address](#jor-command)  |
+| OPCODE | Command                          |
+|--------|----------------------------------|
+| 0x00   | [HLT](#hlt-command)              |
+| 0x01   | [ADD](#add-command)              |
+| 0x02   | [MOV dest src](#mov-command)     |
+| 0x03   | [SUB](#sub-command)              |
+| 0x04   | [MUL](#mul-command)              |
+| 0x05   | [JMP address](#jmp-command)      |
+| 0x06   | [CMP](#cmp-command)              |
+| 0x07   | [JCT mask address](#jct-command) |
+| 0x08   | [INC address](#inc-command)      |
+| 0x09   | [DEC address](#dec-command)      |
+| 0x0A   | [OFS offset](#ofs-command)       |
+| 0x0B   | [JOR mask address](#jor-command) |
+| 0x0C   | [NOP](#nop-command)              |
+| 0x0D   | [STR reg address](#str-command)  |
+| 0x0E   | [LMR reg address](#lmr-command)  |
+| 0x0F   | [MOC dest const](#moc-command)   |
 
 ### HLT command
 Terminates program execution. Doesn`t have any arguments
