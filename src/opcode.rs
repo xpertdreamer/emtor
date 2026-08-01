@@ -1,28 +1,9 @@
 use crate::cpu::*;
 
-// MOV_OPCODE => {
-            //     let mode = cpu.fetch_next_byte();
-            //     match mode {
-            //         // From reg to reg
-            //         REG_TO_REG_MOV_MODE => {
-            //             let dest = cpu.fetch_next_byte();
-            //             let src = cpu.fetch_next_byte();
-            //             Some(Opcode::MOV { mode: Some(REG_TO_REG_MOV_MODE), dest, src })
-            //         },
-            //         // Const to reg
-            //         CONST_TO_REG_MOV_MODE => {
-            //             let dest = cpu.fetch_next_byte();
-            //             let value = cpu.fetch_next_byte();
-            //             Some(Opcode::MOV { mode: Some(CONST_TO_REG_MOV_MODE), dest, src: value })
-            //         },
-            //         _ => None
-            //     }
-            // },
-
 mod opcodes {
     pub const HLT: u8 = 0x00;
     pub const ADD: u8 = 0x01;
-    // pub const MOV_OPCODE: u8 = 0x02;
+    pub const MOV: u8 = 0x02;
     pub const SUB: u8 = 0x03;
     pub const MUL: u8 = 0x04;
     pub const JMP: u8 = 0x05;
@@ -35,12 +16,11 @@ mod opcodes {
     pub const NOP: u8 = 0x0C;
     pub const STR: u8 = 0x0D;
     pub const LMR: u8 = 0x0E;
+    pub const MOC: u8 = 0x0F;
 }
 
 #[allow(clippy::upper_case_acronyms)]
 pub enum Opcode {
-    // TODO: replace mode with arm style, or create separate instruction
-    // MOV { mode: Option<u8>, dest: u8, src: u8 },
     ADD,
     HLT,
     SUB,
@@ -54,7 +34,9 @@ pub enum Opcode {
     JOR{ mask: u8, address: u16 },
     NOP,
     STR {reg: u8, address: u16 },
-    LMR {reg: u8, address: u16}
+    LMR {reg: u8, address: u16},
+    MOV { dest: u8, src: u8 },
+    MOC { dest: u8, value: u8 }
 }
 
 impl Opcode {
@@ -65,9 +47,8 @@ impl Opcode {
         address
     }
 
-    pub fn decode(cpu: &mut Cpu) -> Option<Self>{
+    pub fn decode(cpu: &mut Cpu) -> Option<Self> {
         let byte = cpu.fetch_next_byte().expect("ERROR: Memory out of bound, while reading u16");
-
         match byte {
             opcodes::HLT => Some(Opcode::HLT),
             opcodes::ADD => Some(Opcode::ADD),
@@ -75,22 +56,21 @@ impl Opcode {
             opcodes::MUL => Some(Opcode::MUL),
             opcodes::CMP => Some(Opcode::CMP),
             opcodes::NOP => Some(Opcode::NOP),
-            opcodes::JMP =>
-            {
+            opcodes::JMP => {
                 let address = Self::high_end(cpu);
                 Some(Opcode::JMP(address))
             },
             opcodes::JCT => {
-                let mask = cpu.fetch_next_byte().expect("ERROR: Memory out of bound, while reading u16");
+                let mask = cpu.fetch_next_byte().expect("ERROR: Memory out of bound");
                 let address = Self::high_end(cpu);
                 Some(Opcode::JCT { mask, address })
             },
             opcodes::INC => {
-                let address = cpu.fetch_next_byte().expect("ERROR: Memory out of bound, while reading u16");
+                let address = cpu.fetch_next_byte().expect("ERROR: Memory out of bound");
                 Some(Opcode::INC(address))
             },
             opcodes::DEC => {
-                let address = cpu.fetch_next_byte().expect("ERROR: Memory out of bound, while reading u16");
+                let address = cpu.fetch_next_byte().expect("ERROR: Memory out of bound");
                 Some(Opcode::DEC(address))
             },
             opcodes::OFS => {
@@ -98,20 +78,30 @@ impl Opcode {
                 Some(Opcode::OFS(offset))
             },
             opcodes::JOR => {
-                let mask = cpu.fetch_next_byte().expect("ERROR: Memory out of bound, while reading u16");
+                let mask = cpu.fetch_next_byte().expect("ERROR: Memory out of bound");
                 let address = Self::high_end(cpu);
                 Some(Opcode::JOR { mask, address })
             },
             opcodes::STR=> {
-                let reg = cpu.fetch_next_byte().expect("ERROR: Memory out of bound, while reading u16");
+                let reg = cpu.fetch_next_byte().expect("ERROR: Memory out of bound");
                 let address = Self::high_end(cpu);
                 Some(Opcode::STR { reg, address })
             },
             opcodes::LMR => {
-                let reg = cpu.fetch_next_byte().expect("ERROR: Memory out of bound, while reading u16");
+                let reg = cpu.fetch_next_byte().expect("ERROR: Memory out of bound");
                 let address = Self::high_end(cpu);
                 Some(Opcode::LMR { reg, address })
-            }
+            },
+            opcodes::MOV => {
+                let dest = cpu.fetch_next_byte().expect("ERROR: Decode MOV, Memory out of bounds (dest)");
+                let src = cpu.fetch_next_byte().expect("ERROR: Decode MOV, Memory out of bounds (src)");
+                Some(Opcode::MOV { dest, src })
+            },
+            opcodes::MOC => {
+                let dest = cpu.fetch_next_byte().expect("ERROR: Decode MOC, Memory out of bounds (dest)");
+                let value = cpu.fetch_next_byte().expect("ERROR: Decode MOC, Memory out of bounds (value)");
+                Some(Opcode::MOC { dest, value })
+            },
             _ => None
         }
     }

@@ -26,11 +26,11 @@ impl Machine {
 
     pub fn load_program(&mut self, program: &[u8]) {
         self.cpu.load_prog(program);
-        self.trace(&format!("TRACE: Loaded {} instructions", program.len()));
+        self.trace(&format!(": Loaded {} instructions", program.len()));
     }
 
     pub fn run(&mut self) {
-        self.trace("TRACE: Starting execution");
+        self.trace("Starting execution");
 
         while self.cpu.is_running() {
             if let Some(op) = Opcode::decode(&mut self.cpu) {
@@ -58,6 +58,8 @@ impl Machine {
             Opcode::NOP => self.trace("NOP: nothing to do"),
             Opcode::STR { reg, address } => self.exec_str(reg, address),
             Opcode::LMR { reg, address } => self.exec_lmr(reg, address),
+            Opcode::MOV { dest, src } => self.exec_mov(dest, src),
+            Opcode::MOC { dest, value } => self.exec_moc(dest, value)
         }
 
     }
@@ -68,15 +70,32 @@ impl Machine {
         }
     }
 
+    fn exec_mov(&mut self, dest: u8, src: u8) {
+        // TODO: trace
+        let value = self.cpu.read_reg(src).expect("ERROR: [MOV] invalid register ID");
+        if !self.cpu.write_reg(dest, value) {
+            eprintln!("ERROR: cannot perform MOV from register 0x{:04X}", src);
+            self.cpu.halt();
+        }
+    }
+
+    fn exec_moc(&mut self, dest: u8, val: u8) {
+        // TODO: trace
+        if !self.cpu.write_reg(dest, val) {
+            eprintln!("ERROR: cannot perform MOV with constant 0x{:04X}", val);
+            self.cpu.halt();
+        }
+    }
+    
     fn exec_halt(&mut self) {
-        self.trace("TRACE: HLT");
+        self.trace(" HLT");
         self.cpu.halt();
     }
 
     fn exec_add(&mut self) {
         let a = self.cpu.read_reg(REG_A).expect("ERROR: [ADD] invalid register 'a' ID");
         let b = self.cpu.read_reg(REG_B).expect("ERROR: [ADD] invalid register 'b' ID");
-        self.trace(&format!("TRACE: ADD, A = {}, B = {}", a, b));
+        self.trace(&format!("ADD, A = {}, B = {}", a, b));
         if !self.cpu.write_reg(REG_C, a + b) {
             eprintln!("ERROR: cannot perform ADD");
             self.cpu.halt();
@@ -86,7 +105,7 @@ impl Machine {
     fn exec_sub(&mut self) {
         let a = self.cpu.read_reg(REG_A).expect("ERROR: [SUB] invalid register 'a' ID");
         let b = self.cpu.read_reg(REG_B).expect("ERROR: [SUB] invalid register 'b' ID");
-        self.trace(&format!("TRACE: SUB, A = {}, B = {}", a, b));
+        self.trace(&format!("SUB, A = {}, B = {}", a, b));
         if !self.cpu.write_reg(REG_C, b - a) {
             eprintln!("ERROR: cannot perform ADD");
             self.cpu.halt();
@@ -96,7 +115,7 @@ impl Machine {
     fn exec_mul(&mut self) {
         let a = self.cpu.read_reg(REG_A).expect("ERROR: [MUL] invalid register 'a' ID");
         let b = self.cpu.read_reg(REG_B).expect("ERROR: [MUL] invalid register 'b' ID");
-        self.trace(&format!("TRACE: MUL, A = {}, B = {}", a, b));
+        self.trace(&format!("MUL, A = {}, B = {}", a, b));
         if !self.cpu.write_reg(REG_C, a * b) {
             eprintln!("ERROR: cannot perform ADD");
             self.cpu.halt();
@@ -104,7 +123,7 @@ impl Machine {
     }
 
     fn exec_jmp(&mut self, address: u16) {
-        self.trace(&format!("TRACE: JMP, ADDRESS = {}", address));
+        self.trace(&format!("JMP, ADDRESS = {}", address));
         self.cpu.set_pc(address);
     }
 
@@ -119,14 +138,14 @@ impl Machine {
                    ((a <= b) as u8 * conditional_flags::LE) |
                    ((a == 0) as u8 * conditional_flags::ZE) |
                    ((a != 0) as u8 * conditional_flags::NZ);
-        self.trace(&format!("TRACE: CMP, A = {}, B = {}, F = {:#b}", a, b, f));
+        self.trace(&format!("CMP, A = {}, B = {}, F = {:#b}", a, b, f));
         self.cpu.set_flags(f);
     }
 
     fn exec_jct(&mut self, mask: u8, address: u16) {
         let flags = self.cpu.get_flags();
         let ok: bool = (flags & mask) == 0;
-        self.trace(&format!("TRACE: JCT, mask=0b{:08b}, F=0b{:08b} -> {}", mask, flags, if ok { "TAKEN" } else { "NOT TAKEN" }));
+        self.trace(&format!("JCT, mask=0b{:08b}, F=0b{:08b} -> {}", mask, flags, if ok { "TAKEN" } else { "NOT TAKEN" }));
         if ok { self.cpu.set_pc(address); }
     }
 
@@ -161,7 +180,7 @@ impl Machine {
         }
         let flags = self.cpu.get_flags();
         let ok: bool = (flags & mask) != 0;
-        self.trace(&format!("TRACE: JOR, mask=0b{:08b}, F=0b{:08b} -> {}", mask, flags, if ok { "TAKEN" } else { "NOT TAKEN" }));
+        self.trace(&format!("JOR, mask=0b{:08b}, F=0b{:08b} -> {}", mask, flags, if ok { "TAKEN" } else { "NOT TAKEN" }));
         if ok { self.cpu.set_pc(address); }
     }
 
@@ -171,7 +190,7 @@ impl Machine {
             eprintln!("ERROR: cannot perform STR to address 0x{:04X}", mem_addr);
             self.cpu.halt();
         }
-        self.trace(&format!("TRACE: STR, mem[0x{:04X}] <= {} ({})", mem_addr, match register_addr { 0 => "A", 1 => "B", 2 => "C", _ => "?" }, value));
+        self.trace(&format!("STR, mem[0x{:04X}] <= {} ({})", mem_addr, match register_addr { 0 => "A", 1 => "B", 2 => "C", _ => "?" }, value));
     }
 
     fn exec_lmr(&mut self, register_addr: u8, mem_addr: u16) {
@@ -180,41 +199,6 @@ impl Machine {
             eprintln!("ERROR: cannot perform LMR from address 0x{:04X}", mem_addr);
             self.cpu.halt();
         }
-        self.trace(&format!("TRACE: LMR, mem[0x{:04X}] => {} ({})", mem_addr, match register_addr { 0 => "A", 1 => "B", 2 => "C", _ => "?" }, value));
+        self.trace(&format!("LMR, mem[0x{:04X}] => {} ({})", mem_addr, match register_addr { 0 => "A", 1 => "B", 2 => "C", _ => "?" }, value));
     }
 }
-
-// Opcode::MOV { mode, dest, src } => {
-//     // TODO: trace
-//     let source_val = match mode {
-//         Some(REG_TO_REG_MOV_MODE) => {
-//             match *src {
-//                 REG_A => cpu.regs.a,
-//                 REG_B => cpu.regs.b,
-//                 REG_C => cpu.regs.c,
-//                 _ => {
-//                     cpu.state = false;
-//                     eprintln!("ERROR: src ID is incorrect {}", src);
-//                     return;
-//                 }
-//             }
-//         },
-//         Some(CONST_TO_REG_MOV_MODE) => {
-//             *src
-//         },
-//         _ => {
-//             cpu.state = false;
-//             eprintln!("ERROR: MOV mode is incorrect");
-//             return;
-//         }
-//     };
-//     match *dest {
-//         REG_A => cpu.regs.a = source_val,
-//         REG_B => cpu.regs.b = source_val,
-//         REG_C => cpu.regs.c = source_val,
-//         _ => {
-//             cpu.state = false;
-//             eprintln!("ERROR: dest ID is incorrect {}", src);
-//         },
-//     }
-// },
