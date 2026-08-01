@@ -17,6 +17,7 @@ mod opcodes {
     pub const STR: u8 = 0x0D;
     pub const LMR: u8 = 0x0E;
     pub const MOC: u8 = 0x0F;
+    pub const NOT: u8 = 0x10;
 }
 
 #[allow(clippy::upper_case_acronyms)]
@@ -36,7 +37,8 @@ pub enum Opcode {
     STR {reg: u8, address: u16 },
     LMR {reg: u8, address: u16},
     MOV { dest: u8, src: u8 },
-    MOC { dest: u8, value: u8 }
+    MOC { dest: u8, value: u8 },
+    NOT(u8)
 }
 
 impl Opcode {
@@ -102,6 +104,10 @@ impl Opcode {
                 let value = cpu.fetch_next_byte().expect("ERROR: Decode MOC, Memory out of bounds (value)");
                 Some(Opcode::MOC { dest, value })
             },
+            opcodes::NOT => {
+                let reg = cpu.fetch_next_byte().expect("ERROR: Decode NOT, Memory out of bounds (register)");
+                Some(Opcode::NOT(reg))
+            }
             _ => None
         }
     }

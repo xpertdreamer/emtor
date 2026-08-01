@@ -59,7 +59,8 @@ impl Machine {
             Opcode::STR { reg, address } => self.exec_str(reg, address),
             Opcode::LMR { reg, address } => self.exec_lmr(reg, address),
             Opcode::MOV { dest, src } => self.exec_mov(dest, src),
-            Opcode::MOC { dest, value } => self.exec_moc(dest, value)
+            Opcode::MOC { dest, value } => self.exec_moc(dest, value),
+            Opcode::NOT(reg) => self.exec_not(reg)
         }
 
     }
@@ -200,5 +201,14 @@ impl Machine {
             self.cpu.halt();
         }
         self.trace(&format!("LMR, mem[0x{:04X}] => {} ({})", mem_addr, match register_addr { 0 => "A", 1 => "B", 2 => "C", _ => "?" }, value));
+    }
+
+    fn exec_not(&mut self, register_addr: u8) {
+        // TODO: trace
+        let new_val = !(self.cpu.read_reg(register_addr).expect("ERROR: [NOT] invalid register ID"));
+        if !self.cpu.write_reg(register_addr, new_val) {
+            eprintln!("ERROR: cannot perform NOT for register {}", match register_addr { 0 => "A", 1 => "B", 2 => "C", _ => "?" });
+            self.cpu.halt();
+        }
     }
 }
