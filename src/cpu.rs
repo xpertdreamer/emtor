@@ -28,8 +28,8 @@ impl Cpu {
             eprintln!("ERROR: Stack overflow - sp={}, max={}", self.sp, STACK_START + STACK_SIZE as u16 - 1);
             return false;
         }
-        self.sp += 1;
         self.mem[self.sp as usize] = value;
+        self.sp += 1;
         true
     }
 
@@ -42,8 +42,26 @@ impl Cpu {
         Some(self.mem[self.sp as usize])
     }
 
-    pub fn push_u16(&mut self, value: u16) -> bool {}
-    pub fn pop_u16(&mut self) -> Option<u16> {}
+    pub fn push_u16(&mut self, value: u16) -> bool {
+        if self.sp + 2 > STACK_START + STACK_SIZE as u16 {
+            eprintln!("ERROR: Stack overflow - sp={}, max={}", self.sp, STACK_START + STACK_SIZE as u16 - 1);
+            return false;
+        }
+
+        self.mem[self.sp as usize] = (value >> 8) as u8;
+        self.mem[(self.sp + 1) as usize] = (value & 0xFF) as u8;
+        self.sp += 2;
+        true
+    }
+    
+    pub fn pop_u16(&mut self) -> Option<u16> {
+        if self.sp < STACK_START + 2 {
+            eprintln!("ERROR: Stack overflow - sp={}, min={}", self.sp, STACK_START);
+            return None;
+        }
+        self.sp -= 2;
+        Some((self.mem[self.sp as usize] as u16) << 8 | (self.mem[(self.sp + 1) as usize] as u16))
+    }
 
     pub fn load_prog(&mut self, data: &[u8]) {
         if data.len() > STACK_START as usize {
