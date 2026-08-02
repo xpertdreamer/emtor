@@ -1,5 +1,6 @@
 > Not fully implemented. Documentation is sucks
 
+### TODO: stack
 ### TODO: tests
 ### TODO: system flags (sign handler, overflow handler and etc.)
 
