@@ -1,13 +1,13 @@
 use crate::reg::*;
 
 pub const MEM_SIZE: usize = 256;
-pub const STACK_SIZE: usize = 16;
-pub const STACK_START: u16 = MEM_SIZE as u16 - STACK_SIZE as u16;
+// pub const STACK_SIZE: usize = 16;
+// pub const STACK_START: u16 = MEM_SIZE as u16 - STACK_SIZE as u16;
 
 pub struct Cpu {
     regs: Regs,
     pc: u16,
-    sp: u16,
+//    sp: u16,
     mem: [u8; MEM_SIZE],
     state: bool
 }
@@ -17,21 +17,21 @@ impl Cpu {
         Cpu {
             regs: Regs::create(),
             pc: 0,
-            sp: STACK_START,
+            //sp: STACK_START,
             mem: [0; MEM_SIZE],
             state: true
         }
     }
 
-    pub fn push(&mut self, value: u8) -> bool {}
-    pub fn pop(&mut self) -> Option<u8> {}
-    pub fn push_u16(&mut self, value: u16) -> bool {}
-    pub fn pop_u16(&mut self) -> Option<u16> {}
+    // pub fn push(&mut self, value: u8) -> bool {}
+    // pub fn pop(&mut self) -> Option<u8> {}
+    // pub fn push_u16(&mut self, value: u16) -> bool {}
+    // pub fn pop_u16(&mut self) -> Option<u16> {}
 
     pub fn load_prog(&mut self, data: &[u8]) {
-        if data.len() > STACK_START as usize {
-            eprintln!("WARNING: Program size exceeds stack start at {}", STACK_START);
-        }
+        // if data.len() > STACK_START as usize {
+        //     eprintln!("WARNING: Program size exceeds stack start at {}", STACK_START);
+        // }
         for (i, &byte) in data.iter().enumerate() {
             self.mem[i] = byte;
         }
@@ -60,10 +60,10 @@ impl Cpu {
     }
 
     pub fn write_mem(&mut self, address: u16, value: u8) -> bool {
-        if address >= STACK_START || address < STACK_START + STACK_SIZE as u16 {
-            eprintln!("ERROR: Attempt to write to stack memory at {:#04X}", address);
-            return false;
-        }
+        // if address >= STACK_START || address < STACK_START + STACK_SIZE as u16 {
+        //     eprintln!("ERROR: Attempt to write to stack memory at {:#04X}", address);
+        //     return false;
+        // }
         if (address as usize) < MEM_SIZE {
             self.mem[address as usize] = value;
             true
@@ -97,6 +97,14 @@ impl Cpu {
 
     pub fn get_flags(&self) -> u8 {
         self.regs.f
+    }
+
+    pub fn set_sys_flags(&mut self, sflags: u8) {
+        self.regs.sf = sflags;
+    }
+
+    pub fn get_sys_flags(&self) -> u8 {
+        self.regs.sf
     }
 
     pub fn set_pc(&mut self, address: u16) {

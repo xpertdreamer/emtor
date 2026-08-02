@@ -7,15 +7,16 @@ pub struct Regs {
     pub b: u8,
     pub c: u8,
     pub f: u8,
-    // pub sf: u8
+    pub sf: u8
 }
 
 impl Regs {
     pub fn create() -> Self {
-        Regs { a: 0, b: 0, c: 0, f: 0 }
+        Regs { a: 0, b: 0, c: 0, f: 0, sf: 0 }
     }
 
     pub fn f_zeroed(&mut self) {
         self.f = 0;
+        self.sf = 0;
     }
 }
