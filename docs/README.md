@@ -1,9 +1,9 @@
 > Not fully implemented. Documentation is sucks
 
-### TODO: error handling
 ### TODO: stack
-### TODO: tests
 ### TODO: system flags (sign handler, overflow handler and etc.)
+### TODO: tests
+### TODO: error handling
 
 # emtor
 > Recreational project which have the goal to write an emulator of fictional architecture in Rust
@@ -146,3 +146,13 @@ The CPU uses a single byte flag register to store the results of operations. Eac
 | 2   | `SF` | Sign Flag     |
 | 1   | `OF` | Overflow flag |
 | 0   | `CF` | Carry Flag    |
+
+## Memory layout
+Currently, the RAM size is 256 bytes, 16 of which are occupied by the stack. A schematic representation is shown below:
+
+`` [   Free: 240 bytes   |   Stack: 16 bytes   ] ``
+
+As illustrated, the stack resides within the  upper portion of memory, leaving 240 bytes for other data, variables, and program use.
+It should be noted that this data is relevant at the current stage of development [02.08.2026] and the memory is likely to be expanded in the future.
+As usual, the CPU has a PC (Program Counter) and an SP (Stack Pointer). The first one holds the address of the next instruction in memory to be executed, and 
+the second one holds the address of the current stack top...
