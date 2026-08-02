@@ -39,11 +39,11 @@ Terminates program execution. Doesn`t have any arguments
 [back](#opcodes)
 
 ### ADD command 
-Doesn`t have any arguments. Simply performs the addition of two registers (a + b). The result is stored in register c (0x02).
+Doesn`t have any arguments. Simply performs the addition of two registers (a + b). The result is stored in register c (0x02). Cause the calculation of OF, SF, CF.
 [back](#opcodes)
 
 ### SUB command
-Similar to ADD. Produces c = b - a operation
+Similar to ADD. Produces c = b - a operation. Cause the calculation of OF, SF, CF.
 [back](#opcodes)
 
 ### MOV command 
@@ -123,7 +123,9 @@ Performs AND operation on destination by source. The result is stored in 'destin
 [back](#opcodes)
 
 ## CPU Flags Layout
-The CPU uses a single byte flag register to store the results of comparisons and operations. Each bit represents a specific condition of compare. Do not mistake these for system flags (not implemented yet).
+
+### Compare flags
+The CPU uses a single byte flag register to store the results of comparisons. Each bit represents a specific condition of compare. Do not mistake these for system flags.
 
 | Bit | Flag | Name             |
 |-----|------|------------------|
@@ -135,3 +137,12 @@ The CPU uses a single byte flag register to store the results of comparisons and
 | 2   | `GT` | Greater Than     |
 | 1   | `NE` | Not Equal        |
 | 0   | `EQ` | Equal            |
+
+### System flags (not propertly implemented yet)
+The CPU uses a single byte flag register to store the results of operations. Each bit represents a specific condition of operation result.
+
+| Bit | Flag | Name          |
+|-----|------|---------------|
+| 2   | `SF` | Sign Flag     |
+| 1   | `OF` | Overflow flag |
+| 0   | `CF` | Carry Flag    |
