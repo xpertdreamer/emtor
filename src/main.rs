@@ -150,6 +150,58 @@ mod tests {
         assert_eq!(dump.pc, 0x06);
     }
 
+    #[test]
+    fn test_str() {
+        let cpu = run_test(&[
+            0x0F, 0xC0, 0x01,           // MOC
+            0x0D, 0xC0, 0x00, 0x96,     // STR
+            0x00                        // HLT
+        ]);
+        let dump = cpu.dump();
+        assert_eq!(dump.pc, 8);
+        assert_eq!(dump.reg_a, 1);
+        assert_eq!(dump.mem[0x0096], 0x01);
+    }
+
+    #[test]
+    fn test_lmr() {
+        let mut prog: [u8; 201] = [0; 201];
+        prog[..5].copy_from_slice(&[
+            0x0E, 0xC0, 0x00, 0xC8,
+            0x00
+        ]);
+        prog[0xC8] = 0x63;
+        let cpu = run_test(&prog);
+        let dump = cpu.dump();
+        assert_eq!(dump.mem[0x00C8], 0x63);
+        assert_eq!(dump.pc, 5);
+        assert_eq!(dump.reg_a, 0x63);
+    }
+
+    // #[test]
+    // fn test_not() {
+
+    // }
+
+    // #[test]
+    // fn test_xor() {
+
+    // }
+
+    // #[test]
+    // fn test_bor() {
+
+    // }
+
+    // #[test]
+    // fn test_and() {
+
+    // }
+
+    // #[test]
+    // fn test_jof() {
+
+    // }
     // TODO: simple tests for other instructions
     // TODO: complicated tests
 }
