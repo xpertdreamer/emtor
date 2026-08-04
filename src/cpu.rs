@@ -86,6 +86,10 @@ impl Cpu {
         }
     }
 
+    pub fn get_mem(&self) -> [u8; MEM_SIZE] {
+        self.mem
+    }
+
     pub fn read_mem(&self, address: u16) -> Option<u8> {
         if (address as usize) < MEM_SIZE {
             Some(self.mem[address as usize])
