@@ -26,6 +26,7 @@ mod conditional_flags {
 mod system_flags {
     pub const CF: u8 = 1 << 0;
     pub const OF: u8 = 1 << 1;
+    #[allow(unused)]
     pub const SF: u8 = 1 << 2;
 }
 
