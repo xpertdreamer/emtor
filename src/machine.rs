@@ -95,7 +95,6 @@ impl Machine {
             Opcode::AND { dest, src } => self.exec_and(dest, src),
             Opcode::JOF(address) => self.exec_jof(address),
         }
-
     }
 
     fn trace(&self, ms: &str) {
@@ -105,8 +104,8 @@ impl Machine {
     }
 
     fn exec_jof(&mut self, addr: u16) {
-        // TODO: trace
         let ok = self.cpu.get_sys_flags() == 0x02;
+        self.trace(&format!("JOF, ADDRESS=0x{:04X} F=0b{:08b} -> {}", addr, self.cpu.get_sys_flags() , if ok { "TAKEN" } else { "NOT TAKEN" }));
         if ok { self.cpu.set_pc(addr); }
     }
 
