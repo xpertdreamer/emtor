@@ -9,6 +9,7 @@ pub struct CpuState {
     pub reg_a: u8,
     pub reg_b: u8,
     pub reg_c: u8,
+    pub mem: [u8; MEM_SIZE]
 }
 
 mod conditional_flags {
@@ -50,12 +51,13 @@ impl Machine {
             reg_a: self.cpu.read_reg(REG_A).unwrap_or(0),
             reg_b: self.cpu.read_reg(REG_B).unwrap_or(0),
             reg_c: self.cpu.read_reg(REG_C).unwrap_or(0),
+            mem: self.cpu.get_mem()
         }
     }
 
     pub fn load_program(&mut self, program: &[u8]) {
         self.cpu.load_prog(program);
-        self.trace(&format!(": Loaded {} instructions", program.len()));
+        self.trace(&format!("Loaded {} instructions", program.len()));
     }
 
     pub fn run(&mut self) {
