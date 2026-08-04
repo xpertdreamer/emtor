@@ -286,7 +286,7 @@ impl Machine {
             eprintln!("ERROR: cannot perform STR to address 0x{:04X}", mem_addr);
             self.cpu.halt();
         }
-        self.trace(&format!("STR, mem[0x{:04X}] <= {} ({})", mem_addr, match register_addr { 0 => "A", 1 => "B", 2 => "C", _ => "?" }, value));
+        self.trace(&format!("STR, mem[0x{:04X}] <= {} ({})", mem_addr, match register_addr { REG_A => "A", REG_B => "B", REG_C => "C", _ => "?" }, value));
     }
 
     fn exec_lmr(&mut self, register_addr: u8, mem_addr: u16) {
@@ -295,7 +295,7 @@ impl Machine {
             eprintln!("ERROR: cannot perform LMR from address 0x{:04X}", mem_addr);
             self.cpu.halt();
         }
-        self.trace(&format!("LMR, mem[0x{:04X}] => {} ({})", mem_addr, match register_addr { 0 => "A", 1 => "B", 2 => "C", _ => "?" }, value));
+        self.trace(&format!("LMR, mem[0x{:04X}] => {} ({})", mem_addr, match register_addr { REG_A => "A", REG_B => "B", REG_C => "C", _ => "?" }, value));
     }
 
     fn exec_not(&mut self, register_addr: u8) {
