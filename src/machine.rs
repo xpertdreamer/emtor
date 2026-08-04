@@ -103,6 +103,14 @@ impl Machine {
         }
     }
 
+    fn calc_sys_flags(&self, res: u8, cf: bool, of: bool) -> u8 {
+        let mut result: u8 = 0;
+        result |= system_flags::CF * cf as u8;
+        result |= system_flags::OF * of as u8;
+        result |= (res & 0x80 == 0x80) as u8;
+        result
+    }
+
     fn exec_jof(&mut self, addr: u16) {
         let ok = self.cpu.get_sys_flags() == 0x02;
         if ok { self.cpu.set_pc(addr); }
@@ -158,24 +166,16 @@ impl Machine {
         }
         self.trace(&format!("MOC, DEST=0x{:04x}, VALUE=0x{:04x}", dest, val));
     }
-    
+
     fn exec_halt(&mut self) {
         self.trace("HLT");
         self.cpu.halt();
     }
 
-    fn calc_sys_flags(&self, res: u8, cf: bool, of: bool) -> u8 {
-        let mut result: u8 = 0;
-        result |= system_flags::CF * cf as u8;
-        result |= system_flags::OF * of as u8;
-        result |= (res & 0x80 == 0x80) as u8;
-        result
-    }
 
     fn exec_add(&mut self) {
         let a = self.cpu.read_reg(REG_A).expect("ERROR: [ADD] invalid register 'a' ID");
         let b = self.cpu.read_reg(REG_B).expect("ERROR: [ADD] invalid register 'b' ID");
-        self.trace(&format!("ADD, A = {}, B = {}", a, b));
         let (res, over) = a.overflowing_add(b);
         let carry: bool = (a as u16 + b as u16) > 0xFF;
         self.cpu.set_sys_flags(self.calc_sys_flags(res, carry, over));
@@ -183,6 +183,7 @@ impl Machine {
             eprintln!("ERROR: cannot perform ADD");
             self.cpu.halt();
         }
+        self.trace(&format!("ADD, A = {}, B = {}, RES = {}, OF = {}, CF = {}", a, b, res, over, carry));
     }
 
     fn exec_sub(&mut self) {
@@ -190,23 +191,24 @@ impl Machine {
         let b = self.cpu.read_reg(REG_B).expect("ERROR: [SUB] invalid register 'b' ID");
         let (res, over) = b.overflowing_sub(a);
         let carry: bool = b < a;
-        self.trace(&format!("SUB, A = {}, B = {}", a, b));
         self.cpu.set_sys_flags(self.calc_sys_flags(res, carry, over));
         if !self.cpu.write_reg(REG_C, res) {
             eprintln!("ERROR: cannot perform ADD");
             self.cpu.halt();
         }
+        self.trace(&format!("SUB, A = {}, B = {}, RES = {}, OF = {}, CF = {}", a, b, res, over, carry));
     }
 
     fn exec_mul(&mut self) {
         // TODO: sys flag handling (cf, of)
         let a = self.cpu.read_reg(REG_A).expect("ERROR: [MUL] invalid register 'a' ID");
         let b = self.cpu.read_reg(REG_B).expect("ERROR: [MUL] invalid register 'b' ID");
-        self.trace(&format!("MUL, A = {}, B = {}", a, b));
-        if !self.cpu.write_reg(REG_C, a * b) {
+        let (res, over) = a.overflowing_mul(b);
+        if !self.cpu.write_reg(REG_C, res) {
             eprintln!("ERROR: cannot perform ADD");
             self.cpu.halt();
         }
+        self.trace(&format!("MUL, A = {}, B = {}, RES = {}, OF = {}", a, b, res, over));
     }
 
     fn exec_jmp(&mut self, address: u16) {
