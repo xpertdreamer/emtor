@@ -212,8 +212,8 @@ impl Machine {
     }
 
     fn exec_jmp(&mut self, address: u16) {
-        self.trace(&format!("JMP, ADDRESS = {}", address));
         self.cpu.set_pc(address);
+        self.trace(&format!("JMP, ADDRESS = {}", address));
     }
 
     fn exec_cmp(&mut self) {
@@ -227,40 +227,43 @@ impl Machine {
                    ((a <= b) as u8 * conditional_flags::LE) |
                    ((a == 0) as u8 * conditional_flags::ZE) |
                    ((a != 0) as u8 * conditional_flags::NZ);
-        self.trace(&format!("CMP, A = {}, B = {}, F = {:#b}", a, b, f));
         self.cpu.set_flags(f);
+        self.trace(&format!("CMP, A = {}, B = {}, F = {:#b}", a, b, f));
     }
 
     fn exec_jct(&mut self, mask: u8, address: u16) {
         let flags = self.cpu.get_flags();
         let ok: bool = (flags & mask) == 0;
-        self.trace(&format!("JCT, mask=0b{:08b}, F=0b{:08b} -> {}", mask, flags, if ok { "TAKEN" } else { "NOT TAKEN" }));
         if ok { self.cpu.set_pc(address); }
+        self.trace(&format!("JCT, mask=0b{:08b}, F=0b{:08b} -> {}", mask, flags, if ok { "TAKEN" } else { "NOT TAKEN" }));
     }
 
     fn exec_inc(&mut self, address: u8) {
-        // TODO: trace
         // TODO: sys flag handling (of, sf)
         let value = self.cpu.read_reg(address).expect("ERROR: [INC] invalid register ID");
-        if !self.cpu.write_reg(address, value + 1) {
+        let res = value + 1;
+        if !self.cpu.write_reg(address, res) {
             eprintln!("ERROR: cannot perform INC on register {}", address);
             self.cpu.halt();
         }
+        self.trace(&format!("INC, REG=0x{:04x}, VAL_PRE={}, VAL_POST={}", address, value, res));
     }
 
     fn exec_dec(&mut self, address: u8) {
-        // TODO: trace
         // TODO: sys flag handling (of, sf)
         let value = self.cpu.read_reg(address).expect("ERROR: [DEC] invalid register ID");
-        if !self.cpu.write_reg(address, value - 1) {
+        let res = value - 1;
+        if !self.cpu.write_reg(address, res) {
             eprintln!("ERROR: cannot perform DEC on register {}", address);
             self.cpu.halt();
         }
+        self.trace(&format!("DEC, REG=0x{:04x}, VAL_PRE={}, VAL_POST={}", address, value, res));
     }
 
     fn exec_ofs(&mut self, offset: u16) {
-        // TODO: trace
-        self.cpu.set_pc(self.cpu.get_pc() + offset);
+        let new_addr = self.cpu.get_pc() + offset;
+        self.cpu.set_pc(new_addr);
+        self.trace(&format!("OFS, OFFSET={}, NEW={}", offset, new_addr));
     }
 
     fn exec_jor(&mut self, mask: u8, address: u16) {
@@ -271,8 +274,8 @@ impl Machine {
         }
         let flags = self.cpu.get_flags();
         let ok: bool = (flags & mask) != 0;
-        self.trace(&format!("JOR, mask=0b{:08b}, F=0b{:08b} -> {}", mask, flags, if ok { "TAKEN" } else { "NOT TAKEN" }));
         if ok { self.cpu.set_pc(address); }
+        self.trace(&format!("JOR, mask=0b{:08b}, F=0b{:08b} -> {}", mask, flags, if ok { "TAKEN" } else { "NOT TAKEN" }));
     }
 
     fn exec_str(&mut self, register_addr: u8, mem_addr: u16) {
@@ -294,12 +297,12 @@ impl Machine {
     }
 
     fn exec_not(&mut self, register_addr: u8) {
-        // TODO: trace
         // TODO: sys flag handling (sf)
         let new_val = !(self.cpu.read_reg(register_addr).expect("ERROR: [NOT] invalid register ID"));
         if !self.cpu.write_reg(register_addr, new_val) {
             eprintln!("ERROR: cannot perform NOT for register {}", match register_addr { 0 => "A", 1 => "B", 2 => "C", _ => "?" });
             self.cpu.halt();
         }
+        self.trace(&format!("NOT, REG=0x{:04x}, NEW={}", register_addr, new_val));
     }
 }
