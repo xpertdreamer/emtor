@@ -152,7 +152,7 @@ impl Machine {
         self.trace(&format!("AND, DEST=0x{:04x}, SRC=0x{:04x}, RES=0x{:04x}", a, b, res));
     }
 
-    fn exec_mov(&mut self, dest: u8, src: u8) {x
+    fn exec_mov(&mut self, dest: u8, src: u8) {
         let value = self.cpu.read_reg(src).expect("ERROR: [MOV] invalid register ID");
         if !self.cpu.write_reg(dest, value) {
             eprintln!("ERROR: cannot perform MOV from register 0x{:04X}", src);
