@@ -1,6 +1,8 @@
 > Not fully implemented. Documentation is sucks
 
-### TODO: stack
+### TODO: PUSH, POP instructions
+### TODO: CALL, RET instructions 
+### TODO?: stack
 ### TODO: system flags (sign handler, overflow handler and etc.)
 ### TODO: tests
 ### TODO: error handling

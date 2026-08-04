@@ -22,6 +22,8 @@ mod opcodes {
     pub const BOR: u8 = 0x12;
     pub const AND: u8 = 0x13;
     pub const JOF: u8 = 0x14;
+    pub const PSH: u8 = 0x15;
+    pub const POP: u8 = 0x16;
 }
 
 #[allow(clippy::upper_case_acronyms)]
@@ -46,7 +48,9 @@ pub enum Opcode {
     XOR {dest: u8, src: u8 },
     BOR {dest: u8, src: u8 },
     AND {dest: u8, src: u8 },
-    JOF(u16)
+    JOF(u16),
+    // PUSH(?),
+    // POP(?)
 }
 
 impl Opcode {
