@@ -110,33 +110,36 @@ impl Machine {
     }
 
     fn exec_xor(&mut self, dest: u8, src: u8) {
-        // TODO: trace
         let a = self.cpu.read_reg(dest).expect("ERROR: [XOR] invalid dest register ID");
         let b = self.cpu.read_reg(src).expect("ERROR: [XOR] invalid src register ID");
-        if !self.cpu.write_reg(dest, a ^ b) {
+        let res = a ^ b;
+        if !self.cpu.write_reg(dest, res) {
             eprintln!("ERROR: cannot perform XOR to register 0x{:04X}", dest);
             self.cpu.halt();
         }
+        self.trace(&format!("XOR, DEST=0x{:04x}, SRC=0x{:04x}, RES=0x{:04x}", a, b, res));
     }
 
     fn exec_bor(&mut self, dest: u8, src: u8) {
-        // TODO: trace
         let a = self.cpu.read_reg(dest).expect("ERROR: [BOR] invalid dest register ID");
         let b = self.cpu.read_reg(src).expect("ERROR: [BOR] invalid src register ID");
-        if !self.cpu.write_reg(dest, a | b) {
+        let res = a | b;
+        if !self.cpu.write_reg(dest, res) {
             eprintln!("ERROR: cannot perform BOR to register 0x{:04X}", dest);
             self.cpu.halt();
         }
+        self.trace(&format!("BOR, DEST=0x{:04x}, SRC=0x{:04x}, RES=0x{:04x}", a, b, res));
     }
 
     fn exec_and(&mut self, dest: u8, src: u8) {
-        // TODO: trace
         let a = self.cpu.read_reg(dest).expect("ERROR: [AND] invalid dest register ID");
         let b = self.cpu.read_reg(src).expect("ERROR: [AND] invalid src register ID");
-        if !self.cpu.write_reg(dest, a & b) {
+        let res = a & b;
+        if !self.cpu.write_reg(dest, res) {
             eprintln!("ERROR: cannot perform AND to register 0x{:04X}", dest);
             self.cpu.halt();
         }
+        self.trace(&format!("AND, DEST=0x{:04x}, SRC=0x{:04x}, RES=0x{:04x}", a, b, res));
     }
 
     fn exec_mov(&mut self, dest: u8, src: u8) {
