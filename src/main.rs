@@ -167,8 +167,8 @@ mod tests {
     fn test_lmr() {
         let mut prog: [u8; 201] = [0; 201];
         prog[..5].copy_from_slice(&[
-            0x0E, 0xC0, 0x00, 0xC8,
-            0x00
+            0x0E, 0xC0, 0x00, 0xC8,     // LMR
+            0x00                        // HLT
         ]);
         prog[0xC8] = 0x63;
         let cpu = run_test(&prog);
@@ -178,30 +178,64 @@ mod tests {
         assert_eq!(dump.reg_a, 0x63);
     }
 
-    // #[test]
-    // fn test_not() {
+    #[test]
+    fn test_not() {
+        let cpu = run_test(&[
+            0x0F, 0xC0, 0x28,   // MOC
+            0x10, 0xC0,         // NOT
+            0x00                // HLT
+        ]);
+        let dump = cpu.dump();
+        assert_eq!(dump.pc, 6);
+        assert_eq!(dump.reg_a, 0xD7);
+    }
 
-    // }
+    #[test]
+    fn test_xor() {
+        let cpu = run_test(&[
+            0x0F, 0xC0, 0x84,   // MOC A
+            0x0F, 0xC1, 0x96,   // MOC B
+            0x11, 0xC0, 0xC1,   // XOR A B
+            0x00                // HLT
+        ]);
+        let dump = cpu.dump();
+        assert_eq!(dump.pc, 10);
+        assert_eq!(dump.reg_a, 0x12);
+        assert_eq!(dump.reg_b, 0x96);
+    }
 
-    // #[test]
-    // fn test_xor() {
+    #[test]
+    fn test_bor() {
+        let cpu = run_test(&[
+            0x0F, 0xC0, 0x67,   // MOC A
+            0x0F, 0xC1, 0x76,   // MOC B
+            0x12, 0xC1, 0xC0,   // BOR B A
+            0x00                // HLT
+        ]);
+        let dump = cpu.dump();
+        assert_eq!(dump.pc, 10);
+        assert_eq!(dump.reg_a, 0x67);
+        assert_eq!(dump.reg_b, 0x77);
+    }
 
-    // }
-
-    // #[test]
-    // fn test_bor() {
-
-    // }
-
-    // #[test]
-    // fn test_and() {
-
-    // }
+    #[test]
+    fn test_and() {
+        let cpu = run_test(&[
+            0x0F, 0xC0, 0x23,   // MOC A
+            0x0F, 0xC1, 0x32,   // MOC B
+            0x13, 0xC1, 0xC0,   // BOR B A
+            0x00                // HLT
+        ]);
+        let dump = cpu.dump();
+        assert_eq!(dump.pc, 10);
+        assert_eq!(dump.reg_a, 0x23);
+        assert_eq!(dump.reg_b, 0x22);
+    }
 
     // #[test]
     // fn test_jof() {
 
     // }
-    // TODO: simple tests for other instructions
+
     // TODO: complicated tests
 }
