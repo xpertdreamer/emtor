@@ -105,8 +105,8 @@ impl Machine {
 
     fn exec_jof(&mut self, addr: u16) {
         let ok = self.cpu.get_sys_flags() == 0x02;
-        self.trace(&format!("JOF, ADDRESS=0x{:04X} F=0b{:08b} -> {}", addr, self.cpu.get_sys_flags() , if ok { "TAKEN" } else { "NOT TAKEN" }));
         if ok { self.cpu.set_pc(addr); }
+        self.trace(&format!("JOF, NEXT ADDRESS=0x{:04X} F=0b{:08b} -> {}", addr, self.cpu.get_sys_flags() , if ok { "TAKEN" } else { "NOT TAKEN" }));
     }
 
     fn exec_xor(&mut self, dest: u8, src: u8) {
@@ -142,25 +142,25 @@ impl Machine {
         self.trace(&format!("AND, DEST=0x{:04x}, SRC=0x{:04x}, RES=0x{:04x}", a, b, res));
     }
 
-    fn exec_mov(&mut self, dest: u8, src: u8) {
-        // TODO: trace
+    fn exec_mov(&mut self, dest: u8, src: u8) {x
         let value = self.cpu.read_reg(src).expect("ERROR: [MOV] invalid register ID");
         if !self.cpu.write_reg(dest, value) {
             eprintln!("ERROR: cannot perform MOV from register 0x{:04X}", src);
             self.cpu.halt();
         }
+        self.trace(&format!("MOV, DEST=0x{:04x}, SRC=0x{:04x}, VALUE=0x{:04x}", dest, src, value));
     }
 
     fn exec_moc(&mut self, dest: u8, val: u8) {
-        // TODO: trace
         if !self.cpu.write_reg(dest, val) {
             eprintln!("ERROR: cannot perform MOV with constant 0x{:04X}", val);
             self.cpu.halt();
         }
+        self.trace(&format!("MOC, DEST=0x{:04x}, VALUE=0x{:04x}", dest, val));
     }
     
     fn exec_halt(&mut self) {
-        self.trace(" HLT");
+        self.trace("HLT");
         self.cpu.halt();
     }
 
