@@ -115,7 +115,7 @@ impl Machine {
     }
 
     fn exec_jof(&mut self, addr: u16) {
-        let ok = self.cpu.get_sys_flags() == 0x02;
+        let ok = self.cpu.get_sys_flags() & 0x02 == 0x02;
         if ok { self.cpu.set_pc(addr); }
         self.trace(&format!("JOF, NEXT ADDRESS=0x{:04X} F=0b{:08b} -> {}", addr, self.cpu.get_sys_flags() , if ok { "TAKEN" } else { "NOT TAKEN" }));
     }
