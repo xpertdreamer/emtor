@@ -21,6 +21,7 @@ mod opcodes {
     pub const XOR: u8 = 0x11;
     pub const BOR: u8 = 0x12;
     pub const AND: u8 = 0x13;
+    pub const JOF: u8 = 0x14;
 }
 
 #[allow(clippy::upper_case_acronyms)]
@@ -44,7 +45,8 @@ pub enum Opcode {
     NOT(u8),
     XOR {dest: u8, src: u8 },
     BOR {dest: u8, src: u8 },
-    AND {dest: u8, src: u8 }
+    AND {dest: u8, src: u8 },
+    JOF(u16)
 }
 
 impl Opcode {
@@ -128,6 +130,10 @@ impl Opcode {
                 let dest = cpu.fetch_next_byte().expect("ERROR: Decode AND, Memory out of bounds (dest)");
                 let src = cpu.fetch_next_byte().expect("ERROR: Decode AND, Memory out of bounds (src)");
                 Some(Opcode::AND { dest, src })
+            },
+            opcodes::JOF => {
+                let addr = Self::high_end(cpu);
+                Some(Opcode::JOF(addr))
             },
             _ => None
         }

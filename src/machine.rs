@@ -92,7 +92,8 @@ impl Machine {
             Opcode::NOT(reg) => self.exec_not(reg),
             Opcode::XOR { dest, src } => self.exec_xor(dest, src),
             Opcode::BOR { dest, src } => self.exec_bor(dest, src),
-            Opcode::AND { dest, src } => self.exec_and(dest, src)
+            Opcode::AND { dest, src } => self.exec_and(dest, src),
+            Opcode::JOF(address) => self.exec_jof(address),
         }
 
     }
@@ -101,6 +102,12 @@ impl Machine {
         if self.trace {
             println!("TRACE: {}", ms);
         }
+    }
+
+    fn exec_jof(&mut self, addr: u16) {
+        // TODO: trace
+        let ok = self.cpu.get_sys_flags() == 0x02;
+        if ok { self.cpu.set_pc(addr); }
     }
 
     fn exec_xor(&mut self, dest: u8, src: u8) {
