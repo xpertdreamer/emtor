@@ -232,10 +232,23 @@ mod tests {
         assert_eq!(dump.reg_b, 0x22);
     }
 
-    // #[test]
-    // fn test_jof() {
-
-    // }
+    #[test]
+    fn test_jof() {
+        let cpu = run_test(&[
+            0x0F, 0xC0, 0xC8,   // MOC A
+            0x02, 0xC1, 0xC0,   // MOV A->B
+            0x01,               // ADD
+            0x14, 0x00, 0x0B,   // JOF
+            0x00,               // HLT
+            0x08, 0xC0,         // INC A
+            0x00                // HLT
+        ]);
+        let dump = cpu.dump();
+        assert_eq!(dump.pc, 14);
+        assert_eq!(dump.reg_a, 0xC9);
+        assert_eq!(dump.reg_b, 0xC8);
+        assert_eq!(dump.reg_c, 0x90);
+    }
 
     // TODO: complicated tests
 }
