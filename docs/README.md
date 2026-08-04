@@ -32,6 +32,7 @@
 | 0x11   | [XOR dest src](#xor-command)     |
 | 0x12   | [BOR dest src](#bor-command)     |
 | 0x13   | [AND dest src](#and-command)     |
+| 0x14   | [JOF address](#jof-command)      |
 
 
 ### HLT command 
@@ -80,6 +81,10 @@ Performs a conditional jump based on the flag mask. The instruction checks if al
 ### JOR command 
 Performs a conditional jump based on the flag mask. The instruction checks if a bit in the mask are set in the flag register. Format: JOR mask address.
 If mask given as an argument contains more than one 'true' bit - throws error.
+[back](#opcodes)
+
+### JOF command 
+Performs a conditional jump based on the overflow flag (OF) status. The instruction checks if OF (0x02) bit is set in the flag register. Format: JOF address
 [back](#opcodes)
 
 ### INC command 
