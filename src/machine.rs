@@ -3,6 +3,7 @@ use crate::{TRACE, cpu::*, opcode::Opcode, reg::REG_A, reg::REG_B, reg::REG_C};
 #[derive(Debug, PartialEq)]
 pub struct CpuState {
     pub pc: u16,
+    pub sp: u16,
     pub flags: u8,
     pub sys_flags: u8,
     pub state: bool,
@@ -46,6 +47,7 @@ impl Machine {
     pub fn dump(&self) -> CpuState {
         CpuState {
             pc: self.cpu.get_pc(),
+            sp: self.cpu.get_sp(),
             flags: self.cpu.get_flags(),
             sys_flags: self.cpu.get_sys_flags(),
             state: self.cpu.is_running(),
