@@ -7,7 +7,6 @@ pub const STACK_START: u16 = MEM_SIZE as u16 - STACK_SIZE as u16;
 pub struct Cpu {
     regs: Regs,
     pc: u16,
-    #[allow(unused)]
     sp: u16,
     mem: [u8; MEM_SIZE],
     state: bool
@@ -23,7 +22,7 @@ impl Cpu {
             state: true
         }
     }
-    #[allow(unused)]
+
     pub fn push(&mut self, value: u8) -> bool {
         if self.sp > STACK_START + STACK_SIZE as u16 {
             eprintln!("ERROR: Stack overflow - sp={}, max={}", self.sp, STACK_START + STACK_SIZE as u16 - 1);
@@ -34,7 +33,6 @@ impl Cpu {
         true
     }
 
-    #[allow(unused)]
     pub fn pop(&mut self) -> Option<u8> {
         if self.sp == STACK_START {
             eprintln!("ERROR: Stack overflow - sp={}, min={}", self.sp, STACK_START);
@@ -156,6 +154,10 @@ impl Cpu {
 
     pub fn get_pc(&self) -> u16 {
         self.pc
+    }
+
+    pub fn get_sp(&self) -> u16 {
+        self.sp
     }
 
     pub fn is_running(&self) -> bool {

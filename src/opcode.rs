@@ -49,8 +49,8 @@ pub enum Opcode {
     BOR {dest: u8, src: u8 },
     AND {dest: u8, src: u8 },
     JOF(u16),
-    // PUSH(?),
-    // POP(?)
+    PSH(u8),
+    POP(u8)
 }
 
 impl Opcode {
@@ -138,6 +138,14 @@ impl Opcode {
             opcodes::JOF => {
                 let addr = Self::high_end(cpu);
                 Some(Opcode::JOF(addr))
+            },
+            opcodes::PSH => {
+                let src = cpu.fetch_next_byte().expect("ERROR: Decode PSH, Memory out of bounds (src)");
+                Some(Opcode::PSH(src))
+            },
+            opcodes::POP => {
+                let dest = cpu.fetch_next_byte().expect("ERROR: Decode POP, Memory out of bounds (dest)");
+                Some(Opcode::POP(dest))
             },
             _ => None
         }

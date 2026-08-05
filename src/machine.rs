@@ -97,6 +97,8 @@ impl Machine {
             Opcode::BOR { dest, src } => self.exec_bor(dest, src),
             Opcode::AND { dest, src } => self.exec_and(dest, src),
             Opcode::JOF(address) => self.exec_jof(address),
+            Opcode::PSH(src) => self.exec_psh(src),
+            Opcode::POP(dest) => self.exec_pop(dest)
         }
     }
 
@@ -112,6 +114,24 @@ impl Machine {
         result |= system_flags::OF * of as u8;
         result |= (res & 0x80 == 0x80) as u8;
         result
+    }
+
+    fn exec_psh(&mut self, src: u8) {
+        let value = self.cpu.read_reg(src).expect("ERROR: [PSH] invalid src register ID");
+        if !self.cpu.push(value) {
+            eprintln!("ERROR: cannot perform PSH from register 0x{:04x} to stack", src);
+            self.cpu.halt();
+        }
+        self.trace(&format!("PSH, SRC={}, STACK=0x{:04x}", match src { REG_A => "A", REG_B => "B", REG_C => "C", _ => "?" }, self.cpu.get_sp()));
+    }
+
+    fn exec_pop(&mut self, dest: u8) {
+        let value = self.cpu.pop().expect("ERROR: [POP] Stack overflow");
+        if !self.cpu.write_reg(dest, value) {
+            eprintln!("ERROR: cannot perform POP to register 0x{:04x} from stack", dest);
+            self.cpu.halt();
+        }
+        self.trace(&format!("POP, DEST={}, STACK=0x{:04x}", match dest { REG_A => "A", REG_B => "B", REG_C => "C", _ => "?" }, self.cpu.get_sp()));
     }
 
     fn exec_jof(&mut self, addr: u16) {
