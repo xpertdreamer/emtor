@@ -24,7 +24,7 @@ impl Cpu {
     }
 
     pub fn push(&mut self, value: u8) -> bool {
-        if self.sp > STACK_START + STACK_SIZE as u16 || self.sp == MEM_SIZE as u16 {
+        if self.sp == MEM_SIZE as u16 {
             eprintln!("ERROR: Stack overflow - sp={}, max={}", self.sp, STACK_START + STACK_SIZE as u16 - 1);
             return false;
         }
@@ -44,7 +44,7 @@ impl Cpu {
 
     #[allow(unused)]
     pub fn push_u16(&mut self, value: u16) -> bool {
-        if self.sp + 2 > STACK_START + STACK_SIZE as u16 || self.sp == (MEM_SIZE - 2) as u16 {
+        if self.sp == (MEM_SIZE - 2) as u16 {
             eprintln!("ERROR: Stack overflow - sp={}, max={}", self.sp, STACK_START + STACK_SIZE as u16 - 1);
             return false;
         }
