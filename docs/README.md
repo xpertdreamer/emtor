@@ -1,6 +1,7 @@
 > Not fully implemented. Documentation is sucks
 
 ### TODO: CALL, RET instructions 
+### TODO: LEA, DIV, MOD, Shift instructions
 ### TODO?: stack
 ### TODO: PUSH, POP instructions should interact with memory
 ### TODO: 3 sections memory layout
