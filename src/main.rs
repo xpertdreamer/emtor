@@ -264,5 +264,21 @@ mod tests {
         assert_eq!(dump.mem[0x00f0], 0x71);
     }
 
+    #[test]
+    fn test_pop() {
+        let cpu = run_test(&[
+            0x0F, 0xC0, 0x71,   // MOC A
+            0x15, 0xC0,         // PUSH A
+            0x16, 0xC1,         // POP B
+            0x00                // HLT
+        ]);
+        let dump = cpu.dump();
+        assert_eq!(dump.pc, 8);
+        assert_eq!(dump.reg_a, 0x71);
+        assert_eq!(dump.sp, 0xf0);
+        assert_eq!(dump.mem[0x00f0], 0x71);
+        assert_eq!(dump.reg_b, 0x71);
+    }
+
     // TODO: complicated tests
 }
