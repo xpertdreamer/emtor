@@ -280,5 +280,67 @@ mod tests {
         assert_eq!(dump.reg_b, 0x71);
     }
 
+    #[test]
+    fn test_push_stack_overflow() {
+        let cpu = run_test(&[
+            0x0F, 0xC0, 0x71,   // MOC A
+            0x15, 0xC0,         // PUSH A
+            0x15, 0xC0,         // PUSH A
+            0x15, 0xC0,         // PUSH A
+            0x15, 0xC0,         // PUSH A
+            0x15, 0xC0,         // PUSH A
+            0x15, 0xC0,         // PUSH A
+            0x15, 0xC0,         // PUSH A
+            0x15, 0xC0,         // PUSH A
+            0x15, 0xC0,         // PUSH A
+            0x15, 0xC0,         // PUSH A
+            0x15, 0xC0,         // PUSH A
+            0x15, 0xC0,         // PUSH A
+            0x15, 0xC0,         // PUSH A
+            0x15, 0xC0,         // PUSH A
+            0x15, 0xC0,         // PUSH A
+            0x15, 0xC0,         // PUSH A
+            0x15, 0xC0,         // PUSH A
+            0x15, 0xC0,         // PUSH A
+            0x15, 0xC0,         // PUSH A
+            0x15, 0xC0,         // PUSH A
+            0x15, 0xC0,         // PUSH A
+            0x15, 0xC0,         // PUSH A
+            0x15, 0xC0,         // PUSH A
+            0x15, 0xC0,         // PUSH A
+            0x15, 0xC0,         // PUSH A
+            0x15, 0xC0,         // PUSH A
+            0x15, 0xC0,         // PUSH A
+            0x15, 0xC0,         // PUSH A
+            0x15, 0xC0,         // PUSH A
+            0x15, 0xC0,         // PUSH A
+            0x15, 0xC0,         // PUSH A
+            0x15, 0xC0,         // PUSH A
+        ]);
+        let dump = cpu.dump();
+        assert_eq!(dump.reg_a, 0x71);
+        assert_eq!(dump.sp, 0x100);
+        assert_eq!(dump.mem[0x00f0], 0x71);
+    }
+
+    #[test]
+    #[should_panic(expected="ERROR: [POP] Stack overflow")]
+    fn test_pop_stack_overflow() {
+        let _ = run_test(&[
+            0x0F, 0xC1, 0x01,   // MOC B
+            0x16, 0xC1,         // POP B
+            0x00,               // HLT
+        ]);
+    }
+
+    #[test]
+    #[should_panic(expected="ERROR: [PSH] invalid src register ID")]
+    fn test_invalid_register_address() {
+        let _ = run_test(&[
+            0x15, 0xC8, 0x01,   // MOC B
+            0x00,               // HLT
+        ]);
+    }
+
     // TODO: complicated tests
 }
