@@ -21,7 +21,7 @@ mod tests {
     }
 
     #[test]
-    fn test_add() {
+    fn add() {
         let emtor = run_test(&[
             0x0F, 0xC0, 12,    // MOC
             0x0F, 0xC1, 2,     // MOC
@@ -35,7 +35,7 @@ mod tests {
     }
 
     #[test]
-    fn test_mov() {
+    fn mov() {
         let emtor = run_test(&[
             0x0F, 0xC0, 12,     // MOC
             0x02, 0xC1, 0xC0,   // MOV
@@ -46,7 +46,7 @@ mod tests {
     }
 
     #[test]
-    fn test_sub() {
+    fn sub() {
         let emtor = run_test(&[
             0x0F, 0xC0, 2,     // MOC
             0x0F, 0xC1, 12,    // MOC
@@ -60,7 +60,7 @@ mod tests {
     }
 
     #[test]
-    fn test_mul() {
+    fn mul() {
         let emtor = run_test(&[
             0x0F, 0xC0, 0x32,     // MOC
             0x0F, 0xC1, 0x02,     // MOC
@@ -73,7 +73,7 @@ mod tests {
     }
 
     #[test]
-    fn test_jmp() {
+    fn jmp() {
         let emtor = run_test(&[
             0x0F, 0xC0, 0x01,     // MOC
             0x05, 0x00, 0x09,     // JMP -> HLT
@@ -86,7 +86,7 @@ mod tests {
     }
 
     #[test]
-    fn test_cmp() {
+    fn cmp() {
         let emtor = run_test(&[
             0x0F, 0xC0, 0x01,     // MOC
             0x0F, 0xC1, 0x02,     // MOC
@@ -100,7 +100,7 @@ mod tests {
     }
 
     #[test]
-    fn test_jct() {
+    fn jct() {
         let emtor = run_test(&[
             0x0F, 0xC0, 0x01,     // MOC
             0x0F, 0xC1, 0x02,     // MOC
@@ -118,7 +118,7 @@ mod tests {
     }
 
     #[test]
-    fn test_dec() {
+    fn dec() {
         let emtor = run_test(&[
             0x0F, 0xC0, 0x07,   // MOC
             0x09, 0xC0,         // DEC
@@ -129,7 +129,7 @@ mod tests {
     }
 
     #[test]
-    fn test_ofs() {
+    fn ofs() {
         let cpu = run_test(&[
             0x0A, 0x00, 0x01,   // 0 OFS -> 0
             0x00,               // 1 HLT
@@ -141,7 +141,7 @@ mod tests {
     }
 
     #[test]
-    fn test_nop() {
+    fn nop() {
         let cpu = run_test(&[
             0x0C, 0x0C, 0x0C,   // NOP 3T
             0x0C, 0x0C          // NOP 2T
@@ -151,7 +151,7 @@ mod tests {
     }
 
     #[test]
-    fn test_str() {
+    fn str() {
         let cpu = run_test(&[
             0x0F, 0xC0, 0x01,           // MOC
             0x0D, 0xC0, 0x00, 0x96,     // STR
@@ -164,7 +164,7 @@ mod tests {
     }
 
     #[test]
-    fn test_lmr() {
+    fn lmr() {
         let mut prog: [u8; 201] = [0; 201];
         prog[..5].copy_from_slice(&[
             0x0E, 0xC0, 0x00, 0xC8,     // LMR
@@ -179,7 +179,7 @@ mod tests {
     }
 
     #[test]
-    fn test_not() {
+    fn not() {
         let cpu = run_test(&[
             0x0F, 0xC0, 0x28,   // MOC
             0x10, 0xC0,         // NOT
@@ -191,7 +191,7 @@ mod tests {
     }
 
     #[test]
-    fn test_xor() {
+    fn xor() {
         let cpu = run_test(&[
             0x0F, 0xC0, 0x84,   // MOC A
             0x0F, 0xC1, 0x96,   // MOC B
@@ -205,7 +205,7 @@ mod tests {
     }
 
     #[test]
-    fn test_bor() {
+    fn bor() {
         let cpu = run_test(&[
             0x0F, 0xC0, 0x67,   // MOC A
             0x0F, 0xC1, 0x76,   // MOC B
@@ -219,7 +219,7 @@ mod tests {
     }
 
     #[test]
-    fn test_and() {
+    fn and() {
         let cpu = run_test(&[
             0x0F, 0xC0, 0x23,   // MOC A
             0x0F, 0xC1, 0x32,   // MOC B
@@ -233,7 +233,7 @@ mod tests {
     }
 
     #[test]
-    fn test_jof() {
+    fn jof() {
         let cpu = run_test(&[
             0x0F, 0xC0, 0xC8,   // MOC A
             0x02, 0xC1, 0xC0,   // MOV A->B
@@ -251,7 +251,7 @@ mod tests {
     }
 
     #[test]
-    fn test_psh() {
+    fn psh() {
         let cpu = run_test(&[
             0x0F, 0xC0, 0x71,   // MOC A
             0x15, 0xC0,         // PUSH A
@@ -265,7 +265,7 @@ mod tests {
     }
 
     #[test]
-    fn test_pop() {
+    fn pop() {
         let cpu = run_test(&[
             0x0F, 0xC0, 0x71,   // MOC A
             0x15, 0xC0,         // PUSH A
@@ -281,7 +281,7 @@ mod tests {
     }
 
     #[test]
-    fn test_push_stack_overflow() {
+    fn push_stack_overflow() {
         let cpu = run_test(&[
             0x0F, 0xC0, 0x71,   // MOC A
             0x15, 0xC0,         // PUSH A
@@ -325,7 +325,7 @@ mod tests {
 
     #[test]
     #[should_panic(expected="ERROR: [POP] Stack overflow")]
-    fn test_pop_stack_overflow() {
+    fn pop_stack_overflow() {
         let _ = run_test(&[
             0x0F, 0xC1, 0x01,   // MOC B
             0x16, 0xC1,         // POP B
@@ -335,7 +335,7 @@ mod tests {
 
     #[test]
     #[should_panic(expected="ERROR: [PSH] invalid src register ID")]
-    fn test_invalid_register_address() {
+    fn invalid_register_address() {
         let _ = run_test(&[
             0x15, 0xC8, 0x01,   // MOC B
             0x00,               // HLT
