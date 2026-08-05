@@ -1,8 +1,9 @@
 > Not fully implemented. Documentation is sucks
 
-### TODO: PUSH, POP instructions
 ### TODO: CALL, RET instructions 
 ### TODO?: stack
+### TODO: PUSH, POP instructions should interact with memory
+### TODO: 3 sections memory layout
 ### TODO: system flags (sign handler, overflow handler and etc.)
 ### TODO: tests
 ### TODO: error handling
@@ -35,6 +36,8 @@
 | 0x12   | [BOR dest src](#bor-command)     |
 | 0x13   | [AND dest src](#and-command)     |
 | 0x14   | [JOF address](#jof-command)      |
+| 0x15   | [PSH src](#psh-command)          |
+| 0x16   | [POP dest](#pop-command)         |
 
 
 ### HLT command 
@@ -129,6 +132,15 @@ Performs Bitwise OR operation on destination by source. The result is stored in 
 Performs AND operation on destination by source. The result is stored in 'destination'.
 [back](#opcodes)
 
+### PSH command
+The full name is PUSH. Temporarily accepts only register address to copy (push) value from it to stack. You should know how stack is working.
+<br> May be used in situations when value from specific register need to be stored in safe place. <br>
+[back](#opcodes)
+
+### POP command
+Another one from stack section. Extracts the value on top of the stack into given register. <br>
+[back](#opcodes)
+
 ## CPU Flags Layout
 
 ### Compare flags
@@ -155,7 +167,7 @@ The CPU uses a single byte flag register to store the results of operations. Eac
 | 0   | `CF` | Carry Flag    |
 
 ## Memory layout
-Currently, the RAM size is 256 bytes, 16 of which are occupied by the stack. A schematic representation is shown below:
+Currently, the RAM size is 256 bytes, 16 of which are occupied by the stack. A schematic representation is shown below (will be replaced with 3 section memory):
 
 `` [   Free: 240 bytes   |   Stack: 16 bytes   ] ``
 
