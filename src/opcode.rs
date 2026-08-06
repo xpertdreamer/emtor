@@ -67,6 +67,13 @@ impl Opcode {
         address
     }
 
+    fn high_end_st(cpu: &mut Cpu) -> u16 {
+        let h: u8 = cpu.pop().expect("ERROR: Stack overflow while reading u16 (h)");
+        let l: u8 = cpu.pop().expect("ERROR: Stack overflow while reading u16 (l)");
+        let address: u16 = ((h as u16) << 8) | l as u16;
+        address
+    }
+
     pub fn decode(cpu: &mut Cpu) -> Option<Self> {
         let byte = cpu.fetch_next_byte().expect("ERROR: Memory out of bound, while reading byte");
         match byte {
