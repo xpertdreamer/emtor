@@ -121,26 +121,32 @@ impl Machine {
         result
     }
 
-    // NOTE: UNSAFE AS HELL!!!!
-    fn exec_gmb(&mut self) {
-        if self.cpu.get_sp() < (STACK_START + 2) {
-            eprintln!("ERROR: Stack underflow, cannot perform GMB");
-            self.cpu.halt();
-            return;
-        }
-        let high_byte = self.cpu.pop().unwrap();
-        let low_byte = self.cpu.pop().unwrap();
-        let address = ((high_byte << 8) as u16) | low_byte as u16;
-        self.cpu.set_pc(address);
-    }
+    // fn exec_gmb(&mut self) {
+    //     // TODO: trace
+    //     if self.cpu.get_sp() < (STACK_START + 2) {
+    //         eprintln!("ERROR: Stack underflow, cannot perform GMB");
+    //         self.cpu.halt();
+    //         return;
+    //     }
+    //     let high_byte = self.cpu.pop().unwrap();
+    //     let low_byte = self.cpu.pop().unwrap();
+    //     let address = ((high_byte << 8) as u16) | low_byte as u16;
+    //     self.cpu.set_pc(address);
+    // }
 
     // * * *
     //     ^
     // ^
 
-    // NOTE: UNSAFE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    fn exec_gmb(&mut self) {
+        let address = self.cpu.read_ar();
+        self.cpu.write_ar(0x00);
+        self.cpu.set_pc(address);
+    }
+
     fn exec_iwg(&mut self, address: u16) {
         // TODO: trace
+        // NOTE: Store return address into AR. If IR != 0 -> push AR to stack
         let ok: bool = address > 0 && address < MEM_SIZE as u16;
         let high_byte: u8 = (self.cpu.get_pc() >> 8) as u8;
         let low_byte: u8 = (self.cpu.get_pc() & 0xFF) as u8;

@@ -132,6 +132,14 @@ impl Cpu {
         true
     }
 
+    pub fn write_ar(&mut self, value: u16) -> bool {
+        true
+    }
+
+    pub fn read_ar(&mut self) -> u16 {
+        self.regs.ar
+    }
+
     pub fn set_flags(&mut self, flags: u8) {
         self.regs.f = flags;
     }
