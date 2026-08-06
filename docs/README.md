@@ -41,6 +41,7 @@
 | 0x15   | [PSH src](#psh-command)          |
 | 0x16   | [POP dest](#pop-command)         |
 | 0x17   | [MOD](#mod-command)              |
+| 0x18   | [IWG address](#iwg-command)      |
 
 
 ### HLT command 
@@ -142,10 +143,22 @@ Performs AND operation on destination by source. The result is stored in 'destin
 ### PSH command
 The full name is PUSH. Temporarily accepts only register address to copy (push) value from it to stack. You should know how stack is working.
 <br> May be used in situations when value from specific register need to be stored in safe place. <br>
+NOTE: Here stack growth ascending (sp += 1).
 [back](#opcodes)
 
 ### POP command
 Another one from stack section. Extracts the value on top of the stack into given register. <br>
+[back](#opcodes)
+
+### IWG command
+The full name is I Wanna Go. Analogue of CALL from x86 asm. Accepts address as two bytes value and jump on it. Pre-saving the current address before the jump onto the stack for later return. An address is stored onto the stack as follows:
+
+``
+STACK TOP -> [ HIGH BYTE | LOW BYTE  | ...  ] 
+``
+
+NOTE: Currently i don`t really like design of this instruction and there is a high probability that it will be changed in the future. <br>
+NOTE: Here stack growth ascending (sp += 1).
 [back](#opcodes)
 
 ## CPU Flags Layout
