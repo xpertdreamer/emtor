@@ -24,6 +24,7 @@ mod opcodes {
     pub const JOF: u8 = 0x14;
     pub const PSH: u8 = 0x15;
     pub const POP: u8 = 0x16;
+    pub const MOD: u8 = 0x17;
 }
 
 #[allow(clippy::upper_case_acronyms)]
@@ -50,7 +51,8 @@ pub enum Opcode {
     AND {dest: u8, src: u8 },
     JOF(u16),
     PSH(u8),
-    POP(u8)
+    POP(u8),
+    MOD
 }
 
 impl Opcode {
@@ -70,6 +72,7 @@ impl Opcode {
             opcodes::MUL => Some(Opcode::MUL),
             opcodes::CMP => Some(Opcode::CMP),
             opcodes::NOP => Some(Opcode::NOP),
+            opcodes::MOD => Some(Opcode::MOD),
             opcodes::JMP => {
                 let address = Self::high_end(cpu);
                 Some(Opcode::JMP(address))

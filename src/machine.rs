@@ -100,7 +100,8 @@ impl Machine {
             Opcode::AND { dest, src } => self.exec_and(dest, src),
             Opcode::JOF(address) => self.exec_jof(address),
             Opcode::PSH(src) => self.exec_psh(src),
-            Opcode::POP(dest) => self.exec_pop(dest)
+            Opcode::POP(dest) => self.exec_pop(dest),
+            Opcode::MOD => self.exec_mod()
         }
     }
 
@@ -116,6 +117,17 @@ impl Machine {
         result |= system_flags::OF * of as u8;
         result |= (res & 0x80 == 0x80) as u8;
         result
+    }
+
+    fn exec_mod(&mut self) {
+        let a = self.cpu.read_reg(REG_A).expect("ERROR: [MOD] invalid register 'a' ID");
+        let b = self.cpu.read_reg(REG_B).expect("ERROR: [MOD] invalid register 'b' ID");
+        let res: u8 = a % b;
+        if !self.cpu.write_reg(REG_C, res) {
+            eprintln!("ERROR: cannot perform MOD");
+            self.cpu.halt();
+        }
+        self.trace(&format!("MOD, A = {}, B = {}, RES = {}", a, b, res));
     }
 
     fn exec_psh(&mut self, src: u8) {
