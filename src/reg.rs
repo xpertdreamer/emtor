@@ -20,5 +20,6 @@ impl Regs {
     pub fn f_zeroed(&mut self) {
         self.f = 0;
         self.sf = 0;
+        self.r = 0;
     }
 }
