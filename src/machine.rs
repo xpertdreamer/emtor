@@ -120,6 +120,7 @@ impl Machine {
         result
     }
 
+    // NOTE: UNSAFE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     fn exec_iwg(&mut self, address: u16) {
         // TODO: trace
         let ok: bool = address > 0 && address < MEM_SIZE as u16;

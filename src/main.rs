@@ -337,9 +337,44 @@ mod tests {
     #[should_panic(expected="ERROR: [PSH] invalid src register ID")]
     fn invalid_register_address() {
         let _ = run_test(&[
-            0x15, 0xC8, 0x01,   // MOC B
+            0x15, 0xC8, 0x01,   // PSH ?
             0x00,               // HLT
         ]);
+    }
+
+    #[test]
+    fn modulo() {
+        let cpu = run_test(&[
+            0x0F, 0xC0, 0x51,   // MOC A
+            0x0F, 0xC1, 0x75,   // MOC B
+            0x17,               // MOD
+            0x00                // HLT
+        ]);
+        let dump = cpu.dump();
+        assert_eq!(dump.pc, 8);
+        assert_eq!(dump.reg_a, 0x51);
+        assert_eq!(dump.reg_b, 0x75);
+        assert_eq!(dump.reg_c, 0x51);
+    }
+
+    #[test]
+    fn iwg() {
+        let cpu = run_test(&[
+            0x0F, 0xC0, 0x01,   // MOC A
+            0x0F, 0xC1, 0x05,   // MOC B
+            0x18, 0x00, 0x0A,   // IWG
+            0x00,               // HLT
+            0x08, 0xC0,         // INC A
+            0x08, 0xC1,         // INC B
+            0x00                // HLT
+        ]);
+        let dump = cpu.dump();
+        assert_eq!(dump.pc, 15);
+        assert_eq!(dump.reg_a, 0x02);
+        assert_eq!(dump.reg_b, 0x06);
+        assert_eq!(dump.sp, 0xF2);
+        assert_eq!(dump.mem[(dump.sp - 0x01) as usize], 0x00);
+        assert_eq!(dump.mem[(dump.sp - 0x02) as usize], 0x09);
     }
 
     // TODO: complicated tests
