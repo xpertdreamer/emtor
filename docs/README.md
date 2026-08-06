@@ -1,7 +1,7 @@
 > Not fully implemented. Documentation is sucks
 
 ### TODO: CALL, RET instructions 
-### TODO: LEA, DIV, MOD, Shift instructions
+### TODO: LEA, DIV, Shift instructions
 ### TODO?: stack
 ### TODO: PUSH, POP instructions should interact with memory
 ### TODO: 3 sections memory layout
@@ -40,6 +40,7 @@
 | 0x14   | [JOF address](#jof-command)      |
 | 0x15   | [PSH src](#psh-command)          |
 | 0x16   | [POP dest](#pop-command)         |
+| 0x17   | [MOD](#mod-command)              |
 
 
 ### HLT command 
@@ -51,7 +52,11 @@ Doesn`t have any arguments. Simply performs the addition of two registers (a + b
 [back](#opcodes)
 
 ### SUB command
-Similar to ADD. Produces c = b - a operation. Cause the calculation of OF, SF, CF.
+Similar to ADD. Produces c = b - a operation. (Cause the calculation of OF, SF, CF)?
+[back](#opcodes)
+
+### MOD command
+Similar to ADD. Produces c = a % b operation.
 [back](#opcodes)
 
 ### MOV command 
