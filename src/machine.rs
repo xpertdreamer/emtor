@@ -103,6 +103,7 @@ impl Machine {
             Opcode::POP(dest) => self.exec_pop(dest),
             Opcode::MOD => self.exec_mod(),
             Opcode::IWG(address) => self.exec_iwg(address),
+            Opcode::GMB => self.exec_gmb(),
         }
     }
 
@@ -119,6 +120,23 @@ impl Machine {
         result |= (res & 0x80 == 0x80) as u8;
         result
     }
+
+    // NOTE: UNSAFE AS HELL!!!!
+    fn exec_gmb(&mut self) {
+        if self.cpu.get_sp() < (STACK_START + 2) {
+            eprintln!("ERROR: Stack underflow, cannot perform GMB");
+            self.cpu.halt();
+            return;
+        }
+        let high_byte = self.cpu.pop().unwrap();
+        let low_byte = self.cpu.pop().unwrap();
+        let address = ((high_byte << 8) as u16) | low_byte as u16;
+        self.cpu.set_pc(address);
+    }
+
+    // * * *
+    //     ^
+    // ^
 
     // NOTE: UNSAFE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     fn exec_iwg(&mut self, address: u16) {
