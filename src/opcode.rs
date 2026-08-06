@@ -25,6 +25,8 @@ mod opcodes {
     pub const PSH: u8 = 0x15;
     pub const POP: u8 = 0x16;
     pub const MOD: u8 = 0x17;
+    pub const IWG: u8 = 0x18;
+//    pub const GMB: u8 = 0x19;
 }
 
 #[allow(clippy::upper_case_acronyms)]
@@ -52,7 +54,9 @@ pub enum Opcode {
     JOF(u16),
     PSH(u8),
     POP(u8),
-    MOD
+    MOD,
+    IWG(u16),
+//    GMB(u16)
 }
 
 impl Opcode {
@@ -150,6 +154,13 @@ impl Opcode {
                 let dest = cpu.fetch_next_byte().expect("ERROR: Decode POP, Memory out of bounds (dest)");
                 Some(Opcode::POP(dest))
             },
+            opcodes::IWG => {
+                let addr = Self::high_end(cpu);
+                Some(Opcode::IWG(addr))
+            },
+            // opcodes::GMB => {
+
+            // },
             _ => None
         }
     }

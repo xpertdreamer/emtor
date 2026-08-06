@@ -101,7 +101,8 @@ impl Machine {
             Opcode::JOF(address) => self.exec_jof(address),
             Opcode::PSH(src) => self.exec_psh(src),
             Opcode::POP(dest) => self.exec_pop(dest),
-            Opcode::MOD => self.exec_mod()
+            Opcode::MOD => self.exec_mod(),
+            Opcode::IWG(address) => self.exec_iwg(address),
         }
     }
 
@@ -117,6 +118,16 @@ impl Machine {
         result |= system_flags::OF * of as u8;
         result |= (res & 0x80 == 0x80) as u8;
         result
+    }
+
+    fn exec_iwg(&mut self, address: u16) {
+        // TODO: trace
+        let ok: bool = address > 0 && address < MEM_SIZE as u16;
+        let high_byte: u8 = (self.cpu.get_pc() >> 8) as u8;
+        let low_byte: u8 = (self.cpu.get_pc() & 0xFF) as u8;
+        self.cpu.push(low_byte);
+        self.cpu.push(high_byte);
+        if ok { self.cpu.set_pc(address); }
     }
 
     fn exec_mod(&mut self) {
