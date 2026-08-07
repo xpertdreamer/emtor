@@ -129,6 +129,7 @@ impl Machine {
 
     fn exec_gmb(&mut self) {
         //TODO: trace
+        self.trace("GMB");
         let return_addr = match self.cpu.pop_call() {
             Some(addr) => addr,
             None => {
@@ -142,6 +143,7 @@ impl Machine {
 
     fn exec_iwg(&mut self, address: u16) {
         // TODO: trace
+        self.trace("IWG");
         let ret = self.cpu.get_pc();
         if address >= CALL_STACK_START {
             eprintln!("ERROR: [IWG] invalid target address 0x{:04X}", address);
