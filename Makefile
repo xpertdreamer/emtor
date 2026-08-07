@@ -19,7 +19,7 @@ $(TARGET): $(SRCS)
 test: $(SRCS)
 	  @mkdir -p $(BUILDDIR)
 	  $(RUSTC) $(RUSTFLAGS) --test $(SRC)/main.rs -o $(TEST_TARGET)
-	  ./$(TEST_TARGET)
+	  ./$(TEST_TARGET) $(ARGS)
 
 clippy:
 		   $(CLIPPY) $(RUSTFLAGS) $(SRC)/main.rs --crate-type=bin --out-dir $(BUILDDIR)
