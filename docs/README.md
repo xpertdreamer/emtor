@@ -41,6 +41,7 @@
 | 0x16   | [POP dest](#pop-command)         |
 | 0x17   | [MOD](#mod-command)              |
 | 0x18   | [IWG address](#iwg-command)      |
+| 0x19   | [GMB](#gmb-command)              |
 
 
 ### HLT command 
@@ -150,15 +151,19 @@ Another one from stack section. Extracts the value on top of the stack into give
 [back](#opcodes)
 
 ### IWG command
-The full name is I Wanna Go. Analogue of CALL from x86 asm. Accepts address as two bytes value and jump on it. Pre-saving the current address before the jump onto the stack for later return. An address is stored onto the stack as follows:
+The full name is I Wanna Go. Analogue of CALL from x86 asm. Accepts address as two bytes value and jump on it. Pre-saving the current address before the jump onto the call stack for later return. An address is stored onto the call stack as follows:
 
 ``
-STACK TOP -> [ HIGH BYTE | LOW BYTE  | ...  ] 
+CALL STACK TOP -> [ HIGH BYTE | LOW BYTE  | ...  ] 
 ``
 
-NOTE: Currently i don`t really like design of this instruction and there is a high probability that it will be changed in the future. <br>
-NOTE: Here stack growth ascending (sp += 1).
+NOTE: Here call stack growth ascending (csp += 1), as does the data stack.
 [back](#opcodes)
+
+### GMB command
+The full name is Give Me Back. It is an analogue of RET from x86 assembly. Currently, it doesn't really do anything except extract the return address from the call stack and jump to it.
+<br>NOTE: I want to implement return values with this instruction.
+<br>[back](#opcodes)
 
 ## CPU Flags Layout
 
