@@ -378,5 +378,52 @@ mod tests {
         assert_eq!(dump.mem[(dump.csp - 0x02) as usize], 0x00);
     }
 
+    #[test]
+    fn gmb() {
+        let cpu = run_test(&[
+            0x0F, 0xC0, 0x01,   // MOC A
+            0x0F, 0xC1, 0x05,   // MOC B
+            0x18, 0x00, 0x0A,   // IWG
+            0x00,               // HLT
+            0x08, 0xC0,         // INC A
+            0x08, 0xC1,         // INC B
+            0x19,               // GMB
+            0x00                // HLT
+        ]);
+        let dump = cpu.dump();
+        assert_eq!(dump.pc, 10);
+        assert_eq!(dump.reg_a, 0x02);
+        assert_eq!(dump.reg_b, 0x06);
+        assert_eq!(dump.sp, 0xF0);
+        assert_eq!(dump.csp, 0xE0);
+    }
+
+    #[test]
+    fn multiple_iwg_gmb() {
+        let cpu = run_test(&[
+            0x0F, 0xC0, 0x01,   // MOC A
+            0x0F, 0xC1, 0x05,   // MOC B
+            0x18, 0x00, 0x0A,   // IWG
+            0x00,               // HLT
+            0x08, 0xC0,         // INC A
+            0x08, 0xC1,         // INC B
+            0x18, 0x00, 0x13,   // IWG
+            0x19,               // GMB
+            0x00,               // HLT
+            0x09, 0xC1,         // DEC B
+            0x04,               // MUL
+            0x09, 0xC0,         // DEC A
+            0x19,               // GMB
+            0x00                // HLT
+        ]);
+        let dump = cpu.dump();
+        assert_eq!(dump.pc, 10);
+        assert_eq!(dump.reg_a, 0x01);
+        assert_eq!(dump.reg_b, 0x05);
+        assert_eq!(dump.reg_c, 0x0A);
+        assert_eq!(dump.sp, 0xF0);
+        assert_eq!(dump.csp, 0xE0);
+    }
+
     // TODO: complicated tests
 }
