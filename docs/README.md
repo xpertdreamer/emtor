@@ -1,12 +1,10 @@
 > Not fully implemented. Documentation is sucks
 
-### TODO: RET instructions 
 ### TODO: LEA, DIV, Shift instructions
 ### TODO?: stack
 ### TODO: PUSH, POP instructions should interact with memory
 ### TODO: 4 sections memory layout
 ### TODO: system flags (sign handler, overflow handler and etc.)
-### TODO: IWG & GMB should have safe version
 ### TODO: tests
 ### TODO: error handling
 ### IN PLAN: parser & other cool stuff
