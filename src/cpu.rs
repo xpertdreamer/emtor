@@ -4,7 +4,7 @@ pub const MEM_SIZE: usize = 256;
 pub const STACK_SIZE: usize = 16;
 pub const STACK_START: u16 = MEM_SIZE as u16 - STACK_SIZE as u16;
 pub const CALL_STACK_SIZE: usize = 16;
-pub const CALL_STACK_START: u16 = STACK_START as u16 - CALL_STACK_SIZE as u16;
+pub const CALL_STACK_START: u16 = STACK_START  - CALL_STACK_SIZE as u16;
 
 pub struct Cpu {
     regs: Regs,
@@ -46,9 +46,8 @@ impl Cpu {
         Some(self.mem[self.sp as usize])
     }
 
-    #[allow(unused)]
     pub fn push_call(&mut self, value: u16) -> bool {
-        if self.csp == (STACK_START - 2) as u16 {
+        if self.csp == STACK_START - 2 {
             eprintln!("ERROR: Call stack overflow - csp={}, max={}", self.csp, CALL_STACK_START + CALL_STACK_SIZE as u16 - 1);
             return false;
         }
@@ -59,7 +58,6 @@ impl Cpu {
         true
     }
 
-    #[allow(unused)]
     pub fn pop_call(&mut self) -> Option<u16> {
         if self.csp < CALL_STACK_START + 2 {
             eprintln!("ERROR: Call stack overflow - csp={}, min={}", self.csp, CALL_STACK_START);
