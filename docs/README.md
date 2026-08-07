@@ -4,7 +4,7 @@
 ### TODO: LEA, DIV, Shift instructions
 ### TODO?: stack
 ### TODO: PUSH, POP instructions should interact with memory
-### TODO: 3 sections memory layout
+### TODO: 4 sections memory layout
 ### TODO: system flags (sign handler, overflow handler and etc.)
 ### TODO: IWG & GMB should have safe version
 ### TODO: tests

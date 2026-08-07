@@ -3,11 +3,14 @@ use crate::reg::*;
 pub const MEM_SIZE: usize = 256;
 pub const STACK_SIZE: usize = 16;
 pub const STACK_START: u16 = MEM_SIZE as u16 - STACK_SIZE as u16;
+pub const CALL_STACK_SIZE: usize = 16;
+pub const CALL_STACK_START: u16 = STACK_START as u16 - CALL_STACK_SIZE as u16;
 
 pub struct Cpu {
     regs: Regs,
     pc: u16,
     sp: u16,
+    csp: u16,
     mem: [u8; MEM_SIZE],
     state: bool
 }
@@ -18,6 +21,7 @@ impl Cpu {
             regs: Regs::create(),
             pc: 0,
             sp: STACK_START,
+            csp: CALL_STACK_START,
             mem: [0; MEM_SIZE],
             state: true
         }
@@ -43,26 +47,26 @@ impl Cpu {
     }
 
     #[allow(unused)]
-    pub fn push_u16(&mut self, value: u16) -> bool {
-        if self.sp == (MEM_SIZE - 2) as u16 {
-            eprintln!("ERROR: Stack overflow - sp={}, max={}", self.sp, STACK_START + STACK_SIZE as u16 - 1);
+    pub fn push_call(&mut self, value: u16) -> bool {
+        if self.csp == (STACK_START - 2) as u16 {
+            eprintln!("ERROR: Call stack overflow - csp={}, max={}", self.csp, CALL_STACK_START + CALL_STACK_SIZE as u16 - 1);
             return false;
         }
 
-        self.mem[self.sp as usize] = (value >> 8) as u8;
-        self.mem[(self.sp + 1) as usize] = (value & 0xFF) as u8;
-        self.sp += 2;
+        self.mem[self.csp as usize] = (value >> 8) as u8;
+        self.mem[(self.csp + 1) as usize] = (value & 0xFF) as u8;
+        self.csp += 2;
         true
     }
 
     #[allow(unused)]
-    pub fn pop_u16(&mut self) -> Option<u16> {
-        if self.sp < STACK_START + 2 {
-            eprintln!("ERROR: Stack overflow - sp={}, min={}", self.sp, STACK_START);
+    pub fn pop_call(&mut self) -> Option<u16> {
+        if self.csp < CALL_STACK_START + 2 {
+            eprintln!("ERROR: Call stack overflow - csp={}, min={}", self.csp, CALL_STACK_START);
             return None;
         }
-        self.sp -= 2;
-        Some((self.mem[self.sp as usize] as u16) << 8 | (self.mem[(self.sp + 1) as usize] as u16))
+        self.csp -= 2;
+        Some((self.mem[self.csp as usize] as u16) << 8 | (self.mem[(self.csp + 1) as usize] as u16))
     }
 
     pub fn load_prog(&mut self, data: &[u8]) {
