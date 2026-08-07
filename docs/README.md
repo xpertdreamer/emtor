@@ -191,11 +191,11 @@ The CPU uses a single byte flag register to store the results of operations. Eac
 | 0   | `CF` | Carry Flag    |
 
 ## Memory layout
-Currently, the RAM size is 256 bytes, 16 of which are occupied by the stack. A schematic representation is shown below (will be replaced with 3 section memory):
+Currently, the RAM size is 256 bytes, 16 of which are occupied by the stack and other 16 by call stack. A schematic representation is shown below (will be replaced with 4 section memory):
 
-`` [   Free: 240 bytes   |   Stack: 16 bytes   ] ``
+`` [   Free: 224 bytes   | Call Stack: 16 bytes |   Stack: 16 bytes   ] ``
 
-As illustrated, the stack resides within the  upper portion of memory, leaving 240 bytes for other data, variables, and program use.
+As illustrated, the stack resides within the  upper portion of memory, leaving 224 bytes for other data, variables, and program use.
 It should be noted that this data is relevant at the current stage of development [02.08.2026] and the memory is likely to be expanded in the future.
 As usual, the CPU has a PC (Program Counter) and an SP (Stack Pointer). The first one holds the address of the next instruction in memory to be executed, and 
-the second one holds the address of the current stack top...
+the second one holds the address of the current stack top. Additionally, there is a CSP (Call Stack Pointer), which points to the top of the call stack. This pointer is automatically managed by the CPU when IWG and GMB instructions are executed, ensuring that return addresses are properly pushed and popped.
