@@ -164,6 +164,10 @@ impl Cpu {
         self.sp
     }
 
+    pub fn get_csp(&self) -> u16 {
+        self.csp
+    }
+
     pub fn is_running(&self) -> bool {
         self.state
     }
