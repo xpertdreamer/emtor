@@ -1,6 +1,6 @@
 NAME=emtor
 RUSTC=rustc
-RUSTCFLAGS=
+RUSTFLAGS=-A unused
 CLIPPY=clippy-driver
 SRC=src
 BUILDDIR=target
@@ -22,8 +22,8 @@ test: $(SRCS)
 	  ./$(TEST_TARGET) $(ARGS)
 
 clippy:
+	  	   @mkdir -p $(BUILDDIR)
 		   $(CLIPPY) $(RUSTFLAGS) $(SRC)/main.rs --crate-type=bin --out-dir $(BUILDDIR)
-		   ./$(BUILDDIR)/main
 
 clean:
 		rm -rf $(BUILDDIR)
