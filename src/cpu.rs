@@ -105,7 +105,7 @@ impl Cpu {
     }
 
     pub fn write_mem(&mut self, address: u16, value: u8) -> bool {
-        if address >= STACK_START && address < STACK_START + STACK_SIZE as u16 {
+        if address >= CALL_STACK_START  {
             eprintln!("ERROR: Attempt to write to stack memory at {:#04X}", address);
             return false;
         }
