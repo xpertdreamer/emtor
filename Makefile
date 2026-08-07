@@ -25,4 +25,5 @@ clippy:
 		   $(CLIPPY) $(RUSTFLAGS) $(SRC)/main.rs --crate-type=bin --out-dir $(BUILDDIR)
 		   ./$(BUILDDIR)/main
 
-clean: rm -rf $(BUILDDIR)
+clean:
+		rm -rf $(BUILDDIR)
