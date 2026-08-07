@@ -121,26 +121,33 @@ impl Machine {
         result
     }
 
-    // fn exec_gmb(&mut self) {
-    //     // TODO: trace
-    //     if self.cpu.get_sp() < (STACK_START + 2) {
-    //         eprintln!("ERROR: Stack underflow, cannot perform GMB");
-    //         self.cpu.halt();
-    //         return;
-    //     }
-    //     let high_byte = self.cpu.pop().unwrap();
-    //     let low_byte = self.cpu.pop().unwrap();
-    //     let address = ((high_byte << 8) as u16) | low_byte as u16;
-    //     self.cpu.set_pc(address);
-    // }
-
     // * * *
     //     ^
     // ^
 
     fn exec_gmb(&mut self) {
+        //TODO: trace
         let address = self.cpu.read_ar();
-        self.cpu.write_ar(0x00);
+        if address == AR_EMPTY {
+            eprintln!("ERROR: [GMB] AR is empty (no return address)");
+            self.cpu.halt();
+            return;
+        }
+        if address >= MEM_SIZE as u16 {
+            eprintln!("ERROR: [GMB] invalid return address 0x{:04X}", address);
+            self.cpu.halt();
+            return;
+        }
+        if self.cpu.get_sp() > STACK_START {
+            let high_byte = self.cpu.pop().unwrap();
+            let low_byte = self.cpu.pop().unwrap();
+            let saved_ar = ((high_byte as u16) << 8) | (low_byte as u16);
+            self.cpu.write_ar(saved_ar);
+            self.trace(&format!("  Restored AR=0x{:04X} from stack", saved_ar));
+        } else {
+            self.cpu.write_ar(AR_EMPTY);
+            self.trace("  AR cleared");
+        }
         self.cpu.set_pc(address);
     }
 

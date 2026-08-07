@@ -132,19 +132,6 @@ impl Cpu {
         true
     }
 
-    pub fn write_ar(&mut self, value: u16) -> bool {
-        if value == AR_EMPTY || value < MEM_SIZE as u16 {
-            self.regs.ar = value;
-            true
-        } else {
-            false
-        }
-    }
-
-    pub fn read_ar(&mut self) -> u16 {
-        self.regs.ar
-    }
-
     pub fn set_flags(&mut self, flags: u8) {
         self.regs.f = flags;
     }
