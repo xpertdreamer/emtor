@@ -1,4 +1,4 @@
-use crate::{TRACE, cpu::*, opcode::Opcode, reg::REG_A, reg::REG_B, reg::REG_C};
+use crate::{TRACE, cpu::*, opcode::Opcode, reg::{AR_EMPTY, REG_A, REG_B, REG_C}};
 
 #[derive(Debug, PartialEq)]
 pub struct CpuState {
@@ -146,13 +146,25 @@ impl Machine {
 
     fn exec_iwg(&mut self, address: u16) {
         // TODO: trace
-        // NOTE: Store return address into AR. If IR != 0 -> push AR to stack
-        let ok: bool = address > 0 && address < MEM_SIZE as u16;
-        let high_byte: u8 = (self.cpu.get_pc() >> 8) as u8;
-        let low_byte: u8 = (self.cpu.get_pc() & 0xFF) as u8;
-        self.cpu.push(low_byte);
-        self.cpu.push(high_byte);
-        if ok { self.cpu.set_pc(address); }
+        let ret_adrr= self.cpu.get_pc();
+        let curr_ar = self.cpu.read_ar();
+        if curr_ar != AR_EMPTY {
+            if self.cpu.get_sp() < 2 {
+                eprintln!("ERROR: Stack overflow in CALL (saving AR)");
+                self.cpu.halt();
+                return;
+            }
+            let high_byte: u8 = (self.cpu.get_pc() >> 8) as u8;
+            let low_byte: u8 = (self.cpu.get_pc() & 0xFF) as u8;
+            self.cpu.push(low_byte);
+            self.cpu.push(high_byte);
+        }
+        if !self.cpu.write_ar(ret_adrr) {
+            eprintln!("ERROR: [CALL] cannot write return address 0x{:04X} to AR", ret_adrr);
+            self.cpu.halt();
+            return;
+        }
+        self.cpu.set_pc(address);
     }
 
     fn exec_mod(&mut self) {
