@@ -372,9 +372,10 @@ mod tests {
         assert_eq!(dump.pc, 15);
         assert_eq!(dump.reg_a, 0x02);
         assert_eq!(dump.reg_b, 0x06);
-        assert_eq!(dump.sp, 0xF2);
-        assert_eq!(dump.mem[(dump.sp - 0x01) as usize], 0x00);
-        assert_eq!(dump.mem[(dump.sp - 0x02) as usize], 0x09);
+        assert_eq!(dump.sp, 0xF0);
+        assert_eq!(dump.csp, 0xE2);
+        assert_eq!(dump.mem[(dump.csp - 0x01) as usize], 0x09);
+        assert_eq!(dump.mem[(dump.csp - 0x02) as usize], 0x00);
     }
 
     // TODO: complicated tests

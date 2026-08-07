@@ -1,9 +1,10 @@
-use crate::{TRACE, cpu::*, opcode::Opcode, reg::{AR_EMPTY, REG_A, REG_B, REG_C}};
+use crate::{TRACE, cpu::*, opcode::Opcode, reg::{REG_A, REG_B, REG_C}};
 
 #[derive(Debug, PartialEq)]
 pub struct CpuState {
     pub pc: u16,
     pub sp: u16,
+    pub csp: u16,
     pub flags: u8,
     pub sys_flags: u8,
     pub state: bool,
@@ -48,6 +49,7 @@ impl Machine {
         CpuState {
             pc: self.cpu.get_pc(),
             sp: self.cpu.get_sp(),
+            csp: self.cpu.get_csp(),
             flags: self.cpu.get_flags(),
             sys_flags: self.cpu.get_sys_flags(),
             state: self.cpu.is_running(),
@@ -127,47 +129,27 @@ impl Machine {
 
     fn exec_gmb(&mut self) {
         //TODO: trace
-        let address = self.cpu.read_ar();
-        if address == AR_EMPTY {
-            eprintln!("ERROR: [GMB] AR is empty (no return address)");
-            self.cpu.halt();
-            return;
-        }
-        if address >= MEM_SIZE as u16 {
-            eprintln!("ERROR: [GMB] invalid return address 0x{:04X}", address);
-            self.cpu.halt();
-            return;
-        }
-        if self.cpu.get_sp() > STACK_START {
-            let high_byte = self.cpu.pop().unwrap();
-            let low_byte = self.cpu.pop().unwrap();
-            let saved_ar = ((high_byte as u16) << 8) | (low_byte as u16);
-            self.cpu.write_ar(saved_ar);
-            self.trace(&format!("  Restored AR=0x{:04X} from stack", saved_ar));
-        } else {
-            self.cpu.write_ar(AR_EMPTY);
-            self.trace("  AR cleared");
-        }
-        self.cpu.set_pc(address);
+        let return_addr = match self.cpu.pop_call() {
+            Some(addr) => addr,
+            None => {
+                eprintln!("ERROR: [GMB] call stack underflow");
+                self.cpu.halt();
+                return;
+            }
+        };
+        self.cpu.set_pc(return_addr);
     }
 
     fn exec_iwg(&mut self, address: u16) {
         // TODO: trace
-        let ret_adrr= self.cpu.get_pc();
-        let curr_ar = self.cpu.read_ar();
-        if curr_ar != AR_EMPTY {
-            if self.cpu.get_sp() < 2 {
-                eprintln!("ERROR: Stack overflow in CALL (saving AR)");
-                self.cpu.halt();
-                return;
-            }
-            let high_byte: u8 = (self.cpu.get_pc() >> 8) as u8;
-            let low_byte: u8 = (self.cpu.get_pc() & 0xFF) as u8;
-            self.cpu.push(low_byte);
-            self.cpu.push(high_byte);
+        let ret = self.cpu.get_pc();
+        if address >= CALL_STACK_START {
+            eprintln!("ERROR: [IWG] invalid target address 0x{:04X}", address);
+            self.cpu.halt();
+            return;
         }
-        if !self.cpu.write_ar(ret_adrr) {
-            eprintln!("ERROR: [CALL] cannot write return address 0x{:04X} to AR", ret_adrr);
+        if !self.cpu.push_call(ret) {
+            eprintln!("ERROR: [IWG] call stack overflow");
             self.cpu.halt();
             return;
         }
