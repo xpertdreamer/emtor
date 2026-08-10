@@ -41,6 +41,7 @@
 | 0x17   | [MOD](#mod-command)              |
 | 0x18   | [IWG address](#iwg-command)      |
 | 0x19   | [GMB](#gmb-command)              |
+| 0x20   | [DIV](#div-command)              |
 
 
 ### HLT command 
@@ -52,11 +53,15 @@ Doesn`t have any arguments. Simply performs the addition of two registers (a + b
 [back](#opcodes)
 
 ### SUB command
-Similar to ADD. Produces c = b - a operation. (Cause the calculation of OF, SF, CF)?
+Similar to ADD. Produces c = b - a operation. Cause the calculation of OF, SF, CF.
 [back](#opcodes)
 
 ### MOD command
 Similar to ADD. Produces c = a % b operation.
+[back](#opcodes)
+
+### DIV command
+Similar to ADD. Produces c = b / a operation. If division by zero - sets OF to true and write 0 as result to register C. 
 [back](#opcodes)
 
 ### MOV command 
