@@ -3,9 +3,9 @@ pub const REG_B: u8 = 0xC1;
 pub const REG_C: u8 = 0xC2;
 
 pub struct Regs {
-    pub a: u8,
-    pub b: u8,
-    pub c: u8,
+    pub a: i8,
+    pub b: i8,
+    pub c: i8,
     pub f: u8,
     pub sf: u8
 }
