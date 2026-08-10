@@ -187,7 +187,7 @@ mod tests {
         ]);
         let dump = cpu.dump();
         assert_eq!(dump.pc, 6);
-        assert_eq!(dump.reg_a, 0xD7);
+        assert_eq!(dump.reg_a, 0xD7u8 as i8);
     }
 
     #[test]
@@ -201,7 +201,7 @@ mod tests {
         let dump = cpu.dump();
         assert_eq!(dump.pc, 10);
         assert_eq!(dump.reg_a, 0x12);
-        assert_eq!(dump.reg_b, 0x96);
+        assert_eq!(dump.reg_b, 0x96u8 as i8);
     }
 
     #[test]
@@ -235,7 +235,7 @@ mod tests {
     #[test]
     fn jof() {
         let cpu = run_test(&[
-            0x0F, 0xC0, 0xC8,   // MOC A
+            0x0F, 0xC0, 0x7F,   // MOC A
             0x02, 0xC1, 0xC0,   // MOV A->B
             0x01,               // ADD
             0x14, 0x00, 0x0B,   // JOF
@@ -245,9 +245,9 @@ mod tests {
         ]);
         let dump = cpu.dump();
         assert_eq!(dump.pc, 14);
-        assert_eq!(dump.reg_a, 0xC9);
-        assert_eq!(dump.reg_b, 0xC8);
-        assert_eq!(dump.reg_c, 0x90);
+        assert_eq!(dump.reg_a, 0x80u8 as i8);
+        assert_eq!(dump.reg_b, 0x7Fu8 as i8);
+        assert_eq!(dump.reg_c, 0xFEu8 as i8);
     }
 
     #[test]
