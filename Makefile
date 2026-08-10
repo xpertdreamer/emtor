@@ -9,6 +9,10 @@ TARGET=$(BUILDDIR)/$(NAME)
 TEST_TARGET=$(BUILDDIR)/$(NAME)_test
 SRCS=$(shell find $(SRC) -name '*.rs')
 
+ifdef output
+	override ARGS += --nocapture
+endif
+
 .PHONY: all clean test clippy
 
 all: $(TARGET)

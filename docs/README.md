@@ -215,7 +215,7 @@ make -B test
 To build and run only specific tests:
 
 ``` makefile
-make -B test ARGS="<KEYWORD> <--nocapture>"
+make -B test <output=1/0> ARGS="<KEYWORD>"
 ``` 
 
 To run static analysis (linter):
