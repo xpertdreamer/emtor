@@ -43,7 +43,7 @@ impl Cpu {
             return None;
         }
         self.sp -= 1;
-        Some(self.mem[self.sp as usize])
+        Some(self.mem[self.sp as usize] as i8)
     }
 
     pub fn push_call(&mut self, value: u16) -> bool {
