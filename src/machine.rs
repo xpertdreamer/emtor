@@ -8,9 +8,9 @@ pub struct CpuState {
     pub flags: u8,
     pub sys_flags: u8,
     pub state: bool,
-    pub reg_a: u8,
-    pub reg_b: u8,
-    pub reg_c: u8,
+    pub reg_a: i8,
+    pub reg_b: i8,
+    pub reg_c: i8,
     pub mem: [u8; MEM_SIZE]
 }
 
@@ -62,7 +62,7 @@ impl Machine {
 
     pub fn load_program(&mut self, program: &[u8]) {
         self.cpu.load_prog(program);
-        self.trace(&format!("Loaded {} instructions", program.len()));
+        self.trace(&format!("Loaded {} lines", program.len()));
     }
 
     pub fn run(&mut self) {
