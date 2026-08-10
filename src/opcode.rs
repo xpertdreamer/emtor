@@ -46,7 +46,7 @@ pub enum Opcode {
     STR {reg: u8, address: u16 },
     LMR {reg: u8, address: u16},
     MOV { dest: u8, src: u8 },
-    MOC { dest: u8, value: u8 },
+    MOC { dest: u8, value: i8 },
     NOT(u8),
     XOR {dest: u8, src: u8 },
     BOR {dest: u8, src: u8 },
@@ -122,7 +122,7 @@ impl Opcode {
             opcodes::MOC => {
                 let dest = cpu.fetch_next_byte().expect("ERROR: Decode MOC, Memory out of bounds (dest)");
                 let value = cpu.fetch_next_byte().expect("ERROR: Decode MOC, Memory out of bounds (value)");
-                Some(Opcode::MOC { dest, value })
+                Some(Opcode::MOC { dest, value: value as i8 })
             },
             opcodes::NOT => {
                 let reg = cpu.fetch_next_byte().expect("ERROR: Decode NOT, Memory out of bounds (register)");
