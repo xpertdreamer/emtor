@@ -35,6 +35,38 @@ mod tests {
     }
 
     #[test]
+    fn div() {
+        let emtor = run_test(&[
+            0x0F, 0xC0, 0x06,   // MOC A
+            0x0F, 0xC1, 0x0C,   // MOC B
+            0x20,               // DIV
+            0x00                // HLT
+        ]);
+        let dump = emtor.dump();
+        assert_eq!(dump.reg_a, 0x06);
+        assert_eq!(dump.reg_b, 0x0C);
+        assert_eq!(dump.reg_c, 0x02);
+    }
+
+    #[test]
+    fn div_of() {
+        let emtor = run_test(&[
+            0x0F, 0xC0, 0x00,   // MOC A
+            0x0F, 0xC1, 0x06,   // MOC B
+            0x20,               // DIV
+            0x14, 0x00, 0x0B,   // JOF
+            0x00,               // HLT
+            0x08, 0xC0,         // INC A
+            0x00,               // HLT
+        ]);
+        let dump = emtor.dump();
+        assert_eq!(dump.reg_a, 0x01);
+        assert_eq!(dump.reg_b, 0x06);
+        assert_eq!(dump.reg_c, 0x00);
+        assert_eq!(dump.pc, 0x0E);
+    }
+
+    #[test]
     fn mov() {
         let emtor = run_test(&[
             0x0F, 0xC0, 12,     // MOC
