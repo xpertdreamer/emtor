@@ -27,17 +27,17 @@ impl Cpu {
         }
     }
 
-    pub fn push(&mut self, value: u8) -> bool {
+    pub fn push(&mut self, value: i8) -> bool {
         if self.sp == MEM_SIZE as u16 {
             eprintln!("ERROR: Stack overflow - sp={}, max={}", self.sp, STACK_START + STACK_SIZE as u16 - 1);
             return false;
         }
-        self.mem[self.sp as usize] = value;
+        self.mem[self.sp as usize] = value as u8;
         self.sp += 1;
         true
     }
 
-    pub fn pop(&mut self) -> Option<u8> {
+    pub fn pop(&mut self) -> Option<i8> {
         if self.sp == STACK_START {
             eprintln!("ERROR: Stack overflow - sp={}, min={}", self.sp, STACK_START);
             return None;
@@ -115,7 +115,7 @@ impl Cpu {
         }
     }
 
-    pub fn read_reg(&self, reg_id: u8) -> Option<u8> {
+    pub fn read_reg(&self, reg_id: u8) -> Option<i8> {
         match reg_id {
             REG_A => Some(self.regs.a),
             REG_B => Some(self.regs.b),
@@ -124,7 +124,7 @@ impl Cpu {
         }
     }
 
-    pub fn write_reg(&mut self, reg_id: u8, value: u8) -> bool {
+    pub fn write_reg(&mut self, reg_id: u8, value: i8) -> bool {
         match reg_id {
             REG_A => self.regs.a = value,
             REG_B => self.regs.b = value,
