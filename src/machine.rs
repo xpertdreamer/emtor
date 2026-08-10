@@ -28,7 +28,6 @@ mod conditional_flags {
 mod system_flags {
     pub const CF: u8 = 1 << 0;
     pub const OF: u8 = 1 << 1;
-    #[allow(unused)]
     pub const SF: u8 = 1 << 2;
 }
 
@@ -197,6 +196,7 @@ impl Machine {
         let a = self.cpu.read_reg(dest).expect("ERROR: [XOR] invalid dest register ID");
         let b = self.cpu.read_reg(src).expect("ERROR: [XOR] invalid src register ID");
         let res = a ^ b;
+        self.cpu.set_sys_flags(self.calc_sys_flags(res, false, false));
         if !self.cpu.write_reg(dest, res) {
             eprintln!("ERROR: cannot perform XOR to register 0x{:04X}", dest);
             self.cpu.halt();
@@ -208,6 +208,7 @@ impl Machine {
         let a = self.cpu.read_reg(dest).expect("ERROR: [BOR] invalid dest register ID");
         let b = self.cpu.read_reg(src).expect("ERROR: [BOR] invalid src register ID");
         let res = a | b;
+        self.cpu.set_sys_flags(self.calc_sys_flags(res, false, false));
         if !self.cpu.write_reg(dest, res) {
             eprintln!("ERROR: cannot perform BOR to register 0x{:04X}", dest);
             self.cpu.halt();
@@ -219,6 +220,7 @@ impl Machine {
         let a = self.cpu.read_reg(dest).expect("ERROR: [AND] invalid dest register ID");
         let b = self.cpu.read_reg(src).expect("ERROR: [AND] invalid src register ID");
         let res = a & b;
+        self.cpu.set_sys_flags(self.calc_sys_flags(res, false, false));
         if !self.cpu.write_reg(dest, res) {
             eprintln!("ERROR: cannot perform AND to register 0x{:04X}", dest);
             self.cpu.halt();
@@ -248,12 +250,11 @@ impl Machine {
         self.cpu.halt();
     }
 
-
     fn exec_add(&mut self) {
         let a = self.cpu.read_reg(REG_A).expect("ERROR: [ADD] invalid register 'a' ID");
         let b = self.cpu.read_reg(REG_B).expect("ERROR: [ADD] invalid register 'b' ID");
         let (res, over) = a.overflowing_add(b);
-        let carry: bool = (a as u16 + b as u16) > 0xFF;
+        let carry = ((a as u8) as u16 + (b as u8) as u16) > 0xFF;
         self.cpu.set_sys_flags(self.calc_sys_flags(res, carry, over));
         if !self.cpu.write_reg(REG_C, res) {
             eprintln!("ERROR: cannot perform ADD");
@@ -266,7 +267,7 @@ impl Machine {
         let a = self.cpu.read_reg(REG_A).expect("ERROR: [SUB] invalid register 'a' ID");
         let b = self.cpu.read_reg(REG_B).expect("ERROR: [SUB] invalid register 'b' ID");
         let (res, over) = b.overflowing_sub(a);
-        let carry: bool = b < a;
+        let carry: bool = (b as u8) < (a as u8);
         self.cpu.set_sys_flags(self.calc_sys_flags(res, carry, over));
         if !self.cpu.write_reg(REG_C, res) {
             eprintln!("ERROR: cannot perform ADD");
@@ -276,10 +277,10 @@ impl Machine {
     }
 
     fn exec_mul(&mut self) {
-        // TODO: sys flag handling (cf, of)
         let a = self.cpu.read_reg(REG_A).expect("ERROR: [MUL] invalid register 'a' ID");
         let b = self.cpu.read_reg(REG_B).expect("ERROR: [MUL] invalid register 'b' ID");
         let (res, over) = a.overflowing_mul(b);
+        self.cpu.set_sys_flags(self.calc_sys_flags(res, over, over));
         if !self.cpu.write_reg(REG_C, res) {
             eprintln!("ERROR: cannot perform ADD");
             self.cpu.halt();
@@ -315,9 +316,10 @@ impl Machine {
     }
 
     fn exec_inc(&mut self, address: u8) {
-        // TODO: sys flag handling (of, sf)
         let value = self.cpu.read_reg(address).expect("ERROR: [INC] invalid register ID");
-        let res = value + 1;
+        let (res, over) = value.overflowing_add(1);
+        let carry = ((value as u8) as u16 + (1 as u8) as u16) > 0xFF;
+        self.cpu.set_sys_flags(self.calc_sys_flags(res, carry, over));
         if !self.cpu.write_reg(address, res) {
             eprintln!("ERROR: cannot perform INC on register {}", address);
             self.cpu.halt();
@@ -326,9 +328,10 @@ impl Machine {
     }
 
     fn exec_dec(&mut self, address: u8) {
-        // TODO: sys flag handling (of, sf)
+        // TODO: cf handle
         let value = self.cpu.read_reg(address).expect("ERROR: [DEC] invalid register ID");
-        let res = value - 1;
+        let (res, over) = value.overflowing_sub(1);
+        self.cpu.set_sys_flags(self.calc_sys_flags(res, false, over));
         if !self.cpu.write_reg(address, res) {
             eprintln!("ERROR: cannot perform DEC on register {}", address);
             self.cpu.halt();
