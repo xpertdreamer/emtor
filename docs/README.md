@@ -1,13 +1,12 @@
 > Not fully implemented. Documentation is sucks
 
-### TODO: signed arithemetic (correct tests for i8)
 ### TODO: LEA, DIV, Shift instructions
 ### TODO: PUSH, POP instructions should interact with memory
 ### TODO: 4 sections memory layout
 ### TODO: system flags (sign handler, overflow handler and etc.)
 ### TODO: tests
 ### TODO: error handling
-### IN PLAN: parser & other cool stuff
+### IN PLAN: parser & other cool stuff to write programs from file
 
 # emtor
 > Recreational project which have the goal to write an emulator of fictional architecture in Rust
