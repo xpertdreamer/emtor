@@ -105,6 +105,7 @@ impl Machine {
             Opcode::MOD => self.exec_mod(),
             Opcode::IWG(address) => self.exec_iwg(address),
             Opcode::GMB => self.exec_gmb(),
+            Opcode::DIV => self.exec_div(),
         }
     }
 
@@ -282,10 +283,29 @@ impl Machine {
         let (res, over) = a.overflowing_mul(b);
         self.cpu.set_sys_flags(self.calc_sys_flags(res, over, over));
         if !self.cpu.write_reg(REG_C, res) {
-            eprintln!("ERROR: cannot perform ADD");
+            eprintln!("ERROR: cannot write ADD result to REG_C");
             self.cpu.halt();
         }
         self.trace(&format!("MUL, A = {}, B = {}, RES = {}, OF = {}", a, b, res, over));
+    }
+
+    fn exec_div(&mut self) {
+        let mut is_over: bool = false;
+        let a = self.cpu.read_reg(REG_A).expect("ERROR: [DIV] invalid register 'a' ID");
+        let b = self.cpu.read_reg(REG_B).expect("ERROR: [DIV] invalid register 'b' ID");
+        let res = match b.checked_div(a) {
+            Some(q) => q,
+            None => {
+                eprintln!("ERROR: cannot perform DIV (Division by Zero)");
+                is_over = true;
+                0
+            }
+        };
+        self.cpu.set_sys_flags(self.calc_sys_flags(res, false, is_over));
+        if !self.cpu.write_reg(REG_C, res) {
+            eprintln!("ERROR: cannot write DIV result to REG_C");
+            self.cpu.halt();
+        }
     }
 
     fn exec_jmp(&mut self, address: u16) {
