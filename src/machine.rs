@@ -161,7 +161,7 @@ impl Machine {
     fn exec_mod(&mut self) {
         let a = self.cpu.read_reg(REG_A).expect("ERROR: [MOD] invalid register 'a' ID");
         let b = self.cpu.read_reg(REG_B).expect("ERROR: [MOD] invalid register 'b' ID");
-        let res: u8 = a % b;
+        let res: i8 = a % b;
         if !self.cpu.write_reg(REG_C, res) {
             eprintln!("ERROR: cannot perform MOD");
             self.cpu.halt();
@@ -235,7 +235,7 @@ impl Machine {
         self.trace(&format!("MOV, DEST=0x{:04x}, SRC=0x{:04x}, VALUE=0x{:04x}", dest, src, value));
     }
 
-    fn exec_moc(&mut self, dest: u8, val: u8) {
+    fn exec_moc(&mut self, dest: u8, val: i8) {
         if !self.cpu.write_reg(dest, val) {
             eprintln!("ERROR: cannot perform MOV with constant 0x{:04X}", val);
             self.cpu.halt();
@@ -356,7 +356,7 @@ impl Machine {
 
     fn exec_str(&mut self, register_addr: u8, mem_addr: u16) {
         let value = self.cpu.read_reg(register_addr).expect("ERROR: [STR] invalid register ID");
-        if !self.cpu.write_mem(mem_addr, value) {
+        if !self.cpu.write_mem(mem_addr, value as u8) {
             eprintln!("ERROR: cannot perform STR to address 0x{:04X}", mem_addr);
             self.cpu.halt();
         }
@@ -364,8 +364,9 @@ impl Machine {
     }
 
     fn exec_lmr(&mut self, register_addr: u8, mem_addr: u16) {
+        // TODO: should handle sys flags (OF)
         let value = self.cpu.read_mem(mem_addr).expect("ERROR: [LMR] invalid memory address");
-        if !self.cpu.write_reg(register_addr, value) {
+        if !self.cpu.write_reg(register_addr, value as i8) {
             eprintln!("ERROR: cannot perform LMR from address 0x{:04X}", mem_addr);
             self.cpu.halt();
         }
