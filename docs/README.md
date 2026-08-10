@@ -1,6 +1,6 @@
 > Not fully implemented. Documentation is sucks
 
-### TODO: signed arithemetic
+### TODO: signed arithemetic (correct tests for i8)
 ### TODO: LEA, DIV, Shift instructions
 ### TODO: PUSH, POP instructions should interact with memory
 ### TODO: 4 sections memory layout
