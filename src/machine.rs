@@ -115,11 +115,11 @@ impl Machine {
         }
     }
 
-    fn calc_sys_flags(&self, res: u8, cf: bool, of: bool) -> u8 {
+    fn calc_sys_flags(&self, res: i8, cf: bool, of: bool) -> u8 {
         let mut result: u8 = 0;
         result |= system_flags::CF * cf as u8;
         result |= system_flags::OF * of as u8;
-        result |= (res & 0x80 == 0x80) as u8;
+        result |= (res as u8) >> 7;
         result
     }
 
