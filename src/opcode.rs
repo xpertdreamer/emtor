@@ -28,6 +28,9 @@ mod opcodes {
     pub const IWG: u8 = 0x18;
     pub const GMB: u8 = 0x19;
     pub const DIV: u8 = 0x20;
+    pub const SHT: u8 = 0x21;
+    #[allow(unused)]
+    pub const SHC: u8 = 0x22;
 }
 
 #[allow(clippy::upper_case_acronyms)]
@@ -58,7 +61,8 @@ pub enum Opcode {
     MOD,
     IWG(u16),
     GMB,
-    DIV
+    DIV,
+    SHT{data: u8, dest: u8},
 }
 
 impl Opcode {
@@ -161,6 +165,11 @@ impl Opcode {
             opcodes::IWG => {
                 let addr = Self::high_end(cpu);
                 Some(Opcode::IWG(addr))
+            },
+            opcodes::SHT => {
+                let data = cpu.fetch_next_byte().expect("ERROR: Decode SHT, Memory out of bounds (data)");
+                let dest = cpu.fetch_next_byte().expect("ERROR: Decode SHT, Memory out of bounds (dest)");
+                Some(Opcode::SHT{data, dest})
             },
             _ => None
         }

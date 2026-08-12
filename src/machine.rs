@@ -1,5 +1,7 @@
 use crate::{TRACE, cpu::*, opcode::Opcode, reg::{REG_A, REG_B, REG_C}};
 
+pub const NEGATIVE_U8: u8 = 0b10000000;
+
 #[derive(Debug, PartialEq)]
 pub struct CpuState {
     pub pc: u16,
@@ -106,6 +108,7 @@ impl Machine {
             Opcode::IWG(address) => self.exec_iwg(address),
             Opcode::GMB => self.exec_gmb(),
             Opcode::DIV => self.exec_div(),
+            Opcode::SHT{data, dest} => self.exec_sht(data, dest),
         }
     }
 
@@ -121,6 +124,26 @@ impl Machine {
         result |= system_flags::OF * of as u8;
         result |= (res as u8) >> 7;
         result
+    }
+
+    fn exec_sht(&mut self, data: u8, dest: u8) {
+        // TODO: trace
+        let dir: u8 = (data & NEGATIVE_U8) >> 7;
+        let x: u8 = data & !NEGATIVE_U8;
+        let mut value = self.cpu.read_reg(dest).expect("ERROR: [SHT] invalid src register ID");
+        match dir {
+            0 => value = value << x,
+            1 => value = value >> x,
+            _ => {
+                eprintln!("ERROR: [SHT] error occured while decoding direction");
+                self.cpu.halt();
+                return;
+            }
+        };
+        if !self.cpu.write_reg(dest, value) {
+            eprintln!("ERROR: cannot write SHT result to {}",  match dest { REG_A => "A", REG_B => "B", REG_C => "C", _ => "?" });
+            self.cpu.halt();
+        }
     }
 
     // * * *
