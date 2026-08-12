@@ -43,6 +43,7 @@
 | 0x19   | [GMB](#gmb-command)              |
 | 0x20   | [DIV](#div-command)              |
 | 0x21   | [SHT data dest](#sht-command)    |
+| 0x22   | [SHC data dest](#shc-command)    |
 
 
 ### HLT command 
@@ -150,6 +151,13 @@ The full name is Shift That. Accepts two operands:
 <br>1. Data – contains the shifting direction in the high bit (similar to a negative number), where 0 means left shift and 1 means right shift, along with the number of shift operations.
 <br>2. Destination – the destination register will be overwritten with the result of the operation.
 <br>After execution, the command restores the high bit.
+<br>[back](#opcodes)
+
+### SHC command
+The full name is Shift with Carry. Accepts two operands: 
+<br>1. Data – contains the shifting direction in the high bit (similar to a negative number), where 0 means left shift and 1 means right shift, along with the number of shift operations.
+<br>2. Destination – the destination register will be overwritten with the result of the operation.
+<br>After execution, the command substitutes the value of the carry flag into the vacated extreme bit position.
 <br>[back](#opcodes)
 
 ### PSH command
