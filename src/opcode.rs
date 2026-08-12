@@ -30,7 +30,12 @@ mod opcodes {
     pub const DIV: u8 = 0x20;
     pub const SHT: u8 = 0x21;
     pub const SHC: u8 = 0x22;
-    // TODO: logic shift
+    // TODO: implement
+    pub const RTR: u8 = 0x23; // RoTate, Retard (like ROR/ROL)
+    // TODO: implement
+    pub const BSL: u8 = 0x24; // (like SHL/SHR)
+    // TODO: implement
+    pub const BSA: u8 = 0x25; // (like SAL/SAR)
 }
 
 #[allow(clippy::upper_case_acronyms)]
