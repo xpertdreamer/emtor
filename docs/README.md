@@ -1,6 +1,6 @@
 > Not fully implemented. Documentation is sucks
 
-### TODO: LEA, DIV, Shift instructions
+### TODO: LEA, Shift instructions
 ### TODO: PUSH, POP instructions should interact with memory
 ### TODO: 4 sections memory layout
 ### TODO: system flags (sign handler, overflow handler and etc.)
