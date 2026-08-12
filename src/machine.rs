@@ -304,7 +304,7 @@ impl Machine {
         let a = self.cpu.read_reg(REG_A).expect("ERROR: [ADD] invalid register 'a' ID");
         let b = self.cpu.read_reg(REG_B).expect("ERROR: [ADD] invalid register 'b' ID");
         let (res, over) = a.overflowing_add(b);
-        let carry = ((a as u8) as u16 + (b as u8) as u16) > 0xFF;
+        let carry = (((a as u8 & b as u8) | ((a as u8 | b as u8) & !(res as u8))) & 0x80) != 0;
         self.cpu.set_sys_flags(self.calc_sys_flags(res, carry, over));
         if !self.cpu.write_reg(REG_C, res) {
             eprintln!("ERROR: cannot perform ADD");
