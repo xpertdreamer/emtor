@@ -128,19 +128,20 @@ impl Machine {
 
     fn exec_sht(&mut self, data: u8, dest: u8) {
         // TODO: trace
-        let neg = data & NEGATIVE_U8;
-        let dir: u8 = neg >> 7;
+        let dir: u8 = (data & NEGATIVE_U8) >> 7;
         let x: u8 = (data & !NEGATIVE_U8) % 8;
         let mut value: i8 = self.cpu.read_reg(dest).expect("ERROR: [SHT] invalid src register ID");
         let mut val_u: u8 = value as u8;
+        let neg = val_u & NEGATIVE_U8;
+        val_u &= !NEGATIVE_U8;
         match dir {
-            0 => val_u = val_u << x,
+            0 => val_u = (val_u << x) & !NEGATIVE_U8,
             1 => val_u = val_u >> x,
             _ => unreachable!()
         };
-        value = ((val_u & !NEGATIVE_U8) | neg) as i8;
+        value = (val_u | neg) as i8;
         if !self.cpu.write_reg(dest, value) {
-            eprintln!("ERROR: cannot write SHT result to {}",  match dest { REG_A => "A", REG_B => "B", REG_C => "C", _ => "?" });
+            eprintln!("ERROR: cannot write SHT result to reg {}",  match dest { REG_A => "A", REG_B => "B", REG_C => "C", _ => "?" });
             self.cpu.halt();
         }
         self.trace("SHT");
