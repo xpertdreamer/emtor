@@ -29,8 +29,8 @@ mod opcodes {
     pub const GMB: u8 = 0x19;
     pub const DIV: u8 = 0x20;
     pub const SHT: u8 = 0x21;
-    #[allow(unused)]
     pub const SHC: u8 = 0x22;
+    // TODO: logic shift
 }
 
 #[allow(clippy::upper_case_acronyms)]
@@ -63,6 +63,7 @@ pub enum Opcode {
     GMB,
     DIV,
     SHT{data: u8, dest: u8},
+    SHC{data: u8, dest: u8},
 }
 
 impl Opcode {
@@ -170,6 +171,11 @@ impl Opcode {
                 let data = cpu.fetch_next_byte().expect("ERROR: Decode SHT, Memory out of bounds (data)");
                 let dest = cpu.fetch_next_byte().expect("ERROR: Decode SHT, Memory out of bounds (dest)");
                 Some(Opcode::SHT{data, dest})
+            },
+            opcodes::SHC => {
+                let data = cpu.fetch_next_byte().expect("ERROR: Decode SHC, Memory out of bounds (data)");
+                let dest = cpu.fetch_next_byte().expect("ERROR: Decode SHC, Memory out of bounds (dest)");
+                Some(Opcode::SHC{data, dest})
             },
             _ => None
         }

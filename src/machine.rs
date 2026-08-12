@@ -109,6 +109,7 @@ impl Machine {
             Opcode::GMB => self.exec_gmb(),
             Opcode::DIV => self.exec_div(),
             Opcode::SHT{data, dest} => self.exec_sht(data, dest),
+            Opcode::SHC{data, dest} => self.exec_shc(data, dest),
         }
     }
 
@@ -124,6 +125,31 @@ impl Machine {
         result |= system_flags::OF * of as u8;
         result |= (res as u8) >> 7;
         result
+    }
+
+    fn exec_shc(&mut self, data: u8, dest: u8) {
+        // TODO: trace
+        let dir: u8 = (data & NEGATIVE_U8) >> 7;
+        let x: u8 = (data & !NEGATIVE_U8) % 8;
+        let mut value: i8 = self.cpu.read_reg(dest).expect("ERROR: [SHC] invalid src register ID");
+        let mut val_u: u8 = value as u8;
+        let cf = self.cpu.get_sys_flags() & 0b00000001;
+        match dir {
+            0 => {
+                val_u = val_u.wrapping_shl(x as u32);
+                value = (val_u | cf) as i8;
+            },
+            1 => {
+                val_u = val_u >> x;
+                value = (val_u | cf << 7) as i8;
+            }
+            _ => unreachable!()
+        };
+        if !self.cpu.write_reg(dest, value) {
+            eprintln!("ERROR: cannot write SHC result to reg {}",  match dest { REG_A => "A", REG_B => "B", REG_C => "C", _ => "?" });
+            self.cpu.halt();
+        }
+        self.trace("SHC");
     }
 
     fn exec_sht(&mut self, data: u8, dest: u8) {
