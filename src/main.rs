@@ -471,5 +471,20 @@ mod tests {
         assert_eq!(dump.reg_a, 0x84u8 as i8);
     }
 
+    // 0000 0001 << 0000 0101
+    #[test]
+    fn shc() {
+        let cpu = run_test(&[
+            0x0F, 0xC0, 0x01,   // MOC A
+            0x0F, 0xC1, 0xFF,   // MOC B
+            0x01,               // ADD
+            0x22, 0x02, 0xC0,   // SHC A
+            0x00,               // HLT
+        ]);
+        let dump = cpu.dump();
+        assert_eq!(dump.pc, 11);
+        assert_eq!(dump.reg_a, 0x05);
+    }
+
     // TODO: complicated tests
 }

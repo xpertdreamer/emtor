@@ -301,8 +301,8 @@ impl Machine {
     }
 
     fn exec_add(&mut self) {
-        let a = self.cpu.read_reg(REG_A).expect("ERROR: [ADD] invalid register 'a' ID");
-        let b = self.cpu.read_reg(REG_B).expect("ERROR: [ADD] invalid register 'b' ID");
+        let a: i8 = self.cpu.read_reg(REG_A).expect("ERROR: [ADD] invalid register 'a' ID");
+        let b: i8 = self.cpu.read_reg(REG_B).expect("ERROR: [ADD] invalid register 'b' ID");
         let (res, over) = a.overflowing_add(b);
         let carry = (((a as u8 & b as u8) | ((a as u8 | b as u8) & !(res as u8))) & 0x80) != 0;
         self.cpu.set_sys_flags(self.calc_sys_flags(res, carry, over));
