@@ -42,6 +42,7 @@
 | 0x18   | [IWG address](#iwg-command)      |
 | 0x19   | [GMB](#gmb-command)              |
 | 0x20   | [DIV](#div-command)              |
+| 0x21   | [SHT data dest](#sht-command)    |
 
 
 ### HLT command 
@@ -143,6 +144,13 @@ Performs Bitwise OR operation on destination by source. The result is stored in 
 ### AND command 
 Performs AND operation on destination by source. The result is stored in 'destination'.
 [back](#opcodes)
+
+### SHT command
+The full name is Shift That. Accepts two operands: 
+<br>1. Data – contains the shifting direction in the high bit (similar to a negative number), where 0 means left shift and 1 means right shift, along with the number of shift operations.
+<br>2. Destination – the destination register will be overwritten with the result of the operation.
+<br>After execution, the command restores the high bit.
+<br>[back](#opcodes)
 
 ### PSH command
 The full name is PUSH. Temporarily accepts only register address to copy (push) value from it to stack. You should know how stack is working.
