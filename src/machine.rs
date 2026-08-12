@@ -133,9 +133,8 @@ impl Machine {
         let mut value: i8 = self.cpu.read_reg(dest).expect("ERROR: [SHT] invalid src register ID");
         let mut val_u: u8 = value as u8;
         let neg = val_u & NEGATIVE_U8;
-        val_u &= !NEGATIVE_U8;
         match dir {
-            0 => val_u = (val_u << x) & !NEGATIVE_U8,
+            0 => val_u = (val_u.wrapping_shl(x as u32)) & !NEGATIVE_U8,
             1 => val_u = val_u >> x,
             _ => unreachable!()
         };
