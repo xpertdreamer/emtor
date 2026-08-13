@@ -1,6 +1,6 @@
 > Not fully implemented. Documentation is sucks
 
-### TODO: LEA, Shift instructions (ROL/ROR, Arithmetic & Logic)
+### TODO: LEA, Shift instructions (Arithmetic & Logic)
 ### TODO: PUSH, POP instructions should interact with memory
 ### TODO: 4 sections memory layout
 ### TODO: system flags (sign handler, overflow handler and etc.)
@@ -44,6 +44,7 @@
 | 0x20   | [DIV](#div-command)              |
 | 0x21   | [SHT data dest](#sht-command)    |
 | 0x22   | [SHC data dest](#shc-command)    |
+| 0x23   | [RTR data dest](#rtr-command)    |
 
 
 ### HLT command 
@@ -158,6 +159,13 @@ The full name is Shift with Carry. Accepts two operands:
 <br>1. Data – contains the shifting direction in the high bit (similar to a negative number), where 0 means left shift and 1 means right shift, along with the number of shift operations.
 <br>2. Destination – the destination register will be overwritten with the result of the operation.
 <br>After execution, the command substitutes the value of the carry flag into the vacated extreme bit position.
+<br>[back](#opcodes)
+
+### RTR command
+The full name is RoTate, Retard! Accepts two operands:
+<br>1. Data – contains the shifting direction in the high bit (similar to a negative number), where 0 means left shift and 1 means right shift, along with the number of shift operations.
+<br>2. Destination – the destination register will be overwritten with the result of the operation.
+<br>During execution bits falling off one end of a binary number wrap around to the other end.
 <br>[back](#opcodes)
 
 ### PSH command
