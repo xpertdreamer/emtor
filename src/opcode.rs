@@ -69,6 +69,7 @@ pub enum Opcode {
     DIV,
     SHT{data: u8, dest: u8},
     SHC{data: u8, dest: u8},
+    RTR{data: u8, dest: u8},
 }
 
 impl Opcode {
@@ -181,6 +182,11 @@ impl Opcode {
                 let data = cpu.fetch_next_byte().expect("ERROR: Decode SHC, Memory out of bounds (data)");
                 let dest = cpu.fetch_next_byte().expect("ERROR: Decode SHC, Memory out of bounds (dest)");
                 Some(Opcode::SHC{data, dest})
+            },
+            opcodes::RTR => {
+                let data = cpu.fetch_next_byte().expect("ERROR: Decode RTR, Memory out of bounds (data)");
+                let dest = cpu.fetch_next_byte().expect("ERROR: Decode RTR, Memory out of bounds (dest)");
+                Some(Opcode::RTR{data, dest})
             },
             _ => None
         }
