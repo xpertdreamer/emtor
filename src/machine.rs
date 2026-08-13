@@ -130,6 +130,7 @@ impl Machine {
 
     fn exec_rtr(&mut self, data: u8, dest: u8) {
         // TODO: trace
+        // TODO: replace rotate_left/right with low level shit
         let dir: u8 = (data & NEGATIVE_U8) >> 7;
         let x: u8 = (data & !NEGATIVE_U8) % 8;
         let mut value: i8 = self.cpu.read_reg(dest).expect("ERROR: [RTR] invalid src register ID");
