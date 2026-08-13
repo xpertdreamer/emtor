@@ -486,5 +486,18 @@ mod tests {
         assert_eq!(dump.reg_a, 0x05);
     }
 
+    // 0000 0001 >> 0100 0000
+    #[test]
+    fn rtr() {
+        let cpu = run_test(&[
+            0x0F, 0xC0, 0x01,   // MOC A
+            0x23, 0x82, 0xC0,   // RTR A
+            0x00,               // HLT
+        ]);
+        let dump = cpu.dump();
+        assert_eq!(dump.pc, 7);
+        assert_eq!(dump.reg_a, 0x40u8 as i8);
+    }
+
     // TODO: complicated tests
 }
