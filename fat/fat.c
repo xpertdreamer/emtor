@@ -124,6 +124,18 @@ Tokenized tokenize(Buffer *buf) {
     return (Tokenized){.buf = array, .size = i};
 }
 
+uint8_t* translate(Tokenized* buf) {
+    if (buf == NULL || buf->buf == NULL || buf->size == 0) return NULL;
+    uint8_t* res = malloc(buf->size*sizeof(uint8_t));
+    if (!res) return NULL;
+    for (size_t i = 0; i < buf->size; i++){
+        char* token = buf->buf[i];
+        // TODO: token to byte
+    }
+
+    return res;
+}
+
 int main() {
     Buffer buf = read_file("test.emt");
     strip_nl(&buf);
