@@ -12,7 +12,7 @@ typedef struct {
   const uint8_t argsize; // in bytes
 } Op;
 
-Op table[] = {
+const static Op table[] = {
     {"hlt", 0x00, 0},
     {"add", 0x01, 0},
     {"mov", 0x02, 2},
@@ -127,11 +127,16 @@ Tokenized tokenize(Buffer *buf) {
 uint8_t* translate(Tokenized* buf) {
     if (buf == NULL || buf->buf == NULL || buf->size == 0) return NULL;
     uint8_t* res = malloc(buf->size*sizeof(uint8_t));
+    int c = 0;
     if (!res) return NULL;
     for (size_t i = 0; i < buf->size; i++){
-        char* token = buf->buf[i];
+        const char* token = buf->buf[i];
         // TODO: token to byte
-    }
+        for (int j = 0; j < TABLESIZE; ++j) {
+            if (strcmp(token, table[j].opcode) == 0) {
 
+            }
+        }
+    }
     return res;
 }
