@@ -31,9 +31,7 @@ mod opcodes {
     pub const SHT: u8 = 0x21;
     pub const SHC: u8 = 0x22;
     pub const RTR: u8 = 0x23;
-    pub const BSL: u8 = 0x24; // (like SHL/SHR)
-    // TODO: implement
-    pub const BSA: u8 = 0x25; // (like SAL/SAR)
+    pub const BSL: u8 = 0x24;
 }
 
 #[allow(clippy::upper_case_acronyms)]
