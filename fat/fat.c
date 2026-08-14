@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct {
   const char *opcode;
@@ -46,6 +47,7 @@ Op table[] = {
 };
 
 #define TABLESIZE (sizeof(table) / sizeof(*table))
+#define DELIMITER " "
 
 typedef struct {
     char *data;
@@ -64,11 +66,7 @@ Buffer read_file(char *filename) {
         return (Buffer){.data = NULL, .size = 0};
     }
     len = ftell(fptr);
-    if (len < 0) {
-        fclose(fptr);
-        return (Buffer){.data = NULL, .size = 0};
-    }
-    if (len == 0) {
+    if (len <= 0) {
         fclose(fptr);
         return (Buffer){.data = NULL, .size = 0};
     }
@@ -87,13 +85,29 @@ Buffer read_file(char *filename) {
 void strip_nl(Buffer *buf) {
     if (buf == NULL || buf->data == NULL) return;
     char* b = buf->data;
-    char* q = b;
     while (*b != '\0') {
-        if (*b != '\n') *q++ = *b;
+        if (*b == '\n') *b = ' ';
         b++;
     }
-    *q = '\0';
-    buf->size = (size_t)(q - buf->data);
+}
+
+typedef struct {
+    char** buf;
+    size_t size;
+} Tokenized;
+
+Tokenized tokenize(Buffer *buf) {
+    if (buf == NULL || buf->data == NULL || buf->size == 0) {
+        return (Tokenized){.buf = NULL, .size = 0};
+    }
+    int i = 0;
+    char *p = strtok(buf->data, (const char*)DELIMITER);
+    char** array;
+    while (p != NULL) {
+        array[i++] = p;
+        p = strtok(NULL, (const char*)DELIMITER);
+    }
+    return (Tokenized){.buf = array, .size = i};
 }
 
 int main() {
