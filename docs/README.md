@@ -45,6 +45,7 @@
 | 0x21   | [SHT data dest](#sht-command)    |
 | 0x22   | [SHC data dest](#shc-command)    |
 | 0x23   | [RTR data dest](#rtr-command)    |
+| 0x24   | [BSL data dest](#bsl-command)    |
 
 
 ### HLT command 
@@ -167,6 +168,13 @@ The full name is RoTate, Retard! Accepts two operands:
 <br>2. Destination – the destination register will be overwritten with the result of the operation.
 <br>During execution bits falling off one end of a binary number wrap around to the other end.
 <br>[back](#opcodes)
+
+### BSL command
+The full name is Bit Shift Logic. 
+The full name is RoTate, Retard! Accepts two operands:
+<br>1. Data – contains the shifting direction in the high bit (similar to a negative number), where 0 means left shift and 1 means right shift, along with the number of shift operations.
+<br>2. Destination – the destination register will be overwritten with the result of the operation.
+<br>During execution bits fallig off one end of a binary number replace with zeros.
 
 ### PSH command
 The full name is PUSH. Temporarily accepts only register address to copy (push) value from it to stack. You should know how stack is working.
