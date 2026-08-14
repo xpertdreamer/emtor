@@ -1,11 +1,8 @@
+// parse -> tokenize -> translate
+
 #include <stdint.h>
-
-/* typedef struct { */
-/*     char *data; */
-/*     size_t size; */
-/* } Buffer; */
-
-/* Buffer read_file(char *filename) {} */
+#include <stdio.h>
+#include <stdlib.h>
 
 typedef struct {
   const char *opcode;
@@ -47,3 +44,42 @@ Op table[] = {
     {"rtr", 0x23, 2},
     {"bsl", 0x24, 2}
 };
+
+#define TABLESIZE (sizeof(table) / sizeof(*table))
+
+typedef struct {
+    char *data;
+    size_t size;
+} Buffer;
+
+Buffer read_file(char *filename) {
+    char *buf = NULL;
+    long len;
+    FILE *fptr = fopen(filename, "r");
+    if (fptr == NULL) {
+        return (Buffer){.data = NULL, .size = 0};
+    }
+    if (fseek(fptr, 0, SEEK_END) != 0) {
+        fclose(fptr);
+        return (Buffer){.data = NULL, .size = 0};
+    }
+    len = ftell(fptr);
+    if (len < 0) {
+        fclose(fptr);
+        return (Buffer){.data = NULL, .size = 0};
+    }
+    if (len == 0) {
+        fclose(fptr);
+        return (Buffer){.data = NULL, .size = 0};
+    }
+    rewind(fptr);
+    buf = malloc((size_t)len + 1);
+    if (!buf) {
+        fclose(fptr);
+        return (Buffer){.data = NULL, .size = 0};
+    }
+    size_t n = fread(buf, 1, (size_t)len, fptr);
+    fclose(fptr);
+    buf[n] = '\0';
+    return (Buffer){.data = buf, .size = n};
+}
