@@ -135,14 +135,3 @@ uint8_t* translate(Tokenized* buf) {
 
     return res;
 }
-
-int main() {
-    Buffer buf = read_file("test.emt");
-    strip_nl(&buf);
-    for (size_t i = 0; i < buf.size; ++i) {
-        char ch = *(buf.data + i);
-        printf("%d %c\n", *(buf.data + i), *(buf.data + i));
-    }
-    free(buf.data);
-    return 0;
-}
