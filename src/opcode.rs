@@ -30,9 +30,7 @@ mod opcodes {
     pub const DIV: u8 = 0x20;
     pub const SHT: u8 = 0x21;
     pub const SHC: u8 = 0x22;
-    // TODO: implement
-    pub const RTR: u8 = 0x23; // RoTate, Retard (like ROR/ROL)
-    // TODO: implement
+    pub const RTR: u8 = 0x23;
     pub const BSL: u8 = 0x24; // (like SHL/SHR)
     // TODO: implement
     pub const BSA: u8 = 0x25; // (like SAL/SAR)
@@ -70,6 +68,7 @@ pub enum Opcode {
     SHT{data: u8, dest: u8},
     SHC{data: u8, dest: u8},
     RTR{data: u8, dest: u8},
+    BSL{data: u8, dest: u8},
 }
 
 impl Opcode {
@@ -187,6 +186,11 @@ impl Opcode {
                 let data = cpu.fetch_next_byte().expect("ERROR: Decode RTR, Memory out of bounds (data)");
                 let dest = cpu.fetch_next_byte().expect("ERROR: Decode RTR, Memory out of bounds (dest)");
                 Some(Opcode::RTR{data, dest})
+            },
+            opcodes::BSL => {
+                let data = cpu.fetch_next_byte().expect("ERROR: Decode BSL, Memory out of bounds (data)");
+                let dest = cpu.fetch_next_byte().expect("ERROR: Decode BSL, Memory out of bounds (dest)");
+                Some(Opcode::BSL{data, dest})
             },
             _ => None
         }
