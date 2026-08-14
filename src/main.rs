@@ -499,5 +499,18 @@ mod tests {
         assert_eq!(dump.reg_a, 0x40u8 as i8);
     }
 
+    // 0000 0001 << 0000 0100
+    #[test]
+    fn bsl() {
+        let cpu = run_test(&[
+            0x0F, 0xC0, 0x01,   // MOC A
+            0x24, 0x02, 0xC0,   // BSL A <<
+            0x00,               // HLT
+        ]);
+        let dump = cpu.dump();
+        assert_eq!(dump.pc, 7);
+        assert_eq!(dump.reg_a, 0x04);
+    }
+
     // TODO: complicated tests
 }
