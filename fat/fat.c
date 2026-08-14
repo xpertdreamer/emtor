@@ -97,16 +97,30 @@ typedef struct {
 } Tokenized;
 
 Tokenized tokenize(Buffer *buf) {
-    if (buf == NULL || buf->data == NULL || buf->size == 0) {
+    if (buf == NULL || buf->data == NULL || buf->size == 0) return (Tokenized){.buf = NULL, .size = 0};
+    char* copy = strdup(buf->data);
+    if (!copy) return (Tokenized){.buf = NULL, .size = 0};
+    int c = 0;
+    char *p = strtok(copy, DELIMITER);
+    while (p != NULL) {
+        c++;
+        p = strtok(NULL, DELIMITER);
+    }
+    if (c == 0) {
+        free(copy);
         return (Tokenized){.buf = NULL, .size = 0};
     }
+    free(copy);
+
+    char** array = malloc(c*sizeof(char*));
+    if (!array) return (Tokenized){.buf = NULL, .size = 0};
     int i = 0;
-    char *p = strtok(buf->data, (const char*)DELIMITER);
-    char** array;
+    p = strtok(buf->data, DELIMITER);
     while (p != NULL) {
         array[i++] = p;
-        p = strtok(NULL, (const char*)DELIMITER);
+        p = strtok(NULL, DELIMITER);
     }
+
     return (Tokenized){.buf = array, .size = i};
 }
 
