@@ -124,19 +124,37 @@ Tokenized tokenize(Buffer *buf) {
     return (Tokenized){.buf = array, .size = i};
 }
 
-uint8_t* translate(Tokenized* buf) {
+uint8_t* translate(Tokenized* buf, size_t* out) {
     if (buf == NULL || buf->buf == NULL || buf->size == 0) return NULL;
-    uint8_t* res = malloc(buf->size*sizeof(uint8_t));
+    uint8_t* arr = malloc(buf->size*sizeof(uint8_t));
     int c = 0;
-    if (!res) return NULL;
+    if (!arr) return NULL;
     for (size_t i = 0; i < buf->size; i++){
         const char* token = buf->buf[i];
-        // TODO: token to byte
+        char found = 0;
         for (int j = 0; j < TABLESIZE; ++j) {
             if (strcmp(token, table[j].opcode) == 0) {
-
+                arr[c] = table[j].hex;
+                c++;
+                found = 1;
+                if (table[j].argsize > 0) {
+                    // TODO: handle args
+                }
+                break;
             }
         }
+        if (found == 0) {
+            free(arr);
+            *out = 0;
+            return NULL;
+        }
+    }
+    //uint8_t* res = realloc(res, c * sizeof(uint8_t));
+    *out = c;
+    // return res ? res : arr;
+    return arr;
+}
+
     }
     return res;
 }
