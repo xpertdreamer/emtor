@@ -244,31 +244,40 @@ the second one holds the address of the current stack top. Additionally, there i
 ## Build and run
 To build **emtor** run:
 
-``` makefile
-make -B 
+``` bash
+make 
 ```
 
 To build and run tests:
 
-``` makefile
-make -B test
+``` bash
+make test
 ``` 
 
 To build and run only specific tests:
 
-``` makefile
-make -B test <output=1/0> ARGS="<KEYWORD>"
+``` bash
+make test <output=1/0> ARGS="<KEYWORD>"
 ``` 
 
 To run static analysis (linter):
 
-``` makefile
+``` bash
 make clippy
 ```
 
 To clean all build artifacts:
 
-``` makefile
+``` bash
 make clean
 ```
 
+## ROM loading
+
+To load an assembly file into emtor and execute it you should provide a path to `.emt` file as an argument:
+
+``` bash
+cd target && ./emtor <path-to-file>
+```
+
+For now there are no validation during translation, so please be careful.
