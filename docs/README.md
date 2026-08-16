@@ -3,6 +3,7 @@
 ### TODO: update FAT docs with code sample from machine.rs
 ### TODO: update docs with file loading info
 ### TODO: create examples
+### TODO: tests with load_rom
 ### TODO: put or syscalls
 ### TODO: LEA
 ### TODO: PUSH, POP instructions should interact with memory
