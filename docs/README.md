@@ -1,7 +1,7 @@
 > Not fully implemented. Documentation is sucks
 
-### TODO: update docs with file loading info
 ### TODO: create examples
+### TODO: create a script to run examples
 ### TODO: tests with load_rom
 ### TODO: put or syscalls
 ### TODO: LEA
