@@ -164,7 +164,7 @@ uint8_t* translate(Tokenized* buf, size_t* out) {
     return res ? res : arr;
 }
 
-uint8_t* fat(const char* filename) {
+uint8_t* fat(const char* filename, size_t* size) {
     Buffer buf = read_file(filename);
     if (buf.data == NULL) {
         printf("Error: Failed to read file %s\n", filename);
@@ -185,6 +185,7 @@ uint8_t* fat(const char* filename) {
         printf("Some arguments not providen, or error\n");
         return NULL;
     }
+    if (size != NULL) *size = s;
     return translated;
 }
 
