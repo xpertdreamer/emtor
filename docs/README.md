@@ -274,7 +274,7 @@ make clean
 
 ## ROM loading
 
-To load an assembly file into emtor and execute it you should provide a path to `.emt` file as an argument:
+To load an assembly file into emtor and execute it you should provide a path to `.emt` (recommended, can be any file format) file as an argument:
 
 ``` bash
 cd target && ./emtor <path-to-file>
