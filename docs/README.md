@@ -1,5 +1,9 @@
 > Not fully implemented. Documentation is sucks
 
+### TODO: update FAT docs with code sample from machine.rs
+### TODO: update docs with file loading info
+### TODO: create examples
+### TODO: put or syscalls
 ### TODO: LEA
 ### TODO: PUSH, POP instructions should interact with memory
 ### TODO: 4 sections memory layout
