@@ -1,13 +1,12 @@
 > Not fully implemented. Documentation is sucks
 
-### TODO: create examples
-### TODO: create a script to run examples
 ### TODO: tests with load_rom
 ### TODO: put or syscalls
 ### TODO: LEA
 ### TODO: PUSH, POP instructions should interact with memory
 ### TODO: 4 sections memory layout
 ### TODO: system flags (sign handler, overflow handler and etc.)
+### TODO: create examples
 ### TODO: tests
 ### TODO: error handling
 ### IN PLAN: parser & other cool stuff to load programs from file
