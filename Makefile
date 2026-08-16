@@ -22,6 +22,7 @@ all: $(TARGET)
 $(FAT): fat/fat.c
 	gcc -c fat/fat.c -o $(FAT_OBJ)
 	ar rcs $(FAT) $(FAT_OBJ)
+	rm -f $(FAT_OBJ)
 
 
 $(TARGET): $(SRCS) $(FAT)
