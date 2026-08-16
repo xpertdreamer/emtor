@@ -1,6 +1,5 @@
 > Not fully implemented. Documentation is sucks
 
-### TODO: update FAT docs with code sample from machine.rs
 ### TODO: update docs with file loading info
 ### TODO: create examples
 ### TODO: tests with load_rom
