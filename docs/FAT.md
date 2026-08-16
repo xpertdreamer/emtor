@@ -15,3 +15,48 @@ add
 and 0xC0 0xC2
 hlt
 ```
+
+The C code exposes two functions to Rust:
+
+- ``fat()`` – takes a filename and a pointer to a size variable, returns a pointer to the translated byte array.
+- ``free_translated()`` - frees the allocated memory after the Rust code has finished using it.
+
+<br>Below is an example of the FFI interaction in Rust:
+
+```rust
+unsafe extern "C" {
+    fn fat(filename: *const c_char, size: *mut usize) -> *mut u8;
+    fn free_translated(ptr: *mut u8);
+}
+
+pub fn load_rom(&mut self, filename: String) {
+    unsafe {
+        let c_filename = CString::new(filename).expect("New CString failed");
+        let mut len: usize = 0;
+        let ptr = fat(c_filename.as_ptr(), &mut len);
+        if !ptr.is_null() && len > 0 {
+            self.load_program(slice::from_raw_parts(ptr, len));
+            free_translated(ptr);
+        } else if !ptr.is_null() {
+            self.trace("Size returned by C code is 0");
+            free_translated(ptr);
+        }
+    }
+    self.trace("Rom loaded");
+}
+```
+
+In this Rust code, the load_rom method does the following:
+
+    1. Converts the Rust string into a C-compatible string.
+
+    2. Calls fat() to translate the assembly file into a byte array.
+
+    3. Checks the returned pointer and size:
+
+       * If valid, it loads the program into the emulator using load_program() and then frees the memory.
+
+       * If the size is zero, it logs a warning and still frees the memory.
+
+    4. Logs a confirmation message once the ROM is loaded.
+
