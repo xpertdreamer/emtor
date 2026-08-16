@@ -16,6 +16,8 @@ and 0xC0 0xC2
 hlt
 ```
 
+The translator is written in C and is intended to be used as a backend for the emulator. The C library compiles during the project building process and links with the Rust emulator code. This interact with the emulator's Rust code via FFI (Foreign Function Interface). The interaction is handled on the Rust side
+
 The C code exposes two functions to Rust:
 
 - ``fat()`` – takes a filename and a pointer to a size variable, returns a pointer to the translated byte array.
