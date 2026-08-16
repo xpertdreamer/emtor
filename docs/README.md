@@ -14,6 +14,19 @@
 # emtor
 > Recreational project which have the goal to write an emulator of fictional architecture in Rust
 
+## Table of Contents
+
+- [Opcodes](#opcodes)
+- [CPU Flags Layout](#cpu-flags-layout)
+  - [Compare Flags](#compare-flags)
+  - [System Flags](#system-flags-not-propertly-implemented-yet)
+- [Memory Layout](#memory-layout)
+- [Build and Run](#build-and-run)
+  - [ROM Loading](#rom-loading)
+  - [Running Examples](#running-examples)
+- [TODO](#todo)
+- [IN PLAN](#in-plan)
+
 ## OPCODES
 
 | OPCODE | Command                          |
@@ -271,7 +284,7 @@ To clean all build artifacts:
 make clean
 ```
 
-## ROM loading
+### ROM loading
 
 To load an assembly file into emtor and execute it you should provide a path to `.emt` (recommended, can be any file format) file as an argument:
 
@@ -280,3 +293,23 @@ cd target && ./emtor <path-to-file>
 ```
 
 For now there are no validation during translation, so please be careful.
+
+### Running examples
+
+> [!WARNING]
+<br>
+> Before running any script, please check its code
+
+You can also run examples located in the corresponding directory with providen script:
+
+``` bash
+sh run_example.sh
+```
+
+or 
+
+``` bash
+chmod +x run_example.sh
+./run_example.sh
+```
+
