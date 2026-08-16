@@ -16,16 +16,76 @@
 
 ## Table of Contents
 
+- [Build and Run](#build-and-run)
+  - [ROM Loading](#rom-loading)
+  - [Running Examples](#running-examples)
 - [Opcodes](#opcodes)
 - [CPU Flags Layout](#cpu-flags-layout)
   - [Compare Flags](#compare-flags)
   - [System Flags](#system-flags-not-propertly-implemented-yet)
 - [Memory Layout](#memory-layout)
-- [Build and Run](#build-and-run)
-  - [ROM Loading](#rom-loading)
-  - [Running Examples](#running-examples)
 - [TODO](#todo)
 - [IN PLAN](#in-plan)
+
+
+## Build and run
+To build **emtor** run:
+
+``` bash
+make 
+```
+
+To build and run tests:
+
+``` bash
+make test
+``` 
+
+To build and run only specific tests:
+
+``` bash
+make test <output=1/0> ARGS="<KEYWORD>"
+``` 
+
+To run static analysis (linter):
+
+``` bash
+make clippy
+```
+
+To clean all build artifacts:
+
+``` bash
+make clean
+```
+
+### ROM loading
+
+To load an assembly file into emtor and execute it you should provide a path to `.emt` (recommended, can be any file format) file as an argument:
+
+``` bash
+cd target && ./emtor <path-to-file>
+```
+
+For now there are no validation during translation, so please be careful.
+
+### Running examples
+
+> [!WARNING]
+> Before running any script, please check its code
+
+You can also run examples located in the corresponding directory with providen script:
+
+``` bash
+sh run_example.sh
+```
+
+or 
+
+``` bash
+chmod +x run_example.sh
+./run_example.sh
+```
 
 ## OPCODES
 
@@ -252,64 +312,3 @@ It should be noted that this data is relevant at the current stage of developmen
 As usual, the CPU has a PC (Program Counter) and an SP (Stack Pointer). The first one holds the address of the next instruction in memory to be executed, and 
 the second one holds the address of the current stack top. Additionally, there is a CSP (Call Stack Pointer), which points to the top of the call stack. This pointer is automatically managed by the CPU when IWG and GMB instructions are executed, ensuring that return addresses are properly pushed and popped.
 <br>Keep in mind that registers, even though memory is unsigned, are signed and can only store values ​​in the range -128 to 127, while memory ranges from 0 to 256.
-
-## Build and run
-To build **emtor** run:
-
-``` bash
-make 
-```
-
-To build and run tests:
-
-``` bash
-make test
-``` 
-
-To build and run only specific tests:
-
-``` bash
-make test <output=1/0> ARGS="<KEYWORD>"
-``` 
-
-To run static analysis (linter):
-
-``` bash
-make clippy
-```
-
-To clean all build artifacts:
-
-``` bash
-make clean
-```
-
-### ROM loading
-
-To load an assembly file into emtor and execute it you should provide a path to `.emt` (recommended, can be any file format) file as an argument:
-
-``` bash
-cd target && ./emtor <path-to-file>
-```
-
-For now there are no validation during translation, so please be careful.
-
-### Running examples
-
-> [!WARNING]
-<br>
-> Before running any script, please check its code
-
-You can also run examples located in the corresponding directory with providen script:
-
-``` bash
-sh run_example.sh
-```
-
-or 
-
-``` bash
-chmod +x run_example.sh
-./run_example.sh
-```
-
