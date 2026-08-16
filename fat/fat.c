@@ -48,6 +48,7 @@ const static Op table[] = {
 
 #define TABLESIZE (sizeof(table) / sizeof(*table))
 #define DELIMITER " "
+#define BASE 16
 
 typedef struct {
     char *data;
@@ -127,15 +128,14 @@ Tokenized tokenize(Buffer *buf) {
 uint8_t* translate(Tokenized* buf, size_t* out) {
     if (buf == NULL || buf->buf == NULL || buf->size == 0) return NULL;
     uint8_t* arr = malloc(buf->size*sizeof(uint8_t));
-    int c = 0;
+    size_t c = 0;
     if (!arr) return NULL;
     for (size_t i = 0; i < buf->size; i++){
         const char* token = buf->buf[i];
         char found = 0;
         for (int j = 0; j < TABLESIZE; ++j) {
             if (strcmp(token, table[j].opcode) == 0) {
-                arr[c] = table[j].hex;
-                c++;
+                arr[c++] = table[j].hex;
                 found = 1;
                 if (table[j].argsize > 0) {
                     // TODO: handle args
