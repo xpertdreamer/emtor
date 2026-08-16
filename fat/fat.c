@@ -164,6 +164,26 @@ uint8_t* translate(Tokenized* buf, size_t* out) {
     return res ? res : arr;
 }
 
+uint8_t* fat(const char* filename) {
+    Buffer buf = read_file(filename);
+    if (buf.data == NULL) {
+        printf("Error: Failed to read file %s\n", filename);
+        return NULL;
     }
-    return res;
+    strip_nl(&buf);
+    Tokenized res = tokenize(&buf);
+    if (res.buf == NULL) {
+        printf("Error: Tokenization failed\n");
+        free(buf.data);
+        return NULL;
+    }
+    size_t s = 0;
+    uint8_t* translated = translate(&res, &s);
+    free(buf.data);
+    free(res.buf);
+    if (translated == NULL) {
+        printf("Some arguments not providen, or error\n");
+        return NULL;
+    }
+    return translated;
 }
