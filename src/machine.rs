@@ -414,6 +414,7 @@ impl Machine {
     }
 
     fn exec_div(&mut self) {
+        // TODO: trace
         let mut is_over: bool = false;
         let a = self.cpu.read_reg(REG_A).expect("ERROR: [DIV] invalid register 'a' ID");
         let b = self.cpu.read_reg(REG_B).expect("ERROR: [DIV] invalid register 'b' ID");
@@ -430,6 +431,7 @@ impl Machine {
             eprintln!("ERROR: cannot write DIV result to REG_C");
             self.cpu.halt();
         }
+        self.trace("DIV");
     }
 
     fn exec_jmp(&mut self, address: u16) {
