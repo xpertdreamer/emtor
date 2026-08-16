@@ -1,7 +1,7 @@
 NAME=emtor
 RUSTC=rustc
-RUSTFLAGS=-A unused -O
-CLIPPYFLAGS=-A unused
+RUSTFLAGS=-A unused -O -C link-arg=fat/fat.o
+CLIPPYFLAGS=-A unused -C link-arg=fat/fat.o
 CLIPPY=clippy-driver
 SRC=src
 BUILDDIR=target
