@@ -138,7 +138,17 @@ uint8_t* translate(Tokenized* buf, size_t* out) {
                 arr[c++] = table[j].hex;
                 found = 1;
                 if (table[j].argsize > 0) {
-                    // TODO: handle args
+                    for (int k = 0; k < table[j].argsize; ++k) {
+                        ++i;
+                        if (i >= buf->size) {
+                            free(arr);
+                            *out = 0;
+                            return NULL;
+                        }
+                        const char* arg = buf->buf[i];
+                        uint8_t value = (uint8_t)strtoul(arg, NULL, BASE);
+                        arr[c++] = value;
+                    }
                 }
                 break;
             }
@@ -149,10 +159,9 @@ uint8_t* translate(Tokenized* buf, size_t* out) {
             return NULL;
         }
     }
-    //uint8_t* res = realloc(res, c * sizeof(uint8_t));
+    uint8_t* res = realloc(arr, c * sizeof(uint8_t));
     *out = c;
-    // return res ? res : arr;
-    return arr;
+    return res ? res : arr;
 }
 
     }
