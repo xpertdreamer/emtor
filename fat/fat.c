@@ -55,7 +55,7 @@ typedef struct {
     size_t size;
 } Buffer;
 
-Buffer read_file(char *filename) {
+Buffer read_file(const char *filename) {
     char *buf = NULL;
     long len;
     FILE *fptr = fopen(filename, "r");
