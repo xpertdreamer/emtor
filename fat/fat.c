@@ -187,3 +187,9 @@ uint8_t* fat(const char* filename) {
     }
     return translated;
 }
+
+void free_translated(uint8_t* ptr) {
+    if (ptr != NULL) {
+        free(ptr);
+    }
+}
