@@ -1,3 +1,5 @@
+use crate::machine::Machine;
+
 mod cpu;
 mod reg;
 mod opcode;
@@ -7,6 +9,10 @@ pub const TRACE: bool = true;
 
 fn main() {
     // Thats your sandbox
+    let path = std::env::args().nth(1).expect("No pattern given");
+    let mut cpu = Machine::create();
+    cpu.load_rom(path);
+    cpu.run();
 }
 
 #[cfg(test)]
