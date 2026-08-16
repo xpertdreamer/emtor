@@ -1,5 +1,5 @@
 use crate::{TRACE, cpu::*, opcode::Opcode, reg::{REG_A, REG_B, REG_C}};
-use core::slice;
+use std::slice;
 use std::{ffi::CString, os::raw::c_char};
 
 pub const NEGATIVE_U8: u8 = 0b10000000;
