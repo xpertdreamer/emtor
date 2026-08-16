@@ -1,4 +1,6 @@
 use crate::{TRACE, cpu::*, opcode::Opcode, reg::{REG_A, REG_B, REG_C}};
+use core::slice;
+use std::{ffi::CString, os::raw::c_char};
 
 pub const NEGATIVE_U8: u8 = 0b10000000;
 
@@ -38,6 +40,11 @@ pub struct Machine {
     cpu: Cpu
 }
 
+unsafe extern "C" {
+    fn fat(filename: *const c_char, size: *mut usize) -> *mut u8;
+    fn free_translated(ptr: *mut u8);
+}
+
 impl Machine {
     pub fn create() -> Self {
         Machine {
@@ -59,6 +66,23 @@ impl Machine {
             reg_c: self.cpu.read_reg(REG_C).unwrap_or(0),
             mem: self.cpu.get_mem()
         }
+    }
+
+    pub fn load_rom(&mut self, filename: String) {
+        // TODO: TRACE
+        unsafe {
+            let c_filename = CString::new(filename).expect("New CString failed");
+            let mut len: usize = 0;
+            let ptr = fat(c_filename.as_ptr(), &mut len);
+            if !ptr.is_null() && len > 0 {
+                self.load_program(slice::from_raw_parts(ptr, len));
+                free_translated(ptr);
+            } else if !ptr.is_null() {
+                self.trace("Size returned by C code is 0");
+                free_translated(ptr);
+            }
+        }
+        self.trace("Rom loaded");
     }
 
     pub fn load_program(&mut self, program: &[u8]) {
