@@ -487,6 +487,10 @@ impl Machine {
 
     fn exec_ofs(&mut self, offset: u16) {
         let new_addr = self.cpu.get_pc() + offset;
+        if new_addr >= DATA_SEG_START {
+            eprintln!("ERROR: cannot perform OFS. New address {} out of programm segment", new_addr);
+            self.cpu.halt();
+        }
         self.cpu.set_pc(new_addr);
         self.trace(&format!("OFS, OFFSET={}, NEW={}", offset, new_addr));
     }
