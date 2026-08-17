@@ -1,18 +1,5 @@
 > Not fully implemented. Documentation is sucks
 
-### TODO: dynamic memory size
-### TODO: PUSH, POP instructions should interact with memory
-### TODO: timer and interaprions
-### TODO: io
-### TODO: system flags (sign handler, overflow handler and etc.)
-### TODO: tests with load_rom
-### TODO: create examples
-### TODO: tests
-### TODO: error handling
-### IN PLAN: 4 sections memory layout (Data Pointer)
-### IN PLAN: LEA
-### IN PLAN: syscalls
-### IN PLAN: parser & other cool stuff to load programs from file
 
 # emtor
 > Recreational project which have the goal to write an emulator of fictional architecture in Rust
@@ -320,3 +307,19 @@ It should be noted that this data is relevant at the current stage of developmen
 As usual, the CPU has a PC (Program Counter) and an SP (Stack Pointer). The first one holds the address of the next instruction in memory to be executed, and 
 the second one holds the address of the current stack top. Additionally, there is a CSP (Call Stack Pointer), which points to the top of the call stack. This pointer is automatically managed by the CPU when IWG and GMB instructions are executed, ensuring that return addresses are properly pushed and popped.
 <br>Keep in mind that registers, even though memory is unsigned, are signed and can only store values ​​in the range -128 to 127, while memory ranges from 0 to 256.
+
+### TODO: implement label translation with Label & LabelTable structs
+### TODO: reorganize fat.c
+### TODO: dynamic memory size
+### TODO: PUSH, POP instructions should interact with memory
+### TODO: timer and interaprions
+### TODO: io
+### TODO: system flags (sign handler, overflow handler and etc.)
+### TODO: tests with load_rom
+### TODO: create examples
+### TODO: tests
+### TODO: error handling
+### IN PLAN: 4 sections memory layout (Data Pointer)
+### IN PLAN: LEA
+### IN PLAN: syscalls
+### IN PLAN: parser & other cool stuff to load programs from file

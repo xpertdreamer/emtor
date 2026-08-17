@@ -6,6 +6,14 @@
 #include <string.h>
 
 typedef struct {
+
+} Label;
+
+typedef struct {
+
+} LabT;
+
+typedef struct {
   const char *opcode;
   const uint8_t hex;
   // NOTE: maybe in will be better to rely on the number of arguments
