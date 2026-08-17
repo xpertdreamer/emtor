@@ -49,7 +49,14 @@ static const Op table[] = {
 #define TABLESIZE (sizeof(table) / sizeof(*table))
 
 #define DELIMITER " "
-#define BASE 16
+
+#define BASE_16 16
+#define BASE_10 10
+#define BASE_2  2
+
+#define BASE_PREFIX_SIZE 2
+#define BASE_16_PREFIX   "0x"
+#define BASE_2_PREFIX    "0b"
 
 enum register_hash {
    HASH_A = 1154,
@@ -80,6 +87,21 @@ uint8_t reg_to_hex(const char* regname) {
         case HASH_C: return REG_C_ADDRESS;
         default:     return 0;
     }
+}
+
+uint8_t parse_num(const char* token) {
+    if (token == NULL) {
+        printf("Error occured while parsing number. Returning 0");
+        return 0;
+    }
+    if (strncmp(token, BASE_16_PREFIX, BASE_PREFIX_SIZE) == 0) {
+        return (uint8_t)strtoul(token + BASE_PREFIX_SIZE, NULL, BASE_16);
+    }
+    if (strncmp(token, BASE_2_PREFIX, BASE_PREFIX_SIZE) == 0) {
+        return (uint8_t)strtoul(token + BASE_PREFIX_SIZE, NULL, BASE_2);
+    }
+
+    return (uint8_t)strtoul(token, NULL, BASE_10);
 }
 
 typedef struct {
@@ -184,7 +206,7 @@ uint8_t* translate(Tokenized* buf, size_t* out) {
                             arr[c++] = reg_hex;
                             continue;
                         }
-                        uint8_t value = (uint8_t)strtoul(arg, NULL, BASE);
+                        uint8_t value = parse_num(arg);
                         arr[c++] = value;
                     }
                 }

@@ -1,6 +1,6 @@
-moc A 0x01
+moc A -1
 str A 0x00 0x05
-moc B 0x07
+moc B 7
 add
 psh A
 mov A C
