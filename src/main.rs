@@ -135,7 +135,7 @@ mod tests {
         let emtor = run_test(&[
             0x0F, 0xC0, 0x01,     // MOC
             0x0F, 0xC1, 0x02,     // MOC
-            0x06,                 // CMP
+            0x06, 0xC0, 0xC1,     // CMP
             0x00                  // HLT
         ]);
         let dump = emtor.dump();
@@ -149,7 +149,7 @@ mod tests {
         let emtor = run_test(&[
             0x0F, 0xC0, 0x01,     // MOC
             0x0F, 0xC1, 0x02,     // MOC
-            0x06,                 // CMP
+            0x06, 0xC0, 0xC1,     // CMP
             0x07, 0xAA, 0x0B,     // JCT -> INC B
             0x00,                 // HLT
             0x08, 0xC1,           // INC B
@@ -159,7 +159,7 @@ mod tests {
         assert_eq!(dump.reg_a, 0x01);
         assert_eq!(dump.reg_b, 0x03);
         assert_eq!(dump.flags, 0xAA);
-        assert_eq!(dump.pc, 14);
+        assert_eq!(dump.pc, 16);
     }
 
     #[test]
@@ -212,10 +212,10 @@ mod tests {
     fn lmr() {
         let mut prog: [u8; 201] = [0; 201];
         prog[..5].copy_from_slice(&[
-            0x0E, 0xC0, 0x00, 0xC8,     // LMR
+            0x0E, 0xC0, 0x00, 0x38,     // LMR
             0x00                        // HLT
         ]);
-        prog[0xC8] = 0x63;
+        prog[0x00C8] = 0x63;
         let cpu = run_test(&prog);
         let dump = cpu.dump();
         assert_eq!(dump.mem[0x00C8], 0x63);
