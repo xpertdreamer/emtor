@@ -26,6 +26,13 @@ mod tests {
         cpu
     }
 
+    fn run_test_rom(filename: String) -> Machine{
+        let mut cpu = Machine::create();
+        cpu.load_rom(filename);
+        cpu.run();
+        cpu
+    }
+
     #[test]
     fn add() {
         let emtor = run_test(&[
@@ -518,5 +525,14 @@ mod tests {
         assert_eq!(dump.reg_a, 0x04);
     }
 
+    #[test]
+    fn loading() {
+        let cpu = run_test_rom(String::from("examples/add.emt"));
+        let dump = cpu.dump();
+        assert_eq!(dump.reg_a, 13);
+        assert_eq!(dump.reg_b, 14);
+        assert_eq!(dump.reg_c, 27);
+        assert_eq!(dump.pc, 14);
+    }
     // TODO: complicated tests
 }
