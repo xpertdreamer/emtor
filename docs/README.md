@@ -29,6 +29,7 @@
 - [Memory Layout](#memory-layout)
 - [TODO](#todo)
 - [IN PLAN](#in-plan)
+- [FAT documentation](FAT.md)
 
 
 ## Build and run

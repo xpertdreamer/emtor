@@ -87,7 +87,7 @@ impl Machine {
 
     pub fn load_program(&mut self, program: &[u8]) {
         self.cpu.load_prog(program);
-        self.trace(&format!("Loaded {} lines", program.len()));
+        self.trace(&format!("Loaded {} bytes", program.len()));
     }
 
     pub fn run(&mut self) {
