@@ -269,7 +269,7 @@ impl Machine {
         // TODO: trace
         self.trace("IWG");
         let ret = self.cpu.get_pc();
-        if address >= CALL_STACK_START {
+        if address >= DATA_SEG_START {
             eprintln!("ERROR: [IWG] invalid target address 0x{:04X}", address);
             self.cpu.halt();
             return;

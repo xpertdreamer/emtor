@@ -203,7 +203,7 @@ Little fattie. Takes up space in memory
 [back](#opcodes)
 
 ### STR command 
-The full name is STORE. Just copies the value from register to memory.
+The full name is STORE. Just copies the value from register to memory. The destination address is specified relative to the start of the data segment. The actual physical address is calculated as ``DATA_SEG_START + offset``, where ``DATA_SEG_START`` is the beginning of the data memory section. For example, if ``DATA_SEG_START = 0x0070`` and you write STR A 0x00 0x05, the value from register A will be stored at physical address 0x0075.
 [back](#opcodes)
 
 ### LMR command 
@@ -305,11 +305,15 @@ The CPU uses a single byte flag register to store the results of operations. Eac
 | 0   | `CF` | Carry Flag    |
 
 ## Memory layout
-Currently, the RAM size is 256 bytes, 16 of which are occupied by the stack and other 16 by call stack. A schematic representation is shown below (will be replaced with 4 section memory):
+Currently, the RAM size is 256 bytes, 16 of which are occupied by the stack and other 16 by call stack. A schematic representation is shown below:
 
-`` [   Free: 224 bytes   | Call Stack: 16 bytes |   Stack: 16 bytes   ] ``
+`` [   Programs: 112 bytes   |     Data: 112 bytes    | Call Stack: 16 bytes |   Stack: 16 bytes   ] ``
 
 As illustrated, the stack resides within the  upper portion of memory, leaving 224 bytes for other data, variables, and program use.
+
+> [!NOTE]
+> Data and programs are stored in separate segments. The code segment is read-only and contains the program instructions, while the data segment is read-write and holds other modifiable data (variables and etc.). Memory operations (`STR`, `LMR`) work exclusively with the data segment. The instruction pointer (PC) operates within the code segment.
+
 It should be noted that this data is relevant at the current stage of development [02.08.2026] and the memory is likely to be expanded in the future.
 As usual, the CPU has a PC (Program Counter) and an SP (Stack Pointer). The first one holds the address of the next instruction in memory to be executed, and 
 the second one holds the address of the current stack top. Additionally, there is a CSP (Call Stack Pointer), which points to the top of the call stack. This pointer is automatically managed by the CPU when IWG and GMB instructions are executed, ensuring that return addresses are properly pushed and popped.
