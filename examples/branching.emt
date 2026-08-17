@@ -1,6 +1,6 @@
 moc A 0x01
 moc B 0x02
-cmp
+cmp A B
 jct 0xAA 0x0B
 hlt
 inc B

@@ -41,7 +41,7 @@ pub enum Opcode {
     SUB,
     MUL,
     JMP(u16),
-    CMP,
+    CMP(u8, u8),
     JCT{ mask: u8, address: u16 },
     INC(u8),
     DEC(u8),
@@ -84,11 +84,15 @@ impl Opcode {
             opcodes::ADD => Some(Opcode::ADD),
             opcodes::SUB => Some(Opcode::SUB),
             opcodes::MUL => Some(Opcode::MUL),
-            opcodes::CMP => Some(Opcode::CMP),
             opcodes::NOP => Some(Opcode::NOP),
             opcodes::MOD => Some(Opcode::MOD),
             opcodes::GMB => Some(Opcode::GMB),
             opcodes::DIV => Some(Opcode::DIV),
+            opcodes::CMP => {
+                let l = cpu.fetch_next_byte().expect("ERROR: Decode CMP, Memory out of bound (left)");
+                let r = cpu.fetch_next_byte().expect("ERROR: Decode CMP, Memory out of bound (right)");
+                Some(Opcode::CMP(l, r))
+            },
             opcodes::JMP => {
                 let address = Self::high_end(cpu);
                 Some(Opcode::JMP(address))

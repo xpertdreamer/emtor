@@ -19,7 +19,7 @@ static const Op table[] = {
     {"sub", 0x03, 0},
     {"mul", 0x04, 0},
     {"jmp", 0x05, 2},
-    {"cmp", 0x06, 0},
+    {"cmp", 0x06, 2},
     {"jct", 0x07, 3},
     {"inc", 0x08, 1},
     {"dec", 0x09, 1},

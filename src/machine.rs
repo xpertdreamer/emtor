@@ -110,7 +110,7 @@ impl Machine {
             Opcode::SUB => self.exec_sub(),
             Opcode::MUL => self.exec_mul(),
             Opcode::JMP(address) => self.exec_jmp(address),
-            Opcode::CMP => self.exec_cmp(),
+            Opcode::CMP(left, right) => self.exec_cmp(left, right),
             Opcode::JCT { mask, address } => self.exec_jct(mask, address),
             Opcode::INC(address) => self.exec_inc(address),
             Opcode::DEC(address) => self.exec_dec(address),
@@ -439,19 +439,19 @@ impl Machine {
         self.trace(&format!("JMP, ADDRESS = {}", address));
     }
 
-    fn exec_cmp(&mut self) {
-        let a = self.cpu.read_reg(REG_A).expect("ERROR: [CMP] invalid register 'a' ID");
-        let b = self.cpu.read_reg(REG_B).expect("ERROR: [CMP] invalid register 'b' ID");
-        let f = ((a == b) as u8 * conditional_flags::EQ) |
-                   ((a != b) as u8 * conditional_flags::NE) |
-                   ((a > b) as u8 * conditional_flags::GT)  |
-                   ((a < b) as u8 * conditional_flags::LT)  |
-                   ((a >= b) as u8 * conditional_flags::GE) |
-                   ((a <= b) as u8 * conditional_flags::LE) |
-                   ((a == 0) as u8 * conditional_flags::ZE) |
-                   ((a != 0) as u8 * conditional_flags::NZ);
+    fn exec_cmp(&mut self, left: u8, right: u8) {
+        let l = self.cpu.read_reg(left).expect("ERROR: [CMP] invalid register 'left' ID");
+        let r = self.cpu.read_reg(right).expect("ERROR: [CMP] invalid register 'right' ID");
+        let f = ((l == r)    as u8 * conditional_flags::EQ) |
+                   ((l != r) as u8 * conditional_flags::NE) |
+                   ((l > r)  as u8 * conditional_flags::GT) |
+                   ((l < r)  as u8 * conditional_flags::LT) |
+                   ((l >= r) as u8 * conditional_flags::GE) |
+                   ((l <= r) as u8 * conditional_flags::LE) |
+                   ((l == 0) as u8 * conditional_flags::ZE) |
+                   ((l != 0) as u8 * conditional_flags::NZ);
         self.cpu.set_flags(f);
-        self.trace(&format!("CMP, A = {}, B = {}, F = {:#b}", a, b, f));
+        self.trace(&format!("CMP, LEFT = {}, RIGHT = {}, F = {:#b}", l, r, f));
     }
 
     fn exec_jct(&mut self, mask: u8, address: u16) {
