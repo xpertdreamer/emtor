@@ -10,45 +10,74 @@ typedef struct {
   const uint8_t hex;
   // NOTE: maybe in will be better to rely on the number of arguments
   const uint8_t argsize; // in bytes
+  const uint8_t reg_arguments;
 } Op;
 
 const static Op table[] = {
-    {"hlt", 0x00, 0},
-    {"add", 0x01, 0},
-    {"mov", 0x02, 2},
-    {"sub", 0x03, 0},
-    {"mul", 0x04, 0},
-    {"jmp", 0x05, 2},
-    {"cmp", 0x06, 0},
-    {"jct", 0x07, 3},
-    {"inc", 0x08, 1},
-    {"dec", 0x09, 1},
-    {"ofs", 0x0A, 2},
-    {"jor", 0x0B, 3},
-    {"nop", 0x0C, 0},
-    {"str", 0x0D, 3},
-    {"lmr", 0x0E, 3},
-    {"moc", 0x0F, 2},
-    {"not", 0x10, 1},
-    {"xor", 0x11, 2},
-    {"bor", 0x12, 2},
-    {"and", 0x13, 2},
-    {"jof", 0x14, 2},
-    {"psh", 0x15, 1},
-    {"pop", 0x16, 1},
-    {"mod", 0x17, 0},
-    {"iwg", 0x18, 2},
-    {"gmb", 0x19, 0},
-    {"div", 0x20, 0},
-    {"sht", 0x21, 2},
-    {"shc", 0x22, 2},
-    {"rtr", 0x23, 2},
-    {"bsl", 0x24, 2}
+    {"hlt", 0x00, 0, 0},
+    {"add", 0x01, 0, 0},
+    {"mov", 0x02, 2, 2},
+    {"sub", 0x03, 0, 0},
+    {"mul", 0x04, 0, 0},
+    {"jmp", 0x05, 2, 0},
+    {"cmp", 0x06, 0, 0},
+    {"jct", 0x07, 3, 0},
+    {"inc", 0x08, 1, 1},
+    {"dec", 0x09, 1, 1},
+    {"ofs", 0x0A, 2, 0},
+    {"jor", 0x0B, 3, 0},
+    {"nop", 0x0C, 0, 0},
+    {"str", 0x0D, 3, 1},
+    {"lmr", 0x0E, 3, 1},
+    {"moc", 0x0F, 2, 2},
+    {"not", 0x10, 1, 1},
+    {"xor", 0x11, 2, 2},
+    {"bor", 0x12, 2, 2},
+    {"and", 0x13, 2, 2},
+    {"jof", 0x14, 2, 0},
+    {"psh", 0x15, 1, 1},
+    {"pop", 0x16, 1, 1},
+    {"mod", 0x17, 0, 0},
+    {"iwg", 0x18, 2, 0},
+    {"gmb", 0x19, 0, 0},
+    {"div", 0x20, 0, 0},
+    {"sht", 0x21, 2, 1},
+    {"shc", 0x22, 2, 1},
+    {"rtr", 0x23, 2, 1},
+    {"bsl", 0x24, 2, 1}
 };
 
 #define TABLESIZE (sizeof(table) / sizeof(*table))
+
 #define DELIMITER " "
 #define BASE 16
+
+#define HASH_A 1154
+#define HASH_B 1155
+#define HASH_C 1156
+#define REG_A_ADDRESS 0xC0
+#define REG_B_ADDRESS 0xC1
+#define REG_C_ADDRESS 0xC2
+
+// Reference: http://www.cse.yorku.ca/~oz/hash.html
+unsigned long hash(const char* string) {
+    unsigned long hash = 33;
+    int c;
+    while ( (c = *string++) ) {
+        hash = ((hash << 5) + hash) + c;
+    }
+    return hash;
+}
+
+uint8_t reg_to_hex(const char* regname) {
+    uint8_t address = 0x00;
+    switch (hash(regname)) {
+        case HASH_A: return REG_A_ADDRESS;
+        case HASH_B: return REG_B_ADDRESS;
+        case HASH_C: return REG_C_ADDRESS;
+        default:     return 0;
+    }
+}
 
 typedef struct {
     char *data;
