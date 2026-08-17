@@ -3,8 +3,9 @@
 ### TODO: tests with load_rom
 ### TODO: put or syscalls
 ### TODO: LEA
+### TODO: 4 sections memory layout (Data Pointer)
+### TODO: dynamic memory size
 ### TODO: PUSH, POP instructions should interact with memory
-### TODO: 4 sections memory layout
 ### TODO: system flags (sign handler, overflow handler and etc.)
 ### TODO: create examples
 ### TODO: tests
