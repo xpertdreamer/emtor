@@ -12,8 +12,11 @@ examples=(["add"]="examples/add.emt" ["memory"]="examples/mem.emt" ["branches"]=
 PROJECT_ROOT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 cd "$PROJECT_ROOT"
 TESTNAME=$1
-if [[ "$#" -ne 1 || ! -v examples["$1"] ]]; then
-    echo -e "Usage: $0 <test-name>"
+REBUILD=$2
+if [[ "$#" -ne 2 || ! -v examples["$1"] ]]; then
+    echo -e "Usage: $0 <test-name> <rebuild>"
+    echo "  rebuild (y/n) - Pass 'y' if you want to rebuild entire project before example run"
+    echo ""
     echo "Currently available tests:"
     for i in "${!examples[@]}"
     do
@@ -22,8 +25,7 @@ if [[ "$#" -ne 1 || ! -v examples["$1"] ]]; then
     exit 1
 fi
 
-read -p "Wanna rebuild the project before running tests? (y\n) " rebuild
-if [ "$rebuild" == "y" ]; then
+if [ "$REBUILD" == "y" ]; then
     echo "Rebuilding entire project"
     make -B
 else
