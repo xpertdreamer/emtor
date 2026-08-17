@@ -13,7 +13,7 @@ pub struct Cpu {
     pc: u16,
     sp: u16,
     csp: u16,
-    dp: u16,
+//    dp: u16,
     mem: [u8; MEM_SIZE],
     state: bool
 }
@@ -25,7 +25,7 @@ impl Cpu {
             pc: 0,
             sp: STACK_START,
             csp: CALL_STACK_START,
-            dp: DATA_SEG_START,
+//            dp: DATA_SEG_START,
             mem: [0; MEM_SIZE],
             state: true
         }
@@ -107,7 +107,7 @@ impl Cpu {
     }
 
     pub fn write_mem(&mut self, address: u16, value: u8) -> bool {
-        let addr = self.dp + address;
+        let addr = DATA_SEG_START + address;
         if addr >= CALL_STACK_START {
             eprintln!("ERROR: Attempt to write to stack memory at {:#04X}", addr);
             return false;
