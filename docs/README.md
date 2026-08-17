@@ -1,8 +1,8 @@
 > Not fully implemented. Documentation is sucks
 
-### TODO: LEA
 ### TODO: dynamic memory size
 ### TODO: PUSH, POP instructions should interact with memory
+### TODO: timer and interaprions
 ### TODO: io
 ### TODO: system flags (sign handler, overflow handler and etc.)
 ### TODO: tests with load_rom
@@ -10,6 +10,7 @@
 ### TODO: tests
 ### TODO: error handling
 ### IN PLAN: 4 sections memory layout (Data Pointer)
+### IN PLAN: LEA
 ### IN PLAN: syscalls
 ### IN PLAN: parser & other cool stuff to load programs from file
 
