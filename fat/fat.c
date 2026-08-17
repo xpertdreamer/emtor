@@ -12,7 +12,7 @@ typedef struct {
   const uint8_t argsize; // in bytes
 } Op;
 
-const static Op table[] = {
+static const Op table[] = {
     {"hlt", 0x00, 0},
     {"add", 0x01, 0},
     {"mov", 0x02, 2},
@@ -51,13 +51,17 @@ const static Op table[] = {
 #define DELIMITER " "
 #define BASE 16
 
-#define HASH_A 1154
-#define HASH_B 1155
-#define HASH_C 1156
+enum register_hash {
+   HASH_A = 1154,
+   HASH_B = 1155,
+   HASH_C = 1156
+};
 
-#define REG_A_ADDRESS 0xC0
-#define REG_B_ADDRESS 0xC1
-#define REG_C_ADDRESS 0xC2
+enum register_address {
+   REG_A_ADDRESS = 0xC0,
+   REG_B_ADDRESS = 0xC1,
+   REG_C_ADDRESS = 0xC2,
+};
 
 // Reference: http://www.cse.yorku.ca/~oz/hash.html
 unsigned long hash(const char* string) {
@@ -70,7 +74,6 @@ unsigned long hash(const char* string) {
 }
 
 uint8_t reg_to_hex(const char* regname) {
-    uint8_t address = 0x00;
     switch (hash(regname)) {
         case HASH_A: return REG_A_ADDRESS;
         case HASH_B: return REG_B_ADDRESS;
@@ -162,7 +165,7 @@ uint8_t* translate(Tokenized* buf, size_t* out) {
     for (size_t i = 0; i < buf->size; i++){
         const char* token = buf->buf[i];
         char found = 0;
-        for (int j = 0; j < TABLESIZE; ++j) {
+        for (int j = 0; j < (int)TABLESIZE; ++j) {
             if (strcmp(token, table[j].opcode) == 0) {
                 arr[c++] = table[j].hex;
                 found = 1;
@@ -175,9 +178,9 @@ uint8_t* translate(Tokenized* buf, size_t* out) {
                             return NULL;
                         }
                         const char* arg = buf->buf[i];
-                        const uint8_t is_reg = reg_to_hex(arg);
-                        if (is_reg != 0) {
-                            arr[c++] = is_reg;
+                        const uint8_t reg_hex = reg_to_hex(arg);
+                        if (reg_hex != 0) {
+                            arr[c++] = reg_hex;
                             continue;
                         }
                         uint8_t value = (uint8_t)strtoul(arg, NULL, BASE);
