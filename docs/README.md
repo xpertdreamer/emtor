@@ -7,6 +7,7 @@
 ### TODO: dynamic memory size
 ### TODO: PUSH, POP instructions should interact with memory
 ### TODO: system flags (sign handler, overflow handler and etc.)
+### TODO: io
 ### TODO: create examples
 ### TODO: tests
 ### TODO: error handling
