@@ -97,8 +97,9 @@ impl Cpu {
     }
 
     pub fn read_mem(&self, address: u16) -> Option<u8> {
-        if (address as usize) < MEM_SIZE {
-            Some(self.mem[address as usize])
+        let addr = DATA_SEG_START + address;
+        if (addr as usize) < MEM_SIZE {
+            Some(self.mem[addr as usize])
         } else {
             None
         }
