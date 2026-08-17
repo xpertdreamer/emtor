@@ -173,6 +173,7 @@ uint8_t* translate(Tokenized* buf, size_t* out) {
                     for (int k = 0; k < table[j].argsize; ++k) {
                         ++i;
                         if (i >= buf->size) {
+                            printf("Memory out of bound during translation at byte %#x\n", (unsigned int)i);
                             free(arr);
                             *out = 0;
                             return NULL;
@@ -191,6 +192,7 @@ uint8_t* translate(Tokenized* buf, size_t* out) {
             }
         }
         if (found == 0) {
+            printf("Unknown instruction occoured at byte %#x. Abort\n", (unsigned int)i);
             free(arr);
             *out = 0;
             return NULL;

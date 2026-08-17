@@ -75,12 +75,17 @@ impl Machine {
             let c_filename = CString::new(filename).expect("New CString failed");
             let mut len: usize = 0;
             let ptr = fat(c_filename.as_ptr(), &mut len);
+            if ptr.is_null() {
+                eprintln!("ERROR: Pointer returned by C code is NULL");
+                return;
+            }
             if !ptr.is_null() && len > 0 {
                 self.load_program(slice::from_raw_parts(ptr, len));
                 free_translated(ptr);
             } else if !ptr.is_null() {
-                self.trace("Size returned by C code is 0");
+                eprintln!("ERROR: Size returned by C code is 0");
                 free_translated(ptr);
+                return;
             }
         }
         self.trace("Rom loaded");
