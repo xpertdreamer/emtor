@@ -1,7 +1,6 @@
 > Not fully implemented. Documentation is sucks
 
 ### TODO: LEA
-### TODO: 4 sections memory layout (Data Pointer)
 ### TODO: dynamic memory size
 ### TODO: PUSH, POP instructions should interact with memory
 ### TODO: io
@@ -10,6 +9,7 @@
 ### TODO: create examples
 ### TODO: tests
 ### TODO: error handling
+### IN PLAN: 4 sections memory layout (Data Pointer)
 ### IN PLAN: syscalls
 ### IN PLAN: parser & other cool stuff to load programs from file
 

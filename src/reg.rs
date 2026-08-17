@@ -1,13 +1,13 @@
-pub const REG_A: u8 = 0xC0;
-pub const REG_B: u8 = 0xC1;
-pub const REG_C: u8 = 0xC2;
+pub const REG_A:  u8 = 0xC0;
+pub const REG_B:  u8 = 0xC1;
+pub const REG_C:  u8 = 0xC2;
 
 pub struct Regs {
     pub a: i8,
     pub b: i8,
     pub c: i8,
     pub f: u8,
-    pub sf: u8
+    pub sf: u8,
 }
 
 impl Regs {

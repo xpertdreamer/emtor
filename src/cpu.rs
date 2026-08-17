@@ -13,7 +13,6 @@ pub struct Cpu {
     pc: u16,
     sp: u16,
     csp: u16,
-//    dp: u16,
     mem: [u8; MEM_SIZE],
     state: bool
 }
@@ -25,7 +24,6 @@ impl Cpu {
             pc: 0,
             sp: STACK_START,
             csp: CALL_STACK_START,
-//            dp: DATA_SEG_START,
             mem: [0; MEM_SIZE],
             state: true
         }
