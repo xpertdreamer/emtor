@@ -100,7 +100,7 @@ chmod +x run_example.sh
 | 0x03   | [SUB](#sub-command)              |
 | 0x04   | [MUL](#mul-command)              |
 | 0x05   | [JMP address](#jmp-command)      |
-| 0x06   | [CMP](#cmp-command)              |
+| 0x06   | [CMP reg reg](#cmp-command)      |
 | 0x07   | [JCT mask address](#jct-command) |
 | 0x08   | [INC address](#inc-command)      |
 | 0x09   | [DEC address](#dec-command)      |
@@ -171,8 +171,8 @@ and then they form a single address:
 [back](#opcodes)
 
 ### CMP command 
-Compares register A with register B and sets the flag register accordingly. All flags are updated based on the comparison result. The flag layout is given in the section [CPU Flags Layout](#cpu-flags-layout)
-[back](#opcodes)
+Compares register ``left`` with register ``right`` and sets the flag register accordingly. All flags are updated based on the comparison result. The flag layout is given in the section [CPU Flags Layout](#cpu-flags-layout)
+<br>[back](#opcodes)
 
 ### JCT command 
 Performs a conditional jump based on the flag mask. The instruction checks if all bits in the mask are set in the flag register. Format: JCT mask address
