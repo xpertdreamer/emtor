@@ -1,9 +1,9 @@
 use crate::reg::*;
 
 pub const MEM_SIZE: usize = 256;
-pub const STACK_SIZE: usize = 16;
+pub const STACK_SIZE: usize = MEM_SIZE / 16;
 pub const STACK_START: u16 = MEM_SIZE as u16 - STACK_SIZE as u16;
-pub const CALL_STACK_SIZE: usize = 16;
+pub const CALL_STACK_SIZE: usize = MEM_SIZE / 16;
 pub const CALL_STACK_START: u16 = STACK_START  - CALL_STACK_SIZE as u16;
 pub const DATA_SEG_SIZE: usize = (MEM_SIZE - STACK_SIZE - CALL_STACK_SIZE) / 2;
 pub const DATA_SEG_START: u16 = (MEM_SIZE - DATA_SEG_SIZE) as u16;
