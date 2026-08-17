@@ -524,12 +524,12 @@ impl Machine {
 
     fn exec_lmr(&mut self, register_addr: u8, mem_addr: u16) {
         // TODO: should handle sys flags (OF)
-        let value = self.cpu.read_mem(mem_addr).expect("ERROR: [LMR] invalid memory address");
+        let value = self.cpu.read_data(mem_addr).expect(&format!("ERROR: [LMR] invalid memory address 0x{:04x}", mem_addr + DATA_SEG_START));
         if !self.cpu.write_reg(register_addr, value as i8) {
-            eprintln!("ERROR: cannot perform LMR from address 0x{:04X}", mem_addr);
+            eprintln!("ERROR: cannot perform LMR from address 0x{:04X}", mem_addr + DATA_SEG_START);
             self.cpu.halt();
         }
-        self.trace(&format!("LMR, mem[0x{:04X}] => {} ({})", mem_addr, match register_addr { REG_A => "A", REG_B => "B", REG_C => "C", _ => "?" }, value));
+        self.trace(&format!("LMR, mem[0x{:04X}] => {} ({})", mem_addr + DATA_SEG_START, match register_addr { REG_A => "A", REG_B => "B", REG_C => "C", _ => "?" }, value));
     }
 
     fn exec_not(&mut self, register_addr: u8) {
