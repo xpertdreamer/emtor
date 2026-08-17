@@ -1,16 +1,16 @@
 > Not fully implemented. Documentation is sucks
 
-### TODO: tests with load_rom
-### TODO: put or syscalls
 ### TODO: LEA
 ### TODO: 4 sections memory layout (Data Pointer)
 ### TODO: dynamic memory size
 ### TODO: PUSH, POP instructions should interact with memory
-### TODO: system flags (sign handler, overflow handler and etc.)
 ### TODO: io
+### TODO: system flags (sign handler, overflow handler and etc.)
+### TODO: tests with load_rom
 ### TODO: create examples
 ### TODO: tests
 ### TODO: error handling
+### IN PLAN: syscalls
 ### IN PLAN: parser & other cool stuff to load programs from file
 
 # emtor

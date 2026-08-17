@@ -5,12 +5,15 @@ pub const STACK_SIZE: usize = 16;
 pub const STACK_START: u16 = MEM_SIZE as u16 - STACK_SIZE as u16;
 pub const CALL_STACK_SIZE: usize = 16;
 pub const CALL_STACK_START: u16 = STACK_START  - CALL_STACK_SIZE as u16;
+pub const DATA_SEG_SIZE: usize = (MEM_SIZE - STACK_SIZE - CALL_STACK_SIZE) / 2;
+pub const DATA_SEG_START: u16 = (MEM_SIZE - DATA_SEG_SIZE) as u16;
 
 pub struct Cpu {
     regs: Regs,
     pc: u16,
     sp: u16,
     csp: u16,
+    dp: u16,
     mem: [u8; MEM_SIZE],
     state: bool
 }
@@ -22,6 +25,7 @@ impl Cpu {
             pc: 0,
             sp: STACK_START,
             csp: CALL_STACK_START,
+            dp: DATA_SEG_START,
             mem: [0; MEM_SIZE],
             state: true
         }
@@ -68,8 +72,8 @@ impl Cpu {
     }
 
     pub fn load_prog(&mut self, data: &[u8]) {
-        if data.len() > STACK_START as usize {
-            eprintln!("WARNING: Program size exceeds stack start at {}", STACK_START);
+        if data.len() > DATA_SEG_START as usize {
+            eprintln!("WARNING: Program size exceeds data segment at {}", DATA_SEG_START);
         }
         for (i, &byte) in data.iter().enumerate() {
             self.mem[i] = byte;
@@ -103,14 +107,16 @@ impl Cpu {
     }
 
     pub fn write_mem(&mut self, address: u16, value: u8) -> bool {
-        if address >= CALL_STACK_START  {
-            eprintln!("ERROR: Attempt to write to stack memory at {:#04X}", address);
+        let addr = self.dp + address;
+        if addr >= CALL_STACK_START {
+            eprintln!("ERROR: Attempt to write to stack memory at {:#04X}", addr);
             return false;
         }
-        if (address as usize) < MEM_SIZE {
-            self.mem[address as usize] = value;
+        if (addr as usize) < MEM_SIZE {
+            self.mem[addr as usize] = value;
             true
         } else {
+            eprintln!("ERROR: Memory out of bounds at {:#04X}", addr);
             false
         }
     }

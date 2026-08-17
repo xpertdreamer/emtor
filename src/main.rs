@@ -17,7 +17,7 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
-    use crate::machine::Machine;
+    use crate::{cpu::DATA_SEG_START, machine::Machine};
 
     fn run_test(program: &[u8]) -> Machine {
         let mut cpu = Machine::create();
@@ -199,13 +199,13 @@ mod tests {
     fn str() {
         let cpu = run_test(&[
             0x0F, 0xC0, 0x01,           // MOC
-            0x0D, 0xC0, 0x00, 0x96,     // STR
+            0x0D, 0xC0, 0x00, 0x00,     // STR
             0x00                        // HLT
         ]);
         let dump = cpu.dump();
         assert_eq!(dump.pc, 8);
         assert_eq!(dump.reg_a, 1);
-        assert_eq!(dump.mem[0x0096], 0x01);
+        assert_eq!(dump.mem[DATA_SEG_START as usize], 0x01);
     }
 
     #[test]
