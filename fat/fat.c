@@ -70,6 +70,25 @@ static const Op table[] = {
 #define BASE_16_PREFIX   "0x"
 #define BASE_2_PREFIX    "0b"
 
+LabT init_lable_table() {
+    Label* buck = malloc(sizeof(*buck) * INITIAL_LABEL_TABLE_CAPACITY);
+    if (buck == NULL) {
+        printf("ERROR: Can not initialize table of labels (buck is NULL)\n");
+        return (LabT){.bucket = NULL, .cap = 0, .size = 0};
+    }
+    return (LabT){.bucket = buck, .cap = INITIAL_LABEL_TABLE_CAPACITY, .size = 0};
+}
+
+char add_lable_table(LabT* table, Label* label) {
+    if (table == NULL || label == NULL) {
+        printf("ERROR: Failed to add label to table\n");
+        return 0;
+    }
+    // check if table capacity colliding with size and resize if needed
+
+    return 1;
+}
+
 enum register_hash {
    HASH_A = 1154,
    HASH_B = 1155,
@@ -191,16 +210,8 @@ Tokenized tokenize(Buffer *buf) {
     return (Tokenized){.buf = array, .size = i};
 }
 
-LabT init_lable_table() {
-    Label* buck = malloc(sizeof(*buck) * INITIAL_LABEL_TABLE_CAPACITY);
-    if (buck == NULL) {
-        printf("ERROR: Can not initialize table of labels (buck is NULL)");
-        return (LabT){.bucket = NULL, .cap = 0, .size = 0};
-    }
-    return (LabT){.bucket = buck, .cap = INITIAL_LABEL_TABLE_CAPACITY, .size = 0};
-}
-
-uint8_t* translate(Tokenized* buf, size_t* out) {
+uint8_t* translate(Tokenized* buf, size_t* out, LabT* label_table) {
+    // TODO: handle labels
     if (buf == NULL || buf->buf == NULL || buf->size == 0) return NULL;
     uint8_t* arr = malloc(buf->size*sizeof(uint8_t));
     size_t c = 0;
@@ -259,10 +270,12 @@ uint8_t* fat(const char* filename, size_t* size) {
         free(buf.data);
         return NULL;
     }
+    LabT label_table = init_lable_table();
     size_t s = 0;
-    uint8_t* translated = translate(&res, &s);
+    uint8_t* translated = translate(&res, &s, &label_table);
     free(buf.data);
     free(res.buf);
+    free(label_table.bucket);
     if (translated == NULL) {
         printf("Some arguments not providen, or error\n");
         return NULL;
