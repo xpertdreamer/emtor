@@ -158,6 +158,21 @@ void strip_nl(Buffer *buf) {
     }
 }
 
+void strip_comments(Buffer *buf) {
+    if (buf == NULL || buf->data == NULL) return;
+    char* b = buf->data;
+    char in = 0;
+    while (*b != '\0') {
+        if (*b == ';') {
+            *b = ' ';
+            in = 1;
+        }
+        if (*b == '\n') in = 0;
+        if (in) *b = ' ';
+        b++;
+    }
+}
+
 typedef struct {
     char** buf;
     size_t size;
@@ -335,6 +350,7 @@ uint8_t* fat(const char* filename, size_t* size) {
         printf("Error: Failed to read file %s\n", filename);
         return NULL;
     }
+    strip_comments(&buf);
     strip_nl(&buf);
     Tokenized res = tokenize(&buf);
     if (res.buf == NULL) {

@@ -8,7 +8,8 @@
 # 5. https://stackoverflow.com/questions/59895/how-do-i-get-the-directory-where-a-bash-script-is-located-from-within-the-script
 
 declare -A examples
-examples=(["add"]="examples/add.emt" ["memory"]="examples/mem.emt" ["jct"]="examples/branching.emt" ["jor"]="examples/branching2.emt" ["jmp"]="examples/branching3.emt")
+examples=(["add"]="examples/add.emt" ["memory"]="examples/mem.emt" ["jct"]="examples/branching.emt" ["jor"]="examples/branching2.emt" ["jmp"]="examples/branching3.emt"
+         ["comments"]="examples/comment.emt")
 PROJECT_ROOT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 cd "$PROJECT_ROOT"
 TESTNAME=$1
