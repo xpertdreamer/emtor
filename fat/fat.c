@@ -60,7 +60,8 @@ static const Op table[] = {
 #define TABLESIZE (sizeof(table) / sizeof(*table))
 #define INITIAL_LABEL_TABLE_CAPACITY 10
 
-#define DELIMITER " "
+#define DELIMITER  " "
+#define LABEL_MARK "#"
 
 #define BASE_16 16
 #define BASE_10 10
@@ -69,25 +70,6 @@ static const Op table[] = {
 #define BASE_PREFIX_SIZE 2
 #define BASE_16_PREFIX   "0x"
 #define BASE_2_PREFIX    "0b"
-
-LabT init_lable_table() {
-    Label* buck = malloc(sizeof(*buck) * INITIAL_LABEL_TABLE_CAPACITY);
-    if (buck == NULL) {
-        printf("ERROR: Can not initialize table of labels (buck is NULL)\n");
-        return (LabT){.bucket = NULL, .cap = 0, .size = 0};
-    }
-    return (LabT){.bucket = buck, .cap = INITIAL_LABEL_TABLE_CAPACITY, .size = 0};
-}
-
-char add_lable_table(LabT* table, Label* label) {
-    if (table == NULL || label == NULL) {
-        printf("ERROR: Failed to add label to table\n");
-        return 0;
-    }
-    // check if table capacity colliding with size and resize if needed
-
-    return 1;
-}
 
 enum register_hash {
    HASH_A = 1154,
@@ -208,6 +190,36 @@ Tokenized tokenize(Buffer *buf) {
     }
 
     return (Tokenized){.buf = array, .size = i};
+}
+
+LabT init_lable_table() {
+    Label* buck = malloc(sizeof(*buck) * INITIAL_LABEL_TABLE_CAPACITY);
+    if (buck == NULL) {
+        printf("ERROR: Can not initialize table of labels (buck is NULL)\n");
+        return (LabT){.bucket = NULL, .cap = 0, .size = 0};
+    }
+    return (LabT){.bucket = buck, .cap = INITIAL_LABEL_TABLE_CAPACITY, .size = 0};
+}
+
+char add_lable_table(LabT* table, Label* label) {
+    if (table == NULL || table->bucket == NULL || label == NULL) {
+        printf("ERROR: Failed to add label to table\n");
+        return 0;
+    }
+    // check if table capacity colliding with size and resize if needed
+    if (table->cap == table->size) {
+        size_t cap_rep = table->cap == 0 ? INITIAL_LABEL_TABLE_CAPACITY : table->cap * 2;
+        Label* bucket_rep = realloc(table->bucket, sizeof(*bucket_rep) * cap_rep);
+        if (bucket_rep == NULL) {
+            printf("ERROR: Memory reallocation failed in add_label");
+            return 0;
+        }
+        table->bucket = bucket_rep;
+        table->cap = cap_rep;
+    }
+    table->bucket[table->size] = *label;
+    table->size++;
+    return 1;
 }
 
 uint8_t* translate(Tokenized* buf, size_t* out, LabT* label_table) {
