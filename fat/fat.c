@@ -6,11 +6,14 @@
 #include <string.h>
 
 typedef struct {
-
+    const char* name;
+    uint16_t address;
 } Label;
 
 typedef struct {
-
+    Label* bucket;
+    size_t size;
+    size_t cap;
 } LabT;
 
 typedef struct {
@@ -185,6 +188,10 @@ Tokenized tokenize(Buffer *buf) {
     }
 
     return (Tokenized){.buf = array, .size = i};
+}
+
+Label* init_lable_table() {
+
 }
 
 uint8_t* translate(Tokenized* buf, size_t* out) {
