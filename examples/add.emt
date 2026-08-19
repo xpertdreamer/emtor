@@ -1,5 +1,5 @@
 moc A 0x0C
-moc B 0x02
+moc B 0b10
 add
 inc A
 mov B C
