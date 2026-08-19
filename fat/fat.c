@@ -19,7 +19,6 @@ typedef struct {
 typedef struct {
   const char *opcode;
   const uint8_t hex;
-  // NOTE: maybe in will be better to rely on the number of arguments
   const uint8_t argsize; // in bytes (label name counts as 1 byte)
 } Op;
 
@@ -29,7 +28,7 @@ static const Op table[] = {
     {"mov", 0x02, 2},
     {"sub", 0x03, 0},
     {"mul", 0x04, 0},
-    {"jmp", 0x05, 2},
+    {"jmp", 0x05, 1},
     {"cmp", 0x06, 2},
     {"jct", 0x07, 2},
     {"inc", 0x08, 1},
@@ -44,7 +43,7 @@ static const Op table[] = {
     {"xor", 0x11, 2},
     {"bor", 0x12, 2},
     {"and", 0x13, 2},
-    {"jof", 0x14, 2},
+    {"jof", 0x14, 1},
     {"psh", 0x15, 1},
     {"pop", 0x16, 1},
     {"mod", 0x17, 0},
