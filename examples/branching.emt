@@ -1,7 +1,8 @@
 moc A 0x01
 moc B 0x02
 cmp A B
-jct 0xAA 0x0B
+jct 0xAA label
 hlt
+# label
 inc B
 hlt

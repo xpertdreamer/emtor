@@ -20,7 +20,7 @@ typedef struct {
   const char *opcode;
   const uint8_t hex;
   // NOTE: maybe in will be better to rely on the number of arguments
-  const uint8_t argsize; // in bytes
+  const uint8_t argsize; // in bytes (label name counts as 1 byte)
 } Op;
 
 static const Op table[] = {
@@ -31,11 +31,11 @@ static const Op table[] = {
     {"mul", 0x04, 0},
     {"jmp", 0x05, 2},
     {"cmp", 0x06, 2},
-    {"jct", 0x07, 3},
+    {"jct", 0x07, 2},
     {"inc", 0x08, 1},
     {"dec", 0x09, 1},
     {"ofs", 0x0A, 2},
-    {"jor", 0x0B, 3},
+    {"jor", 0x0B, 2},
     {"nop", 0x0C, 0},
     {"str", 0x0D, 3},
     {"lmr", 0x0E, 3},
@@ -222,6 +222,36 @@ char add_lable_table(LabT* table, Label* label) {
     return 1;
 }
 
+uint16_t find_label(LabT* table, const char* name) {
+    if (table == NULL || table->bucket == NULL) {
+        printf("ERROR: Failed to find label '%s'\n", name);
+        return 0;
+    }
+    for (size_t i = 0; i < table->size; ++i) {
+        if (strcmp(table->bucket[i].name, name) == 0)
+            return table->bucket[i].address;
+    }
+    printf("ERROR: Failed to translate, label '%s' not found in table\n", name);
+    return 0;
+}
+
+char collect_labels(Tokenized* buf, LabT* label_table) {
+    // TODO: handle address
+    for (size_t i = 0; i < buf->size; i++) {
+        const char* token = buf->buf[i];
+        if (strcmp(token, LABEL_MARK) == 0) {
+            if (i + 1 >= buf->size) {
+                printf("ERROR: Label mark with no label name at address %zu\n", c);
+                return 0;
+            }
+            ++i;
+            add_lable_table(label_table, &(Label){.name = strdup(buf->buf[i]), .address = c});
+            continue;
+        }
+        // todo
+    }
+}
+
 uint8_t* translate(Tokenized* buf, size_t* out, LabT* label_table) {
     // TODO: handle labels
     if (buf == NULL || buf->buf == NULL || buf->size == 0) return NULL;
@@ -245,6 +275,15 @@ uint8_t* translate(Tokenized* buf, size_t* out, LabT* label_table) {
                             return NULL;
                         }
                         const char* arg = buf->buf[i];
+                        if ((strcmp(token, "jmp") == 0 || strcmp(token, "jof") == 0)
+                            || ((strcmp(token, "jor") == 0 || strcmp(token, "jct" ) == 0) && k == 1)) {
+                            uint16_t label_addr = find_label(label_table, arg);
+                            uint8_t high = (uint8_t)(label_addr >> 8);
+                            uint8_t low = (uint8_t)(label_addr & 0xFF);
+                            arr[c++] = high;
+                            arr[c++] = low;
+                            continue;
+                        }
                         const uint8_t reg_hex = reg_to_hex(arg);
                         if (reg_hex != 0) {
                             arr[c++] = reg_hex;
@@ -287,12 +326,14 @@ uint8_t* fat(const char* filename, size_t* size) {
     uint8_t* translated = translate(&res, &s, &label_table);
     free(buf.data);
     free(res.buf);
+    for (size_t i = 0; i < label_table.size; ++i) free((void*)label_table.bucket[i].name);
     free(label_table.bucket);
     if (translated == NULL) {
         printf("Some arguments not providen, or error\n");
         return NULL;
     }
     if (size != NULL) *size = s;
+    fflush(stdout);
     return translated;
 }
 
