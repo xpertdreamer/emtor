@@ -235,9 +235,11 @@ uint16_t find_label(LabT* table, const char* name) {
 }
 
 char collect_labels(Tokenized* buf, LabT* label_table) {
-    // TODO: handle address
+    if (buf == NULL || buf->buf == NULL || buf->size == 0) return 0;
+    size_t c = 0;
     for (size_t i = 0; i < buf->size; i++) {
         const char* token = buf->buf[i];
+        char found = 0;
         if (strcmp(token, LABEL_MARK) == 0) {
             if (i + 1 >= buf->size) {
                 printf("ERROR: Label mark with no label name at address %zu\n", c);
@@ -245,40 +247,66 @@ char collect_labels(Tokenized* buf, LabT* label_table) {
             }
             ++i;
             add_lable_table(label_table, &(Label){.name = strdup(buf->buf[i]), .address = c});
+            printf("New label at address %zu\n", c);
             continue;
         }
-        // todo
-    }
-}
-
-uint8_t* translate(Tokenized* buf, size_t* out, LabT* label_table) {
-    // TODO: handle labels
-    if (buf == NULL || buf->buf == NULL || buf->size == 0) return NULL;
-    uint8_t* arr = malloc(buf->size*sizeof(uint8_t));
-    size_t c = 0;
-    if (!arr) return NULL;
-    for (size_t i = 0; i < buf->size; i++){
-        const char* token = buf->buf[i];
-        char found = 0;
         for (int j = 0; j < (int)TABLESIZE; ++j) {
             if (strcmp(token, table[j].opcode) == 0) {
-                arr[c++] = table[j].hex;
+                c++;
                 found = 1;
                 if (table[j].argsize > 0) {
                     for (int k = 0; k < table[j].argsize; ++k) {
                         ++i;
                         if (i >= buf->size) {
-                            printf("Memory out of bound during translation at byte %#x\n", (unsigned int)i);
-                            free(arr);
-                            *out = 0;
-                            return NULL;
+                            printf("Memory out of bound during collecting labels at byte %#x\n", (unsigned int)i);
+                            return 0;
                         }
+                        if (strcmp(token, "jmp") == 0 || strcmp(token, "jof") == 0) {
+                            c+=2;
+                            continue;
+                        }
+                        if ((strcmp(token, "jor") == 0 || strcmp(token, "jct" ) == 0) && k == 1) {
+                            c+=2;
+                            continue;
+                        }
+                        c++;
+                    }
+                }
+                break;
+            }
+        }
+        if (found == 0) {
+            printf("Unknown instruction occoured at byte %#x. Abort\n", (unsigned int)i);
+            return 0;
+        }
+    }
+    return 1;
+}
+
+uint8_t* translate(Tokenized* buf, size_t* out, LabT* label_table) {
+    if (buf == NULL || buf->buf == NULL || buf->size == 0) return NULL;
+    uint8_t* arr = malloc(buf->size*sizeof(uint8_t));
+    if (!arr) return NULL;
+    size_t c = 0;
+    for (size_t i = 0; i < buf->size; i++){
+        const char* token = buf->buf[i];
+        if (strcmp(token, LABEL_MARK) == 0) {
+            i ++;
+            continue;
+        }
+        for (int j = 0; j < (int)TABLESIZE; ++j) {
+            if (strcmp(token, table[j].opcode) == 0) {
+                arr[c++] = table[j].hex;
+                if (table[j].argsize > 0) {
+                    for (int k = 0; k < table[j].argsize; ++k) {
+                        ++i;
                         const char* arg = buf->buf[i];
                         if ((strcmp(token, "jmp") == 0 || strcmp(token, "jof") == 0)
                             || ((strcmp(token, "jor") == 0 || strcmp(token, "jct" ) == 0) && k == 1)) {
                             uint16_t label_addr = find_label(label_table, arg);
                             uint8_t high = (uint8_t)(label_addr >> 8);
                             uint8_t low = (uint8_t)(label_addr & 0xFF);
+                            printf("Jump to %u %u\n", high, low);
                             arr[c++] = high;
                             arr[c++] = low;
                             continue;
@@ -294,12 +322,6 @@ uint8_t* translate(Tokenized* buf, size_t* out, LabT* label_table) {
                 }
                 break;
             }
-        }
-        if (found == 0) {
-            printf("Unknown instruction occoured at byte %#x. Abort\n", (unsigned int)i);
-            free(arr);
-            *out = 0;
-            return NULL;
         }
     }
     uint8_t* res = realloc(arr, c * sizeof(uint8_t));
@@ -321,6 +343,12 @@ uint8_t* fat(const char* filename, size_t* size) {
         return NULL;
     }
     LabT label_table = init_lable_table();
+    if (collect_labels(&res, &label_table) == 0) {
+        printf("Error: Label collection failed\n");
+        free(buf.data);
+        free(res.buf);
+        return NULL;
+    }
     size_t s = 0;
     uint8_t* translated = translate(&res, &s, &label_table);
     free(buf.data);
