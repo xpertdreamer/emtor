@@ -12,6 +12,13 @@ fn main() {
     let path = std::env::args().nth(1).expect("No pattern given");
     let mut cpu = Machine::create();
     cpu.load_rom(path);
+    let dump = cpu.dump();
+    if TRACE {
+        for (i,  _) in dump.mem.iter().enumerate() {
+            print!("{:#08x} ", dump.mem[i]);
+        }
+    }
+    println!();
     cpu.run();
 }
 
