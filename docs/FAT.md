@@ -1,20 +1,25 @@
 # FAT - F*cked Assembly Translator
 > Tiny programm to turn text-assembly into hex programm
 
+> [!NOTE]
+> Source code can be messy and unoptimized because I don`t give a shit about it at this stage.
+
 The idea of this tool is simpler than ever. It takes a file you give to it and matches each instruction with its hex value to return an array of hex values.
 <br>At the first stage, the goal is to **parse->tokenize->translate->return array of bytes**.
-<br>For now it doesn`t support labels and some more additional stuff, but it will be implemented later (for now we'll have to be deal with hexadecimal numbers), but
-since *[17/08/2026]* directly supports register names & different code bases in code
+<br>Since *[17/08/2026]* directly supports register names & different code bases in code and since *[19/08/2026]* fully supports labels and comments.
 <br>This library interact with the emulator's Rust code via FFI. To do this, there are a function that returns an array of ``uint8_t``, which compatible with ``u8`` from Rust.
 <br><br>Syntax is pretty close to x86 assembly. The only difference is the absence of commas when listing arguments. For example:
 
-*[17/08/2026]*
 ``` asm
 moc A 1
 mov B A
 add
 and A C
+cmp A C
+jor 0x02 label
 hlt
+# label
+inc C
 ```
 
 The translator is written in C and is intended to be used as a backend for the emulator. The C library compiles during the project building process and links with the Rust emulator code. This interact with the emulator's Rust code via FFI (Foreign Function Interface). The interaction is handled on the Rust side
