@@ -462,9 +462,9 @@ impl Machine {
 
     fn exec_jct(&mut self, mask: u8, address: u16) {
         let flags = self.cpu.get_flags();
-        let ok: bool = (flags & mask) == 0;
+        let ok: bool = (flags & mask) == mask;
         if ok { self.cpu.set_pc(address); }
-        self.trace(&format!("JCT, mask=0b{:08b}, F=0b{:08b} -> {}", mask, flags, if ok { "TAKEN" } else { "NOT TAKEN" }));
+        self.trace(&format!("JCT, address={} mask=0b{:08b}, F=0b{:08b} -> {}", address, mask, flags, if ok { "TAKEN" } else { "NOT TAKEN" }));
     }
 
     fn exec_inc(&mut self, address: u8) {
