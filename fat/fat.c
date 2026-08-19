@@ -58,6 +58,7 @@ static const Op table[] = {
 };
 
 #define TABLESIZE (sizeof(table) / sizeof(*table))
+#define INITIAL_LABEL_TABLE_CAPACITY 10
 
 #define DELIMITER " "
 
@@ -190,8 +191,13 @@ Tokenized tokenize(Buffer *buf) {
     return (Tokenized){.buf = array, .size = i};
 }
 
-Label* init_lable_table() {
-
+LabT init_lable_table() {
+    Label* buck = malloc(sizeof(*buck) * INITIAL_LABEL_TABLE_CAPACITY);
+    if (buck == NULL) {
+        printf("ERROR: Can not initialize table of labels (buck is NULL)");
+        return (LabT){.bucket = NULL, .cap = 0, .size = 0};
+    }
+    return (LabT){.bucket = buck, .cap = INITIAL_LABEL_TABLE_CAPACITY, .size = 0};
 }
 
 uint8_t* translate(Tokenized* buf, size_t* out) {
