@@ -1,6 +1,7 @@
 ; jump at label at any case (just for examples)
 jmp label
 hlt
+
 # label ;this label
 inc B
 hlt

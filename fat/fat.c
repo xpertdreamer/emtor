@@ -5,6 +5,20 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifndef _WIN32
+#define ERROR_COLOR "\e[1;31m"
+#define RESET_COLOR "\e[0m"
+#else
+#define ERROR_COLOR ""
+#define RESET_COLOR ""
+#endif
+
+#define ERROR(fmt, ...)                                                 \
+    do {                                                                \
+        fprintf(stderr, "%sERROR:%s ", ERROR_COLOR, RESET_COLOR);       \
+        fprintf(stderr, fmt, ##__VA_ARGS__);                            \
+    } while (0)
+
 typedef struct {
     const char* name;
     uint16_t address;
@@ -72,6 +86,7 @@ static const Op table[] = {
 #define BASE_16_PREFIX   "0x"
 #define BASE_2_PREFIX    "0b"
 
+
 enum register_hash {
    HASH_A = 1154,
    HASH_B = 1155,
@@ -105,7 +120,7 @@ uint8_t reg_to_hex(const char* regname) {
 
 uint8_t parse_num(const char* token) {
     if (token == NULL) {
-        fprintf(stderr ,"Error occured while parsing number. Returning 0");
+        ERROR("Error occured while parsing number. Returning 0");
         return 0;
     }
     if (strncmp(token, BASE_16_PREFIX, BASE_PREFIX_SIZE) == 0) {
@@ -211,7 +226,7 @@ Tokenized tokenize(Buffer *buf) {
 LabT init_lable_table() {
     Label* buck = malloc(sizeof(*buck) * INITIAL_LABEL_TABLE_CAPACITY);
     if (buck == NULL) {
-        fprintf(stderr, "ERROR: Can not initialize table of labels (buck is NULL)\n");
+        ERROR("Can not initialize table of labels (buck is NULL)\n");
         return (LabT){.bucket = NULL, .cap = 0, .size = 0};
     }
     return (LabT){.bucket = buck, .cap = INITIAL_LABEL_TABLE_CAPACITY, .size = 0};
@@ -219,14 +234,14 @@ LabT init_lable_table() {
 
 uint16_t find_label(LabT* table, const char* name) {
     if (table == NULL || table->bucket == NULL) {
-        fprintf(stderr, "ERROR: Failed to find label '%s'\n", name);
+        ERROR("Failed to find label '%s'\n", name);
         return 0;
     }
     for (size_t i = 0; i < table->size; ++i) {
         if (strcmp(table->bucket[i].name, name) == 0)
             return table->bucket[i].address;
     }
-    fprintf(stderr, "ERROR: Failed to translate, label '%s' not found in table\n", name);
+    ERROR("Failed to translate, label '%s' not found in table\n", name);
     return 0;
 }
 
@@ -241,11 +256,11 @@ char label_exists(LabT* table, const char* name) {
 
 char add_lable_table(LabT* table, Label* label) {
     if (table == NULL || table->bucket == NULL || label == NULL) {
-        fprintf(stderr, "ERROR: Failed to add label to table\n");
+        ERROR("Failed to add label to table\n");
         return 0;
     }
     if (label_exists(table, label->name)) {
-        fprintf(stderr, "ERROR: Duplicate label %s\n", label->name);
+        ERROR("Duplicate label %s\n", label->name);
         return 0;
     }
     // check if table capacity colliding with size and resize if needed
@@ -253,7 +268,7 @@ char add_lable_table(LabT* table, Label* label) {
         size_t cap_rep = table->cap == 0 ? INITIAL_LABEL_TABLE_CAPACITY : table->cap * 2;
         Label* bucket_rep = realloc(table->bucket, sizeof(*bucket_rep) * cap_rep);
         if (bucket_rep == NULL) {
-            fprintf(stderr, "ERROR: Memory reallocation failed in add_label");
+            ERROR("Memory reallocation failed in add_label");
             return 0;
         }
         table->bucket = bucket_rep;
@@ -272,7 +287,7 @@ char collect_labels(Tokenized* buf, LabT* label_table) {
         char found = 0;
         if (strcmp(token, LABEL_MARK) == 0) {
             if (i + 1 >= buf->size) {
-                fprintf(stderr, "ERROR: Label mark with no label name at address %zu\n", c);
+                ERROR("Label mark with no label name at address %zu\n", c);
                 return 0;
             }
             ++i;
@@ -288,7 +303,7 @@ char collect_labels(Tokenized* buf, LabT* label_table) {
                     for (int k = 0; k < table[j].argsize; ++k) {
                         ++i;
                         if (i >= buf->size) {
-                            fprintf(stderr, "Memory out of bound during collecting labels at byte %#x\n", (unsigned int)i);
+                            ERROR("Memory out of bound during collecting labels at byte %#x\n", (unsigned int)i);
                             return 0;
                         }
                         if (strcmp(token, "jmp") == 0 || strcmp(token, "jof") == 0) {
@@ -306,7 +321,7 @@ char collect_labels(Tokenized* buf, LabT* label_table) {
             }
         }
         if (found == 0) {
-            fprintf(stderr, "Unknown instruction occoured at byte %#x. Abort\n", (unsigned int)i);
+            ERROR("Unknown instruction occoured at byte %#x. Abort\n", (unsigned int)i);
             return 0;
         }
     }
@@ -363,20 +378,20 @@ uint8_t* translate(Tokenized* buf, size_t* out, LabT* label_table) {
 uint8_t* fat(const char* filename, size_t* size) {
     Buffer buf = read_file(filename);
     if (buf.data == NULL) {
-        fprintf(stderr, "ERROR: Failed to read file %s\n", filename);
+        ERROR("Failed to read file %s\n", filename);
         return NULL;
     }
     strip_comments(&buf);
     strip_nl(&buf);
     Tokenized res = tokenize(&buf);
     if (res.buf == NULL) {
-        fprintf(stderr, "ERROR: Tokenization failed\n");
+        ERROR("Tokenization failed\n");
         free(buf.data);
         return NULL;
     }
     LabT label_table = init_lable_table();
     if (collect_labels(&res, &label_table) == 0) {
-        fprintf(stderr, "ERROR: Label collection failed\n");
+        ERROR("Label collection failed\n");
         free(buf.data);
         free(res.buf);
         return NULL;
@@ -388,7 +403,7 @@ uint8_t* fat(const char* filename, size_t* size) {
     for (size_t i = 0; i < label_table.size; ++i) free((void*)label_table.bucket[i].name);
     free(label_table.bucket);
     if (translated == NULL) {
-        fprintf(stderr, "Some arguments not providen, or error\n");
+        ERROR("Some arguments not providen, or error\n");
         return NULL;
     }
     if (size != NULL) *size = s;
