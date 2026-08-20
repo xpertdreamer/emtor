@@ -7,9 +7,11 @@
 
 #ifndef _WIN32
 #define ERROR_COLOR "\e[1;31m"
+#define DEBUG_COLOR "\e[1;34m"
 #define RESET_COLOR "\e[0m"
 #else
 #define ERROR_COLOR ""
+#define DEBUG_COLOR ""
 #define RESET_COLOR ""
 #endif
 
@@ -17,6 +19,12 @@
     do {                                                                \
         fprintf(stderr, "%sERROR:%s ", ERROR_COLOR, RESET_COLOR);       \
         fprintf(stderr, fmt, ##__VA_ARGS__);                            \
+    } while (0)
+
+#define DEBUG(fmt, ...)                                             \
+    do {                                                            \
+        fprintf(stdout, "%sDEBUG:%s ", DEBUG_COLOR, RESET_COLOR);   \
+        fprintf(stdout, fmt, ##__VA_ARGS__);                        \
     } while (0)
 
 typedef struct {
@@ -292,7 +300,7 @@ char collect_labels(Tokenized* buf, LabT* label_table) {
             }
             ++i;
             add_lable_table(label_table, &(Label){.name = strdup(buf->buf[i]), .address = c});
-            fprintf(stdout, "New label at address %zu\n", c);
+            DEBUG("New label at address %zu\n", c);
             continue;
         }
         for (int j = 0; j < (int)TABLESIZE; ++j) {
@@ -352,7 +360,7 @@ uint8_t* translate(Tokenized* buf, size_t* out, LabT* label_table) {
                             uint16_t label_addr = find_label(label_table, arg);
                             uint8_t high = (uint8_t)(label_addr >> 8);
                             uint8_t low = (uint8_t)(label_addr & 0xFF);
-                            fprintf(stdout, "Jump to %u %u\n", high, low);
+                            DEBUG("Jump to %u %u\n", high, low);
                             arr[c++] = high;
                             arr[c++] = low;
                             continue;
