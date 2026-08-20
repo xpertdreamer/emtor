@@ -220,9 +220,35 @@ LabT init_lable_table() {
     return (LabT){.bucket = buck, .cap = INITIAL_LABEL_TABLE_CAPACITY, .size = 0};
 }
 
+uint16_t find_label(LabT* table, const char* name) {
+    if (table == NULL || table->bucket == NULL) {
+        printf("ERROR: Failed to find label '%s'\n", name);
+        return 0;
+    }
+    for (size_t i = 0; i < table->size; ++i) {
+        if (strcmp(table->bucket[i].name, name) == 0)
+            return table->bucket[i].address;
+    }
+    printf("ERROR: Failed to translate, label '%s' not found in table\n", name);
+    return 0;
+}
+
+char label_exists(LabT* table, const char* name) {
+    if (table == NULL || table->bucket == NULL) return 0;
+    for (size_t i = 0; i < table->size; ++i) {
+        if (strcmp(table->bucket[i].name, name) == 0)
+            return 1;
+    }
+    return 0;
+}
+
 char add_lable_table(LabT* table, Label* label) {
     if (table == NULL || table->bucket == NULL || label == NULL) {
         printf("ERROR: Failed to add label to table\n");
+        return 0;
+    }
+    if (label_exists(table, label->name)) {
+        printf("ERROR: Duplicate label %s\n", label->name);
         return 0;
     }
     // check if table capacity colliding with size and resize if needed
@@ -239,19 +265,6 @@ char add_lable_table(LabT* table, Label* label) {
     table->bucket[table->size] = *label;
     table->size++;
     return 1;
-}
-
-uint16_t find_label(LabT* table, const char* name) {
-    if (table == NULL || table->bucket == NULL) {
-        printf("ERROR: Failed to find label '%s'\n", name);
-        return 0;
-    }
-    for (size_t i = 0; i < table->size; ++i) {
-        if (strcmp(table->bucket[i].name, name) == 0)
-            return table->bucket[i].address;
-    }
-    printf("ERROR: Failed to translate, label '%s' not found in table\n", name);
-    return 0;
 }
 
 char collect_labels(Tokenized* buf, LabT* label_table) {
