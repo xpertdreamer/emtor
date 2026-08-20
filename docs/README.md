@@ -334,8 +334,7 @@ error handling
 
 4 sections memory layout (Data Pointer)
 
-LEA
-
 syscalls
 
-parser & other cool stuff to load programs from file
+LEA
+
