@@ -78,7 +78,7 @@ static const Op table[] = {
     {"bsl", 0x24, 2}
 };
 
-#define TABLESIZE (sizeof(table) / sizeof(*table))
+#define TABLESIZE                    (sizeof(table) / sizeof(*table))
 #define INITIAL_LABEL_TABLE_CAPACITY 10
 
 #define DELIMITER    " "
@@ -94,6 +94,7 @@ static const Op table[] = {
 #define BASE_16_PREFIX   "0x"
 #define BASE_2_PREFIX    "0b"
 
+#define MAX_SIZE_IN_BYTES 112
 
 enum register_hash {
    HASH_A = 1154,
@@ -402,6 +403,8 @@ uint8_t* fat(const char* filename, size_t* size) {
         ERROR("Label collection failed\n");
         free(buf.data);
         free(res.buf);
+        for (size_t i = 0; i < label_table.size; ++i) free((void*)label_table.bucket[i].name);
+        free(label_table.bucket);
         return NULL;
     }
     size_t s = 0;
@@ -410,6 +413,10 @@ uint8_t* fat(const char* filename, size_t* size) {
     free(res.buf);
     for (size_t i = 0; i < label_table.size; ++i) free((void*)label_table.bucket[i].name);
     free(label_table.bucket);
+    if (s > MAX_SIZE_IN_BYTES) {
+        ERROR("Code is bigger than memory size\n");
+        return NULL;
+    }
     if (translated == NULL) {
         ERROR("Some arguments not providen, or error\n");
         return NULL;
