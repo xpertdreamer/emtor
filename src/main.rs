@@ -1,11 +1,10 @@
-use crate::machine::Machine;
+use crate::{machine::Machine, config::TRACE};
 
 mod cpu;
 mod reg;
 mod opcode;
 mod machine;
-
-pub const TRACE: bool = true;
+mod config;
 
 fn main() {
     // Thats your sandbox
@@ -17,8 +16,8 @@ fn main() {
         for (i,  _) in dump.mem.iter().enumerate() {
             print!("{:#08x} ", dump.mem[i]);
         }
+        println!();
     }
-    println!();
     cpu.run();
 }
 

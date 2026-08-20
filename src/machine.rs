@@ -1,8 +1,8 @@
-use crate::{TRACE, cpu::*, opcode::Opcode, reg::{REG_A, REG_B, REG_C}};
+use crate::{TRACE, cpu::*, opcode::Opcode, reg::{REG_A, REG_B, REG_C}, config::color_codes};
 use std::slice;
 use std::{ffi::CString, os::raw::c_char};
 
-pub const NEGATIVE_U8: u8 = 0b10000000;
+const NEGATIVE_U8: u8 = 0b10000000;
 
 #[derive(Debug, PartialEq)]
 pub struct CpuState {
@@ -147,7 +147,7 @@ impl Machine {
 
     fn trace(&self, ms: &str) {
         if self.trace {
-            println!("TRACE: {}", ms);
+            println!("{}TRACE{}: {}", color_codes::TRACE, color_codes::RESET, ms);
         }
     }
 
