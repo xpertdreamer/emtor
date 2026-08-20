@@ -59,16 +59,21 @@ static const Op table[] = {
 #define TABLESIZE (sizeof(table) / sizeof(*table))
 #define INITIAL_LABEL_TABLE_CAPACITY 10
 
-#define DELIMITER  " "
-#define LABEL_MARK "#"
+#define DELIMITER    " "
+#define LABEL_MARK   "#"
+#define COMMENT_MARK ';'
 
 #define BASE_16 16
 #define BASE_10 10
 #define BASE_2  2
 
 #define BASE_PREFIX_SIZE 2
+
 #define BASE_16_PREFIX   "0x"
 #define BASE_2_PREFIX    "0b"
+
+#define DATA_START "{"
+#define DATA_END   "}"
 
 enum register_hash {
    HASH_A = 1154,
@@ -163,7 +168,7 @@ void strip_comments(Buffer *buf) {
     char* b = buf->data;
     char in = 0;
     while (*b != '\0') {
-        if (*b == ';') {
+        if ((int)*b == COMMENT_MARK) {
             *b = ' ';
             in = 1;
         }
@@ -299,6 +304,7 @@ char collect_labels(Tokenized* buf, LabT* label_table) {
 }
 
 uint8_t* translate(Tokenized* buf, size_t* out, LabT* label_table) {
+    // TODO: data block
     if (buf == NULL || buf->buf == NULL || buf->size == 0) return NULL;
     uint8_t* arr = malloc(buf->size*sizeof(uint8_t));
     if (!arr) return NULL;
