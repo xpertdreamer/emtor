@@ -5,6 +5,7 @@ mod reg;
 mod opcode;
 mod machine;
 mod config;
+mod timer;
 
 fn main() {
     // Thats your sandbox
